@@ -18,10 +18,6 @@ function useScrollNorm() {
 const Starfield = () => {
   const baseRef = useRef<THREE.Points | null>(null);
   const flareRef = useRef<THREE.Points | null>(null);
-  const NUM_BEAMS = 0;
-  const chainRefs = useRef<Array<THREE.Line | null>>([]);
-  const chainIdx = useRef<number[]>(Array(NUM_BEAMS).fill(0));
-  const chainT = useRef<number[]>(Array(NUM_BEAMS).fill(0));
 
   const sphere = useMemo<Float32Array>(() => inSphere(new Float32Array(9003), { radius: 1.35 }) as Float32Array, []);
   const cloud = useMemo<Float32Array>(() => inSphere(new Float32Array(9003), { radius: 2.2 }) as Float32Array, []);
@@ -74,21 +70,7 @@ const Starfield = () => {
       geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
       geo.attributes.color.needsUpdate = true;
     }
-    // Инициализация геометрии всех лучей
-    chainRefs.current.forEach((ln) => {
-      if (ln) {
-        const lgeo = ln.geometry as THREE.BufferGeometry;
-        const arr = new Float32Array(6);
-        lgeo.setAttribute("position", new THREE.BufferAttribute(arr, 3));
-        lgeo.attributes.position.needsUpdate = true;
-      }
-    });
-    // Разносим стартовые индексы по массиву, чтобы лучи не совпадали
-    for (let b = 0; b < NUM_BEAMS; b++) {
-      chainIdx.current[b] = Math.floor((count / NUM_BEAMS) * b) % count;
-      chainT.current[b] = 0;
-    }
-  }, [colors, baseIntensity, count, NUM_BEAMS]);
+  }, [colors, baseIntensity, count]);
 
   const getScroll = useScrollNorm();
 
@@ -156,25 +138,6 @@ const Starfield = () => {
       geo.attributes.position.needsUpdate = true;
     }
 
-    // Анимированные лучи, последовательно соединяющие звезды
-    for (let b = 0; b < NUM_BEAMS; b++) {
-      const ln = chainRefs.current[b];
-      if (!ln) continue;
-      const lgeo = ln.geometry as THREE.BufferGeometry;
-      const parr = (lgeo.getAttribute("position") as THREE.BufferAttribute)?.array as Float32Array | undefined;
-      if (!parr || pos.length < 6) continue;
-      const i = chainIdx.current[b] % count;
-      const j = (i + 1) % count;
-      const ax = pos[i * 3 + 0], ay = pos[i * 3 + 1], az = pos[i * 3 + 2];
-      const bx = pos[j * 3 + 0], by = pos[j * 3 + 1], bz = pos[j * 3 + 2];
-      const tprog = chainT.current[b];
-      parr[0] = ax; parr[1] = ay; parr[2] = az;
-      parr[3] = ax + (bx - ax) * tprog; parr[4] = ay + (by - ay) * tprog; parr[5] = az + (bz - az) * tprog;
-      lgeo.setDrawRange(0, 2);
-      lgeo.attributes.position.needsUpdate = true;
-      chainT.current[b] += delta * 0.6;
-      if (chainT.current[b] >= 1) { chainT.current[b] = 0; chainIdx.current[b] = j; }
-    }
   });
 
   return (
@@ -195,21 +158,7 @@ const Starfield = () => {
           map={flareTexture}
         />
       </points>
-      {/* 5 анимированных лучей с 60% прозрачностью */}
-      {Array.from({ length: NUM_BEAMS }).map((_, idx) => (
-        <line key={idx} ref={(el) => (chainRefs.current[idx] = el)} frustumCulled={false}>
-          <bufferGeometry />
-          <lineBasicMaterial
-            transparent
-            opacity={0.4}
-            depthWrite={false}
-            depthTest={false}
-            toneMapped={false}
-            blending={THREE.NormalBlending}
-            color={new THREE.Color(1, 1, 1)}
-          />
-        </line>
-      ))}
+      {/* Линии отключены */}
     </>
   );
 };
