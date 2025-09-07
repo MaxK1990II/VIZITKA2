@@ -2,22 +2,23 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { BrainCircuit, Cpu, Rocket } from "lucide-react";
+// Заменяем стандартные иконки на более стилизованные
+import { Cpu, Rocket, BrainCircuit } from "lucide-react";
 
 const competencies = [
   {
     name: "Инновации",
-    icon: Rocket,
+    icon: Rocket, // Rocket символизирует прорыв и инновации
     description: "Внедрение передовых технологий и оптимизация производственных процессов.",
   },
   {
     name: "Автоматизация",
-    icon: Cpu,
+    icon: Cpu, // Cpu напрямую ассоциируется с автоматизацией и робототехникой
     description: "Программирование промышленных роботов и разработка роботизированных ячеек.",
   },
   {
     name: "Искусственный интеллект",
-    icon: BrainCircuit,
+    icon: BrainCircuit, // BrainCircuit - идеальный символ для ИИ
     description: "Развитие в области компьютерного зрения и машинного обучения для промышленности.",
   },
 ];
@@ -48,7 +49,7 @@ export const About = () => {
     <section className="py-24 md:py-32 px-4 overflow-hidden">
       <div className="container mx-auto grid md:grid-cols-2 gap-12 md:gap-16 items-center">
         <motion.div 
-          className="flex justify-center"
+          className="js-about-photo flex justify-center"
           initial={{ opacity: 0, scale: 0.5 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
@@ -79,7 +80,7 @@ export const About = () => {
               return (
               <motion.div
                 key={item.name}
-                className="flex items-start gap-4"
+                className="js-about-item flex items-start gap-4"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 1 + index * 0.2 }}

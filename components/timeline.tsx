@@ -35,7 +35,7 @@ const TimelineItem = ({ data, isLast }: { data: typeof timelineData[0], isLast: 
   });
 
   return (
-    <div ref={ref} className="flex">
+    <div ref={ref} className="js-timeline-item flex">
       <div className="flex flex-col items-center mr-4">
         <motion.div 
           className="w-12 h-12 rounded-full border-2 border-cyan-500 bg-neutral-800 flex items-center justify-center z-10"
@@ -78,7 +78,7 @@ export const Timeline = () => {
       <div className="container mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Мой путь</h2>
         <div ref={ref} className="w-full max-w-3xl mx-auto relative">
-           <motion.div style={{ scaleY }} className="absolute left-5 top-0 w-0.5 h-full bg-cyan-500 origin-top" />
+           <motion.div style={{ scaleY }} className="js-timeline-line absolute left-5 top-0 w-0.5 h-full bg-cyan-500 origin-top" />
            <div className="relative">
               {timelineData.map((item, index) => (
                 <TimelineItem 

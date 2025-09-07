@@ -66,7 +66,7 @@ const ProjectCard = ({ project }: { project: typeof projectData[0] }) => {
                 transformStyle: "preserve-3d",
                 transform: "perspective(800px)",
             }}
-            className="bg-neutral-800 p-8 rounded-xl border border-neutral-700 relative overflow-hidden"
+            className="js-project-card bg-neutral-800 p-8 rounded-xl border border-neutral-700 relative overflow-hidden"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}

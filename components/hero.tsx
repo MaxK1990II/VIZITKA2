@@ -49,7 +49,7 @@ export const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50"
+          className="js-hero-title text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50"
         >
           Максим Каночкин
         </motion.h1>
@@ -58,7 +58,7 @@ export const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-4 text-lg md:text-xl text-neutral-300 max-w-2xl mx-auto"
+          className="js-hero-subtitle mt-4 text-lg md:text-xl text-neutral-300 max-w-2xl mx-auto"
         >
           Начальник отдела развития, инноваций и аддитивных технологий
         </motion.p>
@@ -67,7 +67,7 @@ export const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-2 text-base text-neutral-400"
+          className="js-hero-tagline mt-2 text-base text-neutral-400"
         >
           Инженер | Новатор | Лидер
         </motion.p>
