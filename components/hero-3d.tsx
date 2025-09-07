@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from 'three';
 import { inSphere } from 'maath/random';
+import { TextTrail } from "./text-trail";
 
 function useScrollNorm() {
   const { size } = useThree();
@@ -52,7 +53,7 @@ export const Hero3D = () => {
       </Canvas>
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
         <h1 className="js-hero-title text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400">
-          Максим Каночкин
+          <TextTrail text="Максим Каночкин" />
         </h1>
         <p className="js-hero-subtitle mt-4 text-lg md:text-xl text-neutral-300">
           Инженер • Новатор • Лидер
