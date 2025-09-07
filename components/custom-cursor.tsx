@@ -6,7 +6,7 @@ import { motion, useSpring } from 'framer-motion';
 export const CustomCursor = () => {
     const [isHoveringLink, setIsHoveringLink] = useState(false);
     
-    const springConfig = { damping: 25, stiffness: 300 };
+    const springConfig = { damping: 25, stiffness: 300 } as const;
 
     const cursorX = useSpring(-100, springConfig);
     const cursorY = useSpring(-100, springConfig);
@@ -24,13 +24,15 @@ export const CustomCursor = () => {
         };
 
         const handleMouseOver = (e: MouseEvent) => {
-            if (e.target instanceof Element && (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('a, button'))) {
+            const target = e.target as Element | null;
+            if (target && (target.tagName === 'A' || target.tagName === 'BUTTON' || target.closest('a, button'))) {
                 setIsHoveringLink(true);
             }
         };
         
         const handleMouseOut = (e: MouseEvent) => {
-             if (e.target instanceof Element && (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('a, button'))) {
+            const target = e.target as Element | null;
+            if (target && (target.tagName === 'A' || target.tagName === 'BUTTON' || target.closest('a, button'))) {
                 setIsHoveringLink(false);
             }
         };
@@ -44,7 +46,7 @@ export const CustomCursor = () => {
             document.body.removeEventListener('mouseover', handleMouseOver);
             document.body.removeEventListener('mouseout', handleMouseOut);
         };
-    }, []);
+    }, [cursorX, cursorY, dotX, dotY]);
 
     return (
         <>

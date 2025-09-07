@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { createTimeline, onScroll, stagger, animate } from "animejs";
+import { createTimeline, onScroll, stagger, animate, type Timeline } from "animejs";
+
+declare global {
+  interface Window {
+    __mainTL?: Timeline;
+  }
+}
 
 export const ScrollAnim = () => {
   useEffect(() => {
@@ -14,10 +20,9 @@ export const ScrollAnim = () => {
       animate([".js-timeline-item", ".js-project-card", ".js-vision-title", ".js-vision-cta", ".js-globe-wrapper", ".js-contact-title", ".js-contact-cta"], { opacity: 0, duration: 0 });
     } catch {}
 
-    const tl = createTimeline({
+    const tl: Timeline = createTimeline({
       autoplay: onScroll({ sync: true }),
       duration: 1500,
-      ease: "inOutCubic",
     });
 
     tl.add([".js-hero-title", ".js-hero-subtitle", ".js-hero-tagline"], {
@@ -81,12 +86,11 @@ export const ScrollAnim = () => {
       delay: stagger(140),
     }, ">+=200");
 
-    // Expose simple controls if needed later
-    // @ts-ignore
-    (window as any).__mainTL = tl;
+    window.__mainTL = tl;
 
     return () => {
-      try { // @ts-ignore
+      try {
+        // @ts-expect-error types mismatch in third-party timeline
         tl.pause?.();
       } catch {}
     };

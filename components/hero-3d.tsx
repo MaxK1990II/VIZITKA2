@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useMemo, useRef, useEffect } from "react";
+import React, { useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
-// @ts-ignore
-import * as random from 'maath/random/dist/maath-random.esm';
+import * as THREE from 'three';
+import { inSphere } from 'maath/random';
 
 function useScrollNorm() {
   const { size } = useThree();
@@ -17,25 +17,23 @@ function useScrollNorm() {
 }
 
 const Particles = () => {
-  const ref = useRef<any>();
-  const sphere = useMemo(() => random.inSphere(new Float32Array(9003), { radius: 1.15 }), []);
-  const cloud = useMemo(() => random.inSphere(new Float32Array(9003), { radius: 2.2 }), []);
+  const ref = useRef<THREE.Points | null>(null);
+  const sphere = useMemo<Float32Array>(() => inSphere(new Float32Array(9003), { radius: 1.15 }) as Float32Array, []);
+  const cloud = useMemo<Float32Array>(() => inSphere(new Float32Array(9003), { radius: 2.2 }) as Float32Array, []);
   const getScroll = useScrollNorm();
 
   useFrame((_, delta) => {
     const s = getScroll();
     if (!ref.current) return;
-    // s=0 — собрана сфера; s~0.5 — максимально разлетается; s~1 — снова собирается
     const t = s < 0.5 ? s * 2 : (1 - s) * 2; // 0..1..0
     ref.current.rotation.y += delta * 0.2 * (0.3 + s);
-    // Лерп между шаром и облаком
     const a = sphere;
     const b = cloud;
-    const pos = ref.current.geometry.attributes.position.array as Float32Array;
+    const pos = (ref.current.geometry as THREE.BufferGeometry).attributes.position.array as Float32Array;
     for (let i = 0; i < pos.length; i++) {
       pos[i] = a[i] * (1 - t) + b[i] * t;
     }
-    ref.current.geometry.attributes.position.needsUpdate = true;
+    (ref.current.geometry as THREE.BufferGeometry).attributes.position.needsUpdate = true;
   });
 
   return (
