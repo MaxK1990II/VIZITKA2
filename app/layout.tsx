@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { CustomCursor } from "@/components/custom-cursor";
+import { UniverseBackground } from "@/components/universe-background";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <CustomCursor />
         <SmoothScrollProvider>
+          <UniverseBackground />
           {children}
         </SmoothScrollProvider>
       </body>
