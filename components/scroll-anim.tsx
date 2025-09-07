@@ -90,7 +90,6 @@ export const ScrollAnim = () => {
 
     return () => {
       try {
-        // @ts-expect-error types mismatch in third-party timeline
         tl.pause?.();
       } catch {}
     };
