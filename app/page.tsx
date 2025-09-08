@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <SmoothScrollProvider>
       <CustomCursor />
-      <UniverseBackground />
+      {/* <UniverseBackground /> */}
       <main>
         {/* <Loader /> */}
         {/* <ScrollAnim /> */}
