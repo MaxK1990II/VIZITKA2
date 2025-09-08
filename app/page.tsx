@@ -17,13 +17,13 @@ export const revalidate = 0;
 
 export default function Home() {
   return (
-    <>
-      {/* <CustomCursor /> */}
-      {/* <UniverseBackground /> */}
+    <SmoothScrollProvider>
+      <CustomCursor />
+      <UniverseBackground />
       <main>
         <Loader />
-        {/* <ScrollAnim /> */}
-        <Hero3D />
+        <ScrollAnim />
+        {/* <Hero3D /> */}
         <About />
         <Timeline />
         <Projects />
@@ -31,6 +31,6 @@ export default function Home() {
         <Map />
         <Contact />
       </main>
-    </>
+    </SmoothScrollProvider>
   );
 }
