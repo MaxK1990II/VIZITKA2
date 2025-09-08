@@ -2,7 +2,12 @@
 
 import React, { Suspense } from "react";
 import { motion } from "framer-motion";
-import { Globe } from "./globe";
+import dynamic from "next/dynamic";
+
+const Globe = dynamic(() => import("./globe").then(m => m.Globe), {
+  ssr: false,
+  loading: () => <div className="text-white">Loading 3D...</div>,
+});
 
 const locations = [
   {
