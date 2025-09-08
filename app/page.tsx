@@ -28,7 +28,7 @@ export default function Home() {
         <Timeline />
         <Projects />
         <Vision />
-        <Map />
+        {/* <Map /> */}
         <Contact />
       </main>
     </SmoothScrollProvider>
