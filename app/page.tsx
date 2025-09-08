@@ -18,7 +18,7 @@ export const revalidate = 0;
 export default function Home() {
   return (
     <SmoothScrollProvider>
-      <CustomCursor />
+      {/* <CustomCursor /> */}
       {/* <UniverseBackground /> */}
       <main>
         <Loader />
