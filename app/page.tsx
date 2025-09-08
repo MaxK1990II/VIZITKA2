@@ -22,7 +22,7 @@ export default function Home() {
       {/* <UniverseBackground /> */}
       <main>
         <Loader />
-        <ScrollAnim />
+        {/* <ScrollAnim /> */}
         <Hero3D />
         <About />
         <Timeline />
