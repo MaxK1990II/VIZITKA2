@@ -17,7 +17,7 @@ export const revalidate = 0;
 
 export default function Home() {
   return (
-    <SmoothScrollProvider>
+    <>
       {/* <CustomCursor /> */}
       {/* <UniverseBackground /> */}
       <main>
@@ -31,6 +31,6 @@ export default function Home() {
         <Map />
         <Contact />
       </main>
-    </SmoothScrollProvider>
+    </>
   );
 }
