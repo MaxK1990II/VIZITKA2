@@ -23,7 +23,7 @@ export default function Home() {
       <main>
         <Loader />
         {/* <ScrollAnim /> */}
-        <Hero3D />
+        {/* <Hero3D /> */}
         <About />
         <Timeline />
         <Projects />
