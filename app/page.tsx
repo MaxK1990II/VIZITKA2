@@ -21,15 +21,15 @@ export default function Home() {
       <CustomCursor />
       {/* <UniverseBackground /> */}
       <main>
-        {/* <Loader /> */}
-        {/* <ScrollAnim /> */}
-        {/* <Hero3D /> */}
-        {/* <About /> */}
-        {/* <Timeline /> */}
-        {/* <Projects /> */}
-        {/* <Vision /> */}
-        {/* <Map /> */}
-        {/* <Contact /> */}
+        <Loader />
+        <ScrollAnim />
+        <Hero3D />
+        <About />
+        <Timeline />
+        <Projects />
+        <Vision />
+        <Map />
+        <Contact />
       </main>
     </SmoothScrollProvider>
   );
