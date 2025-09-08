@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
-import { CustomCursor } from "@/components/custom-cursor";
-import { UniverseBackground } from "@/components/universe-background";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -21,13 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body className={inter.className}>
-        <CustomCursor />
-        <SmoothScrollProvider>
-          <UniverseBackground />
-          {children}
-        </SmoothScrollProvider>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
