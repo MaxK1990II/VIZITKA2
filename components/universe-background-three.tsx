@@ -49,29 +49,52 @@ export const UniverseBackgroundThree: React.FC = () => {
     camera.position.set(0, 0, 2.6);
 
     // Stars geometry
-    const num = 3001; // divisible by 1*3? We'll use count points, each uses one vertex; but BufferGeometry expects triplets for position attribute
+    const num = 3000;
     const sphere = generateInSphere(num, 1.35);
     const cloud = generateInSphere(num, 2.2);
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(sphere, 3));
 
-    const baseColor = new THREE.Color(0x99e6ff);
-    const colors = new Float32Array((sphere.length / 3) * 3);
-    for (let i = 0; i < sphere.length / 3; i++) {
-      colors[i * 3 + 0] = baseColor.r * 0.7;
-      colors[i * 3 + 1] = baseColor.g * 0.7;
-      colors[i * 3 + 2] = baseColor.b * 0.7;
+    // White-ish vertex colors (uniform, for additive blend boost)
+    const baseColor = new THREE.Color(0xffffff);
+    const colors = new Float32Array(num * 3);
+    for (let i = 0; i < num; i++) {
+      colors[i * 3 + 0] = baseColor.r;
+      colors[i * 3 + 1] = baseColor.g;
+      colors[i * 3 + 2] = baseColor.b;
     }
     geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
+    // Circular sprite texture
+    const size = 64;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    g.addColorStop(0, "rgba(255,255,255,1)");
+    g.addColorStop(0.6, "rgba(255,255,255,0.9)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+    ctx.fill();
+    const starTexture = new THREE.CanvasTexture(canvas);
+    starTexture.needsUpdate = true;
+    starTexture.minFilter = THREE.LinearFilter;
+    starTexture.magFilter = THREE.LinearFilter;
+
     const material = new THREE.PointsMaterial({
-      color: baseColor,
-      size: 0.01,
+      color: 0xffffff,
+      size: 0.02,
       sizeAttenuation: true,
       transparent: true,
       depthWrite: false,
       vertexColors: true,
+      map: starTexture,
+      alphaTest: 0.1,
+      blending: THREE.AdditiveBlending,
     });
 
     const points = new THREE.Points(geometry, material);
@@ -118,12 +141,11 @@ export const UniverseBackgroundThree: React.FC = () => {
       window.removeEventListener("resize", resize);
       geometry.dispose();
       material.dispose();
+      starTexture.dispose();
       renderer.dispose();
       if (renderer.domElement.parentElement === host) host.removeChild(renderer.domElement);
     };
   }, []);
 
-  return (
-    <div ref={hostRef} style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }} />
-  );
+  return <div ref={hostRef} style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }} />;
 };
