@@ -38,18 +38,15 @@ export const UniverseBackgroundThree: React.FC = () => {
     const host = hostRef.current;
     if (!host) return;
 
-    // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     host.appendChild(renderer.domElement);
 
-    // Scene & camera
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
     camera.position.set(0, 0, 2.6);
 
-    // Stars geometry (reduced density)
     const num = 1400;
     const sphere = generateInSphere(num, 1.35);
     const cloud = generateInSphere(num, 2.2);
@@ -57,12 +54,11 @@ export const UniverseBackgroundThree: React.FC = () => {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(sphere, 3));
 
-    // Custom shader for crisp star (no circles), subtle cross + core
     const material = new THREE.ShaderMaterial({
       uniforms: {
         uColor: { value: new THREE.Color(0xffffff) },
         uOpacity: { value: 0.28 },
-        uSize: { value: 3.0 }, // pixels
+        uSize: { value: 12.0 },
         uSizeAttenuation: { value: 1.0 },
       },
       vertexShader: `
@@ -79,13 +75,11 @@ export const UniverseBackgroundThree: React.FC = () => {
         uniform vec3 uColor;
         uniform float uOpacity;
         void main() {
-          vec2 p = gl_PointCoord * 2.0 - 1.0; // -1..1
+          vec2 p = gl_PointCoord * 2.0 - 1.0;
           float r = length(p);
-          // crisp cross
           float vx = max(0.0, 1.0 - abs(p.x) * 8.0);
           float vy = max(0.0, 1.0 - abs(p.y) * 8.0);
           float cross = max(vx, vy) * 0.55;
-          // tight bright core
           float core = smoothstep(0.18, 0.0, r);
           float alpha = clamp(cross + core, 0.0, 1.0) * uOpacity;
           if (alpha < 0.06) discard;
@@ -102,7 +96,6 @@ export const UniverseBackgroundThree: React.FC = () => {
     group.add(points);
     scene.add(group);
 
-    // Resize
     const resize = () => {
       const w = host.clientWidth || window.innerWidth;
       const h = host.clientHeight || window.innerHeight;
@@ -113,18 +106,15 @@ export const UniverseBackgroundThree: React.FC = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    // Animate (slower)
     const positionAttr = geometry.getAttribute("position") as THREE.BufferAttribute;
     const posArray = positionAttr.array as Float32Array;
     const animate = () => {
       if (!mountedRef.current) return;
       const s = getScrollNorm();
-      const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0; // 0..1..0
+      const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0;
 
-      // Rotate (very subtle)
       group.rotation.y += 0.001 + s * 0.003;
 
-      // Morph
       for (let i = 0; i < posArray.length; i++) {
         posArray[i] = sphere[i] * (1.0 - t) + cloud[i] * t;
       }
@@ -149,15 +139,6 @@ export const UniverseBackgroundThree: React.FC = () => {
   return (
     <div ref={wrapperRef} style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
       <div ref={hostRef} style={{ position: "absolute", inset: 0 }} />
-      {/* Vignette to improve readability */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(ellipse at center, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.30) 55%, rgba(0,0,0,0.50) 100%)",
-        }}
-      />
     </div>
   );
 };
