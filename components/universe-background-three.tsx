@@ -246,8 +246,8 @@ export const UniverseBackgroundThree: React.FC = () => {
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
     camera.position.set(0, 0, 3.0);
 
-    const COUNT = 54;
-    const baseRadius = 1.3;
+    const COUNT = 220;
+    const baseRadius = 1.45;
     const targetsA = fibonacciSphere(COUNT, baseRadius);
     const targetsB = fibonacciSphere(COUNT, baseRadius * 1.6);
 
@@ -262,7 +262,7 @@ export const UniverseBackgroundThree: React.FC = () => {
       const tex = makeIconTexture(kind);
       const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, color: 0xffffff, opacity: 0.85 });
       const spr = new THREE.Sprite(mat);
-      const s = 2.4 + ((i * 31) % 10) * 0.08; // larger icons with slight variation
+      const s = 0.024 + ((i * 31) % 10) * 0.001; // ~100x smaller than before, slight variation
       spr.scale.set(s, s, 1);
       spr.position.copy(targetsA[i]);
       group.add(spr);
@@ -285,7 +285,7 @@ export const UniverseBackgroundThree: React.FC = () => {
       const s = getScrollNorm();
       const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0;
 
-      group.rotation.y += 0.0012 + s * 0.002;
+      group.rotation.y += 0.001 + s * 0.0015;
 
       for (let i = 0; i < COUNT; i++) {
         const a = targetsA[i];
