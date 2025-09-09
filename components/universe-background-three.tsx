@@ -3,6 +3,18 @@
 import React from "react";
 import * as THREE from "three";
 
+type IconKind =
+  | "code"
+  | "gear"
+  | "robot"
+  | "cloud"
+  | "chip"
+  | "atom"
+  | "cube"
+  | "bolt"
+  | "eye"
+  | "shield";
+
 function fibonacciSphere(count: number, radius: number): THREE.Vector3[] {
   const points: THREE.Vector3[] = [];
   const offset = 2 / count;
@@ -25,23 +37,184 @@ function getScrollNorm(): number {
   return docHeight > 0 ? Math.min(1, Math.max(0, scrollTop / docHeight)) : 0;
 }
 
-function makeLabelTexture(text: string): THREE.CanvasTexture {
+function drawIcon(ctx: CanvasRenderingContext2D, kind: IconKind, S: number) {
+  const lw = Math.max(2, S * 0.06);
+  ctx.clearRect(0, 0, S, S);
+  ctx.save();
+  ctx.translate(S / 2, S / 2);
+  ctx.strokeStyle = "#fff";
+  ctx.fillStyle = "#fff";
+  ctx.lineWidth = lw;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  const u = (v: number) => v * (S / 2); // unit helper (-1..1)
+
+  switch (kind) {
+    case "code": {
+      // < >
+      ctx.beginPath();
+      ctx.moveTo(u(-0.4), u(-0.2));
+      ctx.lineTo(u(-0.65), u(0));
+      ctx.lineTo(u(-0.4), u(0.2));
+      ctx.moveTo(u(0.4), u(-0.2));
+      ctx.lineTo(u(0.65), u(0));
+      ctx.lineTo(u(0.4), u(0.2));
+      ctx.stroke();
+      break;
+    }
+    case "gear": {
+      // ring
+      ctx.beginPath();
+      ctx.arc(0, 0, u(0.45), 0, Math.PI * 2);
+      ctx.stroke();
+      // spokes
+      for (let a = 0; a < 6; a++) {
+        const ang = (a * Math.PI) / 3;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(ang) * u(0.25), Math.sin(ang) * u(0.25));
+        ctx.lineTo(Math.cos(ang) * u(0.45), Math.sin(ang) * u(0.45));
+        ctx.stroke();
+      }
+      // center
+      ctx.beginPath();
+      ctx.arc(0, 0, u(0.12), 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case "robot": {
+      // head
+      const r = u(0.35);
+      const rr = u(0.08);
+      ctx.beginPath();
+      ctx.moveTo(-r, -r);
+      ctx.lineTo(r, -r);
+      ctx.lineTo(r, r);
+      ctx.lineTo(-r, r);
+      ctx.closePath();
+      ctx.stroke();
+      // eyes
+      ctx.beginPath();
+      ctx.arc(-u(0.15), -u(0.05), rr, 0, Math.PI * 2);
+      ctx.arc(u(0.15), -u(0.05), rr, 0, Math.PI * 2);
+      ctx.fill();
+      // antenna
+      ctx.beginPath();
+      ctx.moveTo(0, -r);
+      ctx.lineTo(0, -u(0.6));
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, -u(0.65), rr * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case "cloud": {
+      ctx.beginPath();
+      ctx.arc(-u(0.2), 0, u(0.18), Math.PI * 0.2, Math.PI * 1.2);
+      ctx.arc(0, -u(0.1), u(0.22), Math.PI * 0.8, Math.PI * 1.8);
+      ctx.arc(u(0.22), 0, u(0.18), Math.PI * 1.1, Math.PI * 0.1);
+      ctx.lineTo(u(-0.35), u(0.18));
+      ctx.stroke();
+      break;
+    }
+    case "chip": {
+      // body
+      ctx.strokeRect(-u(0.35), -u(0.28), u(0.7), u(0.56));
+      // pins
+      for (let i = -3; i <= 3; i++) {
+        ctx.beginPath();
+        ctx.moveTo(-u(0.45), i * u(0.08));
+        ctx.lineTo(-u(0.38), i * u(0.08));
+        ctx.moveTo(u(0.45), i * u(0.08));
+        ctx.lineTo(u(0.38), i * u(0.08));
+        ctx.stroke();
+      }
+      break;
+    }
+    case "atom": {
+      ctx.save();
+      const drawOrbit = (rot: number) => {
+        ctx.save();
+        ctx.rotate(rot);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, u(0.42), u(0.18), 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      };
+      drawOrbit(0);
+      drawOrbit(Math.PI / 3);
+      drawOrbit((2 * Math.PI) / 3);
+      ctx.beginPath();
+      ctx.arc(0, 0, u(0.06), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      break;
+    }
+    case "cube": {
+      // isometric cube
+      ctx.beginPath();
+      ctx.moveTo(0, -u(0.45));
+      ctx.lineTo(-u(0.35), -u(0.2));
+      ctx.lineTo(-u(0.35), u(0.2));
+      ctx.lineTo(0, u(0.45));
+      ctx.lineTo(u(0.35), u(0.2));
+      ctx.lineTo(u(0.35), -u(0.2));
+      ctx.closePath();
+      ctx.stroke();
+      // inner edges
+      ctx.beginPath();
+      ctx.moveTo(0, -u(0.45));
+      ctx.lineTo(0, -u(0.05));
+      ctx.moveTo(0, u(0.45));
+      ctx.lineTo(0, u(0.05));
+      ctx.stroke();
+      break;
+    }
+    case "bolt": {
+      ctx.beginPath();
+      ctx.moveTo(-u(0.1), -u(0.5));
+      ctx.lineTo(u(0.1), -u(0.1));
+      ctx.lineTo(-u(0.02), -u(0.1));
+      ctx.lineTo(u(0.08), u(0.4));
+      ctx.lineTo(-u(0.12), u(0.05));
+      ctx.lineTo(u(0.02), u(0.05));
+      ctx.closePath();
+      ctx.fill();
+      break;
+    }
+    case "eye": {
+      ctx.beginPath();
+      ctx.ellipse(0, 0, u(0.5), u(0.28), 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, 0, u(0.1), 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case "shield": {
+      ctx.beginPath();
+      ctx.moveTo(0, -u(0.5));
+      ctx.lineTo(u(0.45), -u(0.2));
+      ctx.lineTo(u(0.3), u(0.45));
+      ctx.lineTo(0, u(0.55));
+      ctx.lineTo(-u(0.3), u(0.45));
+      ctx.lineTo(-u(0.45), -u(0.2));
+      ctx.closePath();
+      ctx.stroke();
+      break;
+    }
+  }
+
+  ctx.restore();
+}
+
+function makeIconTexture(kind: IconKind): THREE.CanvasTexture {
   const size = 256;
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d")!;
-  ctx.clearRect(0, 0, size, size);
-  // soft glow
-  ctx.shadowColor = "rgba(255,255,255,0.5)";
-  ctx.shadowBlur = 18;
-  ctx.fillStyle = "#ffffff";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  // dynamic font size based on length
-  const base = text.length <= 3 ? 130 : text.length <= 5 ? 110 : 90;
-  ctx.font = `bold ${base}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
-  ctx.fillText(text, size / 2, size / 2);
+  drawIcon(ctx, kind, size);
   const tex = new THREE.CanvasTexture(canvas);
   tex.needsUpdate = true;
   tex.minFilter = THREE.LinearFilter;
@@ -50,9 +223,8 @@ function makeLabelTexture(text: string): THREE.CanvasTexture {
   return tex;
 }
 
-const SKILL_LABELS = [
-  "CODE", "AI", "ML", "3D", "CAD", "ROBOT", "IOT", "CLOUD", "DEVOPS", "R&D",
-  "VISION", "UX", "LEAN", "QA", "DATA", "AUTOMATE", "RISK", "SECURE"
+const ICONS: IconKind[] = [
+  "code", "gear", "robot", "cloud", "chip", "atom", "cube", "bolt", "eye", "shield",
 ];
 
 export const UniverseBackgroundThree: React.FC = () => {
@@ -74,9 +246,8 @@ export const UniverseBackgroundThree: React.FC = () => {
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
     camera.position.set(0, 0, 3.0);
 
-    // Build icons
-    const COUNT = 84;
-    const baseRadius = 1.4;
+    const COUNT = 90;
+    const baseRadius = 1.45;
     const targetsA = fibonacciSphere(COUNT, baseRadius);
     const targetsB = fibonacciSphere(COUNT, baseRadius * 1.6);
 
@@ -87,22 +258,18 @@ export const UniverseBackgroundThree: React.FC = () => {
     const materials: THREE.SpriteMaterial[] = [];
 
     for (let i = 0; i < COUNT; i++) {
-      const label = SKILL_LABELS[i % SKILL_LABELS.length];
-      const tex = makeLabelTexture(label);
-      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, color: 0xffffff, opacity: 0.9 });
+      const kind = ICONS[i % ICONS.length];
+      const tex = makeIconTexture(kind);
+      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, color: 0xffffff, opacity: 0.85 });
       const spr = new THREE.Sprite(mat);
-      // world scale tuned by text length
-      const len = label.length;
-      const s = len <= 3 ? 0.6 : len <= 5 ? 0.72 : 0.85; // bigger text => slightly larger sprite
+      const s = 0.7 + ((i * 31) % 10) * 0.03; // subtle variation
       spr.scale.set(s, s, 1);
-      const p = targetsA[i];
-      spr.position.copy(p);
+      spr.position.copy(targetsA[i]);
       group.add(spr);
       sprites.push(spr);
       materials.push(mat);
     }
 
-    // Resize
     const resize = () => {
       const w = host.clientWidth || window.innerWidth;
       const h = host.clientHeight || window.innerHeight;
@@ -116,12 +283,10 @@ export const UniverseBackgroundThree: React.FC = () => {
     const animate = () => {
       if (!mountedRef.current) return;
       const s = getScrollNorm();
-      const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0; // 0..1..0 expansion
+      const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0;
 
-      // Subtle rotation
-      group.rotation.y += 0.0012 + s * 0.002;
+      group.rotation.y += 0.0015 + s * 0.0025;
 
-      // Morph positions between two shells
       for (let i = 0; i < COUNT; i++) {
         const a = targetsA[i];
         const b = targetsB[i];
@@ -131,11 +296,11 @@ export const UniverseBackgroundThree: React.FC = () => {
           a.y * (1 - t) + b.y * t,
           a.z * (1 - t) + b.z * t
         );
-        // Face the camera (sprites always billboard), add slight individual spin by changing material rotation
-        materials[i].rotation += 0.0006 + (i % 5) * 0.0001;
-        // Distance-based subtle opacity for depth
-        const dz = (spr.position.z + 3.0) / 6.0; // ~0..1
-        materials[i].opacity = 0.6 + (1 - dz) * 0.35; // 0.6..0.95
+        // subtle per-icon rotation
+        materials[i].rotation += 0.0005 + (i % 7) * 0.00007;
+        // depth-based opacity
+        const dz = (spr.position.z + 3.0) / 6.0;
+        materials[i].opacity = 0.55 + (1 - dz) * 0.35;
       }
 
       renderer.render(scene, camera);
