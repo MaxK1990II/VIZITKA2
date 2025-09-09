@@ -10,7 +10,7 @@ import { Loader } from "@/components/loader";
 import { Hero3D } from "@/components/hero-3d";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { CustomCursor } from "@/components/custom-cursor";
-import { UniverseBackground2D } from "@/components/universe-background-2d";
+import { UniverseBackgroundThree } from "@/components/universe-background-three";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <SmoothScrollProvider>
       <CustomCursor />
-      <UniverseBackground2D />
+      <UniverseBackgroundThree />
       <main>
         <Loader />
         <ScrollAnim />
