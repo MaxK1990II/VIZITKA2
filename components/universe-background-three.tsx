@@ -50,41 +50,50 @@ export const UniverseBackgroundThree: React.FC = () => {
     camera.position.set(0, 0, 2.6);
 
     // Stars geometry (reduced density)
-    const num = 1500;
+    const num = 1400;
     const sphere = generateInSphere(num, 1.35);
     const cloud = generateInSphere(num, 2.2);
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(sphere, 3));
 
-    // Circular sprite texture (white, soft)
-    const size = 64;
-    const texCanvas = document.createElement("canvas");
-    texCanvas.width = size;
-    texCanvas.height = size;
-    const ctx = texCanvas.getContext("2d")!;
-    const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-    grad.addColorStop(0, "rgba(255,255,255,1)");
-    grad.addColorStop(0.6, "rgba(255,255,255,0.9)");
-    grad.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-    ctx.fill();
-    const starTexture = new THREE.CanvasTexture(texCanvas);
-    starTexture.needsUpdate = true;
-    starTexture.minFilter = THREE.LinearFilter;
-    starTexture.magFilter = THREE.LinearFilter;
-
-    const material = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: 0.012,
-      sizeAttenuation: true,
+    // Custom shader for crisp star (no circles), subtle cross + core
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uColor: { value: new THREE.Color(0xffffff) },
+        uOpacity: { value: 0.28 },
+        uSize: { value: 3.0 }, // pixels
+        uSizeAttenuation: { value: 1.0 },
+      },
+      vertexShader: `
+        uniform float uSize;
+        uniform float uSizeAttenuation;
+        void main() {
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+          float size = (uSizeAttenuation > 0.5) ? (uSize / -mvPosition.z) : uSize;
+          gl_PointSize = size;
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColor;
+        uniform float uOpacity;
+        void main() {
+          vec2 p = gl_PointCoord * 2.0 - 1.0; // -1..1
+          float r = length(p);
+          // crisp cross
+          float vx = max(0.0, 1.0 - abs(p.x) * 8.0);
+          float vy = max(0.0, 1.0 - abs(p.y) * 8.0);
+          float cross = max(vx, vy) * 0.55;
+          // tight bright core
+          float core = smoothstep(0.18, 0.0, r);
+          float alpha = clamp(cross + core, 0.0, 1.0) * uOpacity;
+          if (alpha < 0.06) discard;
+          gl_FragColor = vec4(uColor, alpha);
+        }
+      `,
       transparent: true,
-      opacity: 0.35,
       depthWrite: false,
-      map: starTexture,
-      alphaTest: 0.05,
       blending: THREE.NormalBlending,
     });
 
@@ -110,14 +119,14 @@ export const UniverseBackgroundThree: React.FC = () => {
     const animate = () => {
       if (!mountedRef.current) return;
       const s = getScrollNorm();
-      const t = s < 0.5 ? s * 2 : (1 - s) * 2; // 0..1..0
+      const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0; // 0..1..0
 
-      // Rotate (subtle)
-      group.rotation.y += 0.0015 + s * 0.004;
+      // Rotate (very subtle)
+      group.rotation.y += 0.001 + s * 0.003;
 
       // Morph
       for (let i = 0; i < posArray.length; i++) {
-        posArray[i] = sphere[i] * (1 - t) + cloud[i] * t;
+        posArray[i] = sphere[i] * (1.0 - t) + cloud[i] * t;
       }
       positionAttr.needsUpdate = true;
 
@@ -132,7 +141,6 @@ export const UniverseBackgroundThree: React.FC = () => {
       window.removeEventListener("resize", resize);
       geometry.dispose();
       material.dispose();
-      starTexture.dispose();
       renderer.dispose();
       if (renderer.domElement.parentElement === host) host.removeChild(renderer.domElement);
     };
@@ -147,7 +155,7 @@ export const UniverseBackgroundThree: React.FC = () => {
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.55) 100%)",
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.30) 55%, rgba(0,0,0,0.50) 100%)",
         }}
       />
     </div>
