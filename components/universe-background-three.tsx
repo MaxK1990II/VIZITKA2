@@ -28,6 +28,7 @@ function getScrollNorm(): number {
 }
 
 export const UniverseBackgroundThree: React.FC = () => {
+  const wrapperRef = React.useRef<HTMLDivElement | null>(null);
   const hostRef = React.useRef<HTMLDivElement | null>(null);
   const rafRef = React.useRef<number | null>(null);
   const mountedRef = React.useRef<boolean>(false);
@@ -48,53 +49,43 @@ export const UniverseBackgroundThree: React.FC = () => {
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
     camera.position.set(0, 0, 2.6);
 
-    // Stars geometry
-    const num = 3000;
+    // Stars geometry (reduced density)
+    const num = 1500;
     const sphere = generateInSphere(num, 1.35);
     const cloud = generateInSphere(num, 2.2);
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(sphere, 3));
 
-    // White-ish vertex colors (uniform, for additive blend boost)
-    const baseColor = new THREE.Color(0xffffff);
-    const colors = new Float32Array(num * 3);
-    for (let i = 0; i < num; i++) {
-      colors[i * 3 + 0] = baseColor.r;
-      colors[i * 3 + 1] = baseColor.g;
-      colors[i * 3 + 2] = baseColor.b;
-    }
-    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-
-    // Circular sprite texture
+    // Circular sprite texture (white, soft)
     const size = 64;
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d")!;
-    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-    g.addColorStop(0, "rgba(255,255,255,1)");
-    g.addColorStop(0.6, "rgba(255,255,255,0.9)");
-    g.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = g;
+    const texCanvas = document.createElement("canvas");
+    texCanvas.width = size;
+    texCanvas.height = size;
+    const ctx = texCanvas.getContext("2d")!;
+    const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    grad.addColorStop(0, "rgba(255,255,255,1)");
+    grad.addColorStop(0.6, "rgba(255,255,255,0.9)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = grad;
     ctx.beginPath();
     ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
     ctx.fill();
-    const starTexture = new THREE.CanvasTexture(canvas);
+    const starTexture = new THREE.CanvasTexture(texCanvas);
     starTexture.needsUpdate = true;
     starTexture.minFilter = THREE.LinearFilter;
     starTexture.magFilter = THREE.LinearFilter;
 
     const material = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.02,
+      size: 0.012,
       sizeAttenuation: true,
       transparent: true,
+      opacity: 0.35,
       depthWrite: false,
-      vertexColors: true,
       map: starTexture,
-      alphaTest: 0.1,
-      blending: THREE.AdditiveBlending,
+      alphaTest: 0.05,
+      blending: THREE.NormalBlending,
     });
 
     const points = new THREE.Points(geometry, material);
@@ -113,7 +104,7 @@ export const UniverseBackgroundThree: React.FC = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    // Animate
+    // Animate (slower)
     const positionAttr = geometry.getAttribute("position") as THREE.BufferAttribute;
     const posArray = positionAttr.array as Float32Array;
     const animate = () => {
@@ -121,8 +112,8 @@ export const UniverseBackgroundThree: React.FC = () => {
       const s = getScrollNorm();
       const t = s < 0.5 ? s * 2 : (1 - s) * 2; // 0..1..0
 
-      // Rotate
-      group.rotation.y += 0.003 + s * 0.01;
+      // Rotate (subtle)
+      group.rotation.y += 0.0015 + s * 0.004;
 
       // Morph
       for (let i = 0; i < posArray.length; i++) {
@@ -147,5 +138,18 @@ export const UniverseBackgroundThree: React.FC = () => {
     };
   }, []);
 
-  return <div ref={hostRef} style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }} />;
+  return (
+    <div ref={wrapperRef} style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+      <div ref={hostRef} style={{ position: "absolute", inset: 0 }} />
+      {/* Vignette to improve readability */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
+    </div>
+  );
 };
