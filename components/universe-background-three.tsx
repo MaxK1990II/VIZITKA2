@@ -15,18 +15,16 @@ type IconKind =
   | "eye"
   | "shield";
 
-function fibonacciSphere(count: number, radius: number): THREE.Vector3[] {
+function randomInSphereVectors(count: number, radius: number): THREE.Vector3[] {
   const points: THREE.Vector3[] = [];
-  const offset = 2 / count;
-  const increment = Math.PI * (3 - Math.sqrt(5));
   for (let i = 0; i < count; i++) {
-    const y = i * offset - 1 + offset / 2;
-    const r = Math.sqrt(1 - y * y);
-    const phi = i * increment;
-    const x = Math.cos(phi) * r;
-    const z = Math.sin(phi) * r;
-    const v = new THREE.Vector3(x, y, z).multiplyScalar(radius);
-    points.push(v);
+    let x = 0, y = 0, z = 0;
+    do {
+      x = Math.random() * 2 - 1;
+      y = Math.random() * 2 - 1;
+      z = Math.random() * 2 - 1;
+    } while (x * x + y * y + z * z > 1);
+    points.push(new THREE.Vector3(x, y, z).multiplyScalar(radius));
   }
   return points;
 }
@@ -246,10 +244,10 @@ export const UniverseBackgroundThree: React.FC = () => {
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
     camera.position.set(0, 0, 3.0);
 
-    const COUNT = 220;
+    const COUNT = 1400;
     const baseRadius = 1.45;
-    const targetsA = fibonacciSphere(COUNT, baseRadius);
-    const targetsB = fibonacciSphere(COUNT, baseRadius * 1.6);
+    const targetsA = randomInSphereVectors(COUNT, baseRadius);
+    const targetsB = randomInSphereVectors(COUNT, baseRadius * 1.85);
 
     const group = new THREE.Group();
     scene.add(group);
@@ -258,11 +256,11 @@ export const UniverseBackgroundThree: React.FC = () => {
     const materials: THREE.SpriteMaterial[] = [];
 
     for (let i = 0; i < COUNT; i++) {
-      const kind = ICONS[i % ICONS.length];
+      const kind = ICONS[(Math.random() * ICONS.length) | 0];
       const tex = makeIconTexture(kind);
-      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, color: 0xffffff, opacity: 0.85 });
+      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, color: 0xffffff, opacity: 0.8 });
       const spr = new THREE.Sprite(mat);
-      const s = 0.024 + ((i * 31) % 10) * 0.001; // ~100x smaller than before, slight variation
+      const s = 0.02 + Math.random() * 0.006; // tiny icons
       spr.scale.set(s, s, 1);
       spr.position.copy(targetsA[i]);
       group.add(spr);
@@ -285,7 +283,7 @@ export const UniverseBackgroundThree: React.FC = () => {
       const s = getScrollNorm();
       const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0;
 
-      group.rotation.y += 0.001 + s * 0.0015;
+      group.rotation.y += 0.0012 + s * 0.0022;
 
       for (let i = 0; i < COUNT; i++) {
         const a = targetsA[i];
@@ -297,10 +295,10 @@ export const UniverseBackgroundThree: React.FC = () => {
           a.z * (1 - t) + b.z * t
         );
         // subtle per-icon rotation
-        materials[i].rotation += 0.0005 + (i % 7) * 0.00007;
+        materials[i].rotation += 0.0003 + ((i * 13) % 11) * 0.00003;
         // depth-based opacity
         const dz = (spr.position.z + 3.0) / 6.0;
-        materials[i].opacity = 0.55 + (1 - dz) * 0.35;
+        materials[i].opacity = 0.45 + (1 - dz) * 0.35;
       }
 
       renderer.render(scene, camera);
