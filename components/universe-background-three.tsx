@@ -3,22 +3,20 @@
 import React from "react";
 import * as THREE from "three";
 
-function generateInSphere(count: number, radius: number): Float32Array {
-  const arr = new Float32Array(count * 3);
-  let i = 0;
-  while (i < count) {
-    const x = (Math.random() * 2 - 1) * radius;
-    const y = (Math.random() * 2 - 1) * radius;
-    const z = (Math.random() * 2 - 1) * radius;
-    if (x * x + y * y + z * z <= radius * radius) {
-      const idx = i * 3;
-      arr[idx] = x;
-      arr[idx + 1] = y;
-      arr[idx + 2] = z;
-      i++;
-    }
+function fibonacciSphere(count: number, radius: number): THREE.Vector3[] {
+  const points: THREE.Vector3[] = [];
+  const offset = 2 / count;
+  const increment = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < count; i++) {
+    const y = i * offset - 1 + offset / 2;
+    const r = Math.sqrt(1 - y * y);
+    const phi = i * increment;
+    const x = Math.cos(phi) * r;
+    const z = Math.sin(phi) * r;
+    const v = new THREE.Vector3(x, y, z).multiplyScalar(radius);
+    points.push(v);
   }
-  return arr;
+  return points;
 }
 
 function getScrollNorm(): number {
@@ -26,6 +24,36 @@ function getScrollNorm(): number {
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
   return docHeight > 0 ? Math.min(1, Math.max(0, scrollTop / docHeight)) : 0;
 }
+
+function makeLabelTexture(text: string): THREE.CanvasTexture {
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  ctx.clearRect(0, 0, size, size);
+  // soft glow
+  ctx.shadowColor = "rgba(255,255,255,0.5)";
+  ctx.shadowBlur = 18;
+  ctx.fillStyle = "#ffffff";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  // dynamic font size based on length
+  const base = text.length <= 3 ? 130 : text.length <= 5 ? 110 : 90;
+  ctx.font = `bold ${base}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
+  ctx.fillText(text, size / 2, size / 2);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.needsUpdate = true;
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.premultiplyAlpha = true;
+  return tex;
+}
+
+const SKILL_LABELS = [
+  "CODE", "AI", "ML", "3D", "CAD", "ROBOT", "IOT", "CLOUD", "DEVOPS", "R&D",
+  "VISION", "UX", "LEAN", "QA", "DATA", "AUTOMATE", "RISK", "SECURE"
+];
 
 export const UniverseBackgroundThree: React.FC = () => {
   const hostRef = React.useRef<HTMLDivElement | null>(null);
@@ -44,112 +72,37 @@ export const UniverseBackgroundThree: React.FC = () => {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
-    camera.position.set(0, 0, 2.6);
+    camera.position.set(0, 0, 3.0);
 
-    const num = 1400;
-    const sphere = generateInSphere(num, 1.35);
-    const cloud = generateInSphere(num, 2.2);
+    // Build icons
+    const COUNT = 84;
+    const baseRadius = 1.4;
+    const targetsA = fibonacciSphere(COUNT, baseRadius);
+    const targetsB = fibonacciSphere(COUNT, baseRadius * 1.6);
 
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.BufferAttribute(sphere, 3));
-
-    // Per-star variations
-    const aSize = new Float32Array(num);
-    const aBright = new Float32Array(num);
-    const aType = new Float32Array(num); // 0:hex, 1:diamond, 2:5-point
-    const aAngle = new Float32Array(num);
-    for (let i = 0; i < num; i++) {
-      aSize[i] = 0.8 + Math.random() * 1.2; // 0.8..2.0
-      aBright[i] = 0.6 + Math.random() * 0.6; // 0.6..1.2
-      aType[i] = Math.floor(Math.random() * 3);
-      aAngle[i] = Math.random() * Math.PI * 2;
-    }
-    geometry.setAttribute("aSize", new THREE.BufferAttribute(aSize, 1));
-    geometry.setAttribute("aBright", new THREE.BufferAttribute(aBright, 1));
-    geometry.setAttribute("aType", new THREE.BufferAttribute(aType, 1));
-    geometry.setAttribute("aAngle", new THREE.BufferAttribute(aAngle, 1));
-
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        uColor: { value: new THREE.Color(0xffffff) },
-        uOpacity: { value: 0.28 },
-        uSize: { value: 12.0 }, // base pixels (will be scaled by aSize)
-        uSizeAttenuation: { value: 1.0 },
-      },
-      vertexShader: `
-        attribute float aSize;
-        attribute float aBright;
-        attribute float aType;
-        attribute float aAngle;
-        varying float vBright;
-        varying float vType;
-        varying float vAngle;
-        uniform float uSize;
-        uniform float uSizeAttenuation;
-        void main(){
-          vBright = aBright;
-          vType = aType;
-          vAngle = aAngle;
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_Position = projectionMatrix * mvPosition;
-          float size = uSize * aSize;
-          if(uSizeAttenuation > 0.5){ size /= -mvPosition.z; }
-          gl_PointSize = size;
-        }
-      `,
-      fragmentShader: `
-        precision highp float;
-        uniform vec3 uColor;
-        uniform float uOpacity;
-        varying float vBright;
-        varying float vType;
-        varying float vAngle;
-
-        mat2 rot(float a){ return mat2(cos(a), -sin(a), sin(a), cos(a)); }
-
-        float shapeDiamond(vec2 p){
-          // diamond via L1 norm
-          float d = abs(p.x) + abs(p.y);
-          return smoothstep(0.9, 0.6, d); // inner bright core
-        }
-        float shapeHex(vec2 p){
-          // regular hexagon mask
-          p = rot(0.523599)*p; // rotate 30deg for symmetry
-          vec2 q = abs(p);
-          float a = max(q.x*0.8660254 + q.y*0.5, q.y);
-          return smoothstep(1.0, 0.7, a);
-        }
-        float shapeStar5(vec2 p){
-          float r = length(p);
-          float th = atan(p.y, p.x);
-          float spikes = 5.0;
-          float m = (cos(th*spikes)*0.5+0.5);
-          float edge = mix(0.35, 0.8, m);
-          return smoothstep(edge, edge-0.15, r);
-        }
-
-        void main(){
-          vec2 uv = gl_PointCoord * 2.0 - 1.0; // -1..1
-          uv = rot(vAngle) * uv;
-          float mask;
-          if(vType < 0.5){ mask = shapeHex(uv); }
-          else if(vType < 1.5){ mask = shapeDiamond(uv); }
-          else { mask = shapeStar5(uv); }
-          float alpha = clamp(mask * uOpacity * vBright, 0.0, 1.0);
-          if(alpha < 0.06) discard;
-          gl_FragColor = vec4(uColor, alpha);
-        }
-      `,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
-    });
-
-    const points = new THREE.Points(geometry, material);
     const group = new THREE.Group();
-    group.add(points);
     scene.add(group);
 
+    const sprites: THREE.Sprite[] = [];
+    const materials: THREE.SpriteMaterial[] = [];
+
+    for (let i = 0; i < COUNT; i++) {
+      const label = SKILL_LABELS[i % SKILL_LABELS.length];
+      const tex = makeLabelTexture(label);
+      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, color: 0xffffff, opacity: 0.9 });
+      const spr = new THREE.Sprite(mat);
+      // world scale tuned by text length
+      const len = label.length;
+      const s = len <= 3 ? 0.6 : len <= 5 ? 0.72 : 0.85; // bigger text => slightly larger sprite
+      spr.scale.set(s, s, 1);
+      const p = targetsA[i];
+      spr.position.copy(p);
+      group.add(spr);
+      sprites.push(spr);
+      materials.push(mat);
+    }
+
+    // Resize
     const resize = () => {
       const w = host.clientWidth || window.innerWidth;
       const h = host.clientHeight || window.innerHeight;
@@ -160,28 +113,43 @@ export const UniverseBackgroundThree: React.FC = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    const positionAttr = geometry.getAttribute("position") as THREE.BufferAttribute;
-    const posArray = positionAttr.array as Float32Array;
     const animate = () => {
       if (!mountedRef.current) return;
       const s = getScrollNorm();
-      const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0;
-      group.rotation.y += 0.001 + s * 0.003;
-      for (let i = 0; i < posArray.length; i++) {
-        posArray[i] = sphere[i] * (1.0 - t) + cloud[i] * t;
+      const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0; // 0..1..0 expansion
+
+      // Subtle rotation
+      group.rotation.y += 0.0012 + s * 0.002;
+
+      // Morph positions between two shells
+      for (let i = 0; i < COUNT; i++) {
+        const a = targetsA[i];
+        const b = targetsB[i];
+        const spr = sprites[i];
+        spr.position.set(
+          a.x * (1 - t) + b.x * t,
+          a.y * (1 - t) + b.y * t,
+          a.z * (1 - t) + b.z * t
+        );
+        // Face the camera (sprites always billboard), add slight individual spin by changing material rotation
+        materials[i].rotation += 0.0006 + (i % 5) * 0.0001;
+        // Distance-based subtle opacity for depth
+        const dz = (spr.position.z + 3.0) / 6.0; // ~0..1
+        materials[i].opacity = 0.6 + (1 - dz) * 0.35; // 0.6..0.95
       }
-      positionAttr.needsUpdate = true;
+
       renderer.render(scene, camera);
       rafRef.current = requestAnimationFrame(animate);
     };
+
     rafRef.current = requestAnimationFrame(animate);
 
     return () => {
       mountedRef.current = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resize);
-      geometry.dispose();
-      material.dispose();
+      for (const m of materials) m.map?.dispose();
+      for (const m of materials) m.dispose();
       renderer.dispose();
       if (renderer.domElement.parentElement === host) host.removeChild(renderer.domElement);
     };
