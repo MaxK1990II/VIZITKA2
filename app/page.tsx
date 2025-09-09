@@ -22,8 +22,8 @@ export default function Home() {
       {/* <UniverseBackground /> */}
       <main>
         <Loader />
-        {/* <ScrollAnim /> */}
-        {/* <Hero3D /> */}
+        <ScrollAnim />
+        <Hero3D />
         <About />
         <Timeline />
         <Projects />
