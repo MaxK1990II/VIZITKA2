@@ -10,3 +10,4 @@ const UniverseBG = dynamic(() => import("./universe-background").then(m => m.Uni
 export const UniverseBackgroundLazy: React.FC = () => {
   return <UniverseBG />;
 };
+

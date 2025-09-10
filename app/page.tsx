@@ -20,7 +20,7 @@ export default function Home() {
     <SmoothScrollProvider>
       <CustomCursor />
       <UniverseBackgroundThree />
-      <main>
+      <main style={{ position: "relative", zIndex: 1 }}>
         <Loader />
         <ScrollAnim />
         <Hero3D />
