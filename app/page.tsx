@@ -2,7 +2,7 @@ import { About } from "@/components/about";
 import { Contact } from "@/components/contact";
 import { Map } from "@/components/map";
 import { Projects } from "@/components/projects";
-import { Timeline } from "@/components/timeline";
+import { Timeline } from "../components/timeline";
 import { Vision } from "@/components/vision";
 
 import { ScrollAnim } from "@/components/scroll-anim";

@@ -312,8 +312,7 @@ export const UniverseBackgroundThree: React.FC = () => {
     const targetsA: THREE.Vector3[] = [];
     const targetsB: THREE.Vector3[] = [];
     
-    // Инициализируем частицы Мёбиуса
-    let mobiusPoints = generateMobiusPoints(MOBIUS_COUNT, 0);
+    // Инициализируем частицы Мёбиуса (инстансами)
 
     const group = new THREE.Group();
     scene.add(group);
@@ -321,10 +320,10 @@ export const UniverseBackgroundThree: React.FC = () => {
     const sprites: THREE.Sprite[] = [];
     const materials: THREE.SpriteMaterial[] = [];
     // Данные и инстансы сфер ленты
-    let uValues: Float32Array;
-    let vValues: Float32Array;
-    let radii: Float32Array;
-    let speeds: Float32Array;
+    const uValues = new Float32Array(MOBIUS_COUNT);
+    const vValues = new Float32Array(MOBIUS_COUNT);
+    const radii = new Float32Array(MOBIUS_COUNT);
+    const speeds = new Float32Array(MOBIUS_COUNT);
     let phiAngles: Float32Array;
     let phiSpeeds: Float32Array;
     let sphereGeo: THREE.SphereGeometry | null = null;
@@ -335,10 +334,6 @@ export const UniverseBackgroundThree: React.FC = () => {
     // Отключены обычные частицы
 
     // Инициализация параметров сфер на ленте
-    uValues = new Float32Array(MOBIUS_COUNT);
-    vValues = new Float32Array(MOBIUS_COUNT);
-    radii = new Float32Array(MOBIUS_COUNT);
-    speeds = new Float32Array(MOBIUS_COUNT);
     for (let i = 0; i < MOBIUS_COUNT; i++) {
       uValues[i] = i / MOBIUS_COUNT;
       vValues[i] = (Math.random() - 0.5) * 0.8; // шире полоса
@@ -447,21 +442,23 @@ export const UniverseBackgroundThree: React.FC = () => {
     resize();
     window.addEventListener("resize", resize);
 
+    // Внутреннее состояние анимации без any
+    const animState: { prev: number | null; lastS: number | null } = { prev: null, lastS: null };
+
     const animate = () => {
       if (!mountedRef.current) return;
       const s = getScrollNorm();
-      const t = s < 0.5 ? s * 2.0 : (1.0 - s) * 2.0;
       const time = performance.now() * 0.001; // время в секундах
       // delta-время для стабильной физики
-      if (!(animate as any)._prev) (animate as any)._prev = time;
-      const prev = (animate as any)._prev as number;
+      if (animState.prev === null) animState.prev = time;
+      const prev = animState.prev as number;
       const dt = Math.min(0.05, Math.max(0.001, time - prev));
-      (animate as any)._prev = time;
+      animState.prev = time;
       // скорость скролла (привязываем динамику к скроллу)
-      if ((animate as any)._lastS === undefined) (animate as any)._lastS = s;
-      const lastS = (animate as any)._lastS as number;
+      if (animState.lastS === null) animState.lastS = s;
+      const lastS = animState.lastS as number;
       const ds = s - lastS;
-      (animate as any)._lastS = s;
+      animState.lastS = s;
       const rawVel = ds / Math.max(0.001, dt); // может быть отрицательной (направление)
       // EMA сглаживание скорости и направления (плавная общая динамика)
       velEMA = THREE.MathUtils.lerp(velEMA, Math.abs(rawVel), 0.12);
