@@ -2,7 +2,7 @@
 
 import { UniverseBackgroundThree } from "@/components/universe-background-three";
 import { CustomCursor } from "@/components/custom-cursor";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +61,7 @@ export default function Home() {
   };
 
   // Функция для анимации смены роли
-  const animateRoleChange = (setRole: (role: string) => void, setIsAnimating: (animating: boolean) => void) => {
+  const animateRoleChange = useCallback((setRole: (role: string) => void, setIsAnimating: (animating: boolean) => void) => {
     setIsAnimating(true);
     setTimeout(() => {
       setRole(getRandomRole(role1)); // Используем role1 как базовую для фильтрации
@@ -69,7 +69,7 @@ export default function Home() {
         setIsAnimating(false);
       }, 300);
     }, 300);
-  };
+  }, [role1]);
 
   // Автоматическая смена ролей с разными интервалами
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function Home() {
       clearInterval(interval2);
       clearInterval(interval3);
     };
-  }, []);
+  }, [animateRoleChange]);
 
   const getLetterStyle = (index: number, total: number, roleOffset: number) => {
     // Проверяем, что мы на клиенте
@@ -163,7 +163,7 @@ export default function Home() {
                 key={index}
                 style={{
                   display: "inline-block",
-                  ...getLetterStyle(index, name.length)
+                  ...getLetterStyle(index, name.length, 0)
                 }}
               >
                 {letter === ' ' ? '\u00A0' : letter}
