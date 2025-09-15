@@ -11,3 +11,4 @@ export const UniverseBackgroundLazy: React.FC = () => {
   return <UniverseBG />;
 };
 
+
