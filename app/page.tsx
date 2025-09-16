@@ -181,7 +181,7 @@ export default function Home() {
     <>
       <UniverseBackgroundThree />
       <CustomCursor />
-          <main style={{ 
+          <main className="main-container" style={{ 
             position: "relative", 
             zIndex: 1, 
             minHeight: "100vh", 
@@ -189,15 +189,13 @@ export default function Home() {
             flexDirection: "column", 
             alignItems: "center", 
             justifyContent: "center", 
-            padding: "clamp(2rem, 8vw, 2rem)",
             cursor: "default",
             pointerEvents: "auto"
           }}>
-        <div style={{ 
+        <div className="name-container" style={{ 
           textAlign: "center", 
           color: "white", 
-          fontFamily: "Arial, sans-serif",
-          padding: "0 clamp(2rem, 6vw, 0rem)"
+          fontFamily: "Arial, sans-serif"
         }}>
           <h1 style={{ 
             fontSize: "clamp(2.5rem, 8vw, 4rem)", 
