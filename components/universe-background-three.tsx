@@ -40,17 +40,9 @@ export const UniverseBackgroundThree: React.FC = () => {
     
     const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
     
-    // Позиционирование камеры с учетом мобильных устройств
-    if (isSmallMobile) {
-      camera.position.set(-1.5, 1.0, baseZ); // Смещение влево и вверх для маленьких экранов
-      camera.lookAt(0.5, -0.3, 0); // Смотрим на центр ленты
-    } else if (isMobile) {
-      camera.position.set(-1.0, 0.5, baseZ); // Смещение влево и вверх для мобильных
-      camera.lookAt(0.3, -0.2, 0); // Смотрим на центр ленты
-    } else {
-      camera.position.set(0, 0, baseZ); // Центр для десктопа
-      camera.lookAt(0, 0, 0); // Смотрим в центр
-    }
+    // Позиционирование камеры - всегда в центре
+    camera.position.set(0, 0, baseZ);
+    camera.lookAt(0, 0, 0); // Всегда смотрим в центр
 
     // Освещение для объемного вида сфер
     const hemi = new THREE.HemisphereLight(0x88aaff, 0x0a0a12, 0.55);
@@ -104,7 +96,7 @@ export const UniverseBackgroundThree: React.FC = () => {
     const phiAngles = new Float32Array(MOBIUS_COUNT);
     const phiSpeeds = new Float32Array(MOBIUS_COUNT);
     // Адаптивный размер сфер для мобильных устройств
-    const sphereRadius = isSmallMobile ? 0.7 : (isMobile ? 0.85 : 1.0);
+    const sphereRadius = isSmallMobile ? 0.8 : (isMobile ? 0.9 : 1.0);
     const sphereGeo = new THREE.SphereGeometry(sphereRadius, 12, 12);
     const sphereMat = new THREE.MeshPhysicalMaterial({
       color: 0x8fcaff,
@@ -161,7 +153,7 @@ export const UniverseBackgroundThree: React.FC = () => {
       const deformation = wave1 + wave2 + turbulence;
       
       // Адаптивный масштаб для мобильных устройств
-      const scaleFactor = isSmallMobile ? 0.7 : (isMobile ? 0.75 : 1.0); // Умеренное уменьшение
+      const scaleFactor = isSmallMobile ? 0.85 : (isMobile ? 0.9 : 1.0); // Меньше уменьшение для лучшей видимости
       const R = (3.2 + deformation) * scaleFactor; // лента длиннее (больше радиус)
       const baseWidth = 1.6 * (1.0 + scrollAmp) * scaleFactor; // лента шире и динамически расширяется
       // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
