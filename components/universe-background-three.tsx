@@ -46,19 +46,9 @@ export const UniverseBackgroundThree: React.FC = () => {
     
     const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
     
-    // Позиционирование камеры с учетом мобильных устройств
-    if (isSmallMobile) {
-      camera.position.set(-2.0, 3.0, baseZ); // Больше смещение влево и вверх
-      camera.lookAt(-1.0, 1.0, 0); // Смотрим на центр ленты
-      console.log("Small mobile camera position set");
-    } else if (isMobile) {
-      camera.position.set(-1.5, 2.5, baseZ); // Больше смещение влево и вверх
-      camera.lookAt(-0.8, 0.8, 0); // Смотрим на центр ленты
-      console.log("Mobile camera position set");
-    } else {
-      camera.position.set(0, 0, baseZ);
-      camera.lookAt(0, 0, 0); // Смотрим в центр
-    }
+    // Позиционирование камеры - всегда в центре
+    camera.position.set(0, 0, baseZ);
+    camera.lookAt(0, 0, 0); // Всегда смотрим в центр
 
     // Освещение для объемного вида сфер
     const hemi = new THREE.HemisphereLight(0x88aaff, 0x0a0a12, 0.55);
@@ -172,6 +162,10 @@ export const UniverseBackgroundThree: React.FC = () => {
       const scaleFactor = isSmallMobile ? 0.8 : (isMobile ? 0.85 : 1.0); // Нормальный размер
       const R = (3.2 + deformation) * scaleFactor; // лента длиннее (больше радиус)
       const baseWidth = 1.6 * (1.0 + scrollAmp) * scaleFactor; // лента шире и динамически расширяется
+      
+      // Смещение ленты для мобильных устройств
+      const offsetX = isSmallMobile ? -1.0 : (isMobile ? -0.8 : 0);
+      const offsetY = isSmallMobile ? 1.0 : (isMobile ? 0.8 : 0);
       // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
       const c1 = wrap01(0.18 + 0.05 * Math.sin(t * 0.25));
       const c2 = wrap01(0.53 + 0.07 * Math.sin(t * 0.18 + 1.7));
@@ -193,8 +187,8 @@ export const UniverseBackgroundThree: React.FC = () => {
       const vcos = v * (1 + ringScale * Math.cos(phi));
       const vsin = v * (1 + ringScale * Math.sin(phi));
       const base = R + vcos * width * cosTw;
-      const x = base * Math.cos(angle);
-      const y = base * Math.sin(angle) + vsin * width * sinTw * 0.5;
+      const x = base * Math.cos(angle) + offsetX;
+      const y = base * Math.sin(angle) + vsin * width * sinTw * 0.5 + offsetY;
       const z = vsin * width * sinTw + deformation * 0.3;
       out.set(x, y, z);
     };
