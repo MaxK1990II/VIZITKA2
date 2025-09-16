@@ -43,6 +43,7 @@ export const UniverseBackgroundThree: React.FC = () => {
     
     // Логирование для отладки
     console.log(`Mobile settings - width: ${window.innerWidth}, isMobile: ${isMobile}, isSmallMobile: ${isSmallMobile}, FOV: ${baseFov}, Z: ${baseZ}`);
+    console.log(`Mobius strip scale: ${isSmallMobile ? 0.4 : (isMobile ? 0.5 : 1.0)}`);
     console.log(`Mobius strip offset - X: ${isSmallMobile ? -2.5 : (isMobile ? -2.0 : 0)}, Y: ${isSmallMobile ? 2.0 : (isMobile ? 1.5 : 0)}`);
     
     const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
@@ -102,8 +103,8 @@ export const UniverseBackgroundThree: React.FC = () => {
     const speeds = new Float32Array(MOBIUS_COUNT);
     const phiAngles = new Float32Array(MOBIUS_COUNT);
     const phiSpeeds = new Float32Array(MOBIUS_COUNT);
-    // Адаптивный размер сфер для мобильных устройств
-    const sphereRadius = isSmallMobile ? 0.7 : (isMobile ? 0.8 : 1.0);
+    // Размер сфер одинаковый для всех устройств
+    const sphereRadius = 1.0;
     const sphereGeo = new THREE.SphereGeometry(sphereRadius, 12, 12);
     const sphereMat = new THREE.MeshPhysicalMaterial({
       color: 0x8fcaff,
@@ -159,8 +160,8 @@ export const UniverseBackgroundThree: React.FC = () => {
       const turbulence = Math.sin(u * 12.0 * Math.PI + t * 1.5) * 0.08;
       const deformation = wave1 + wave2 + turbulence;
       
-      // Адаптивный масштаб для мобильных устройств
-      const scaleFactor = isSmallMobile ? 0.8 : (isMobile ? 0.85 : 1.0); // Нормальный размер
+      // Адаптивный масштаб для мобильных устройств - уменьшаем диаметр ленты в 2 раза
+      const scaleFactor = isSmallMobile ? 0.4 : (isMobile ? 0.5 : 1.0); // Уменьшаем диаметр ленты в 2 раза
       const R = (3.2 + deformation) * scaleFactor; // лента длиннее (больше радиус)
       const baseWidth = 1.6 * (1.0 + scrollAmp) * scaleFactor; // лента шире и динамически расширяется
       
