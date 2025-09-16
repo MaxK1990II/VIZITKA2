@@ -15,7 +15,7 @@ export const UniverseBackgroundThree: React.FC = () => {
   const mountedRef = React.useRef<boolean>(false);
   
   // Версия для принудительного обновления
-  const version = "v2.2";
+  const version = "v2.3";
 
   React.useEffect(() => {
     mountedRef.current = true;
@@ -43,6 +43,7 @@ export const UniverseBackgroundThree: React.FC = () => {
     
     // Логирование для отладки
     console.log(`Mobile settings - width: ${window.innerWidth}, isMobile: ${isMobile}, isSmallMobile: ${isSmallMobile}, FOV: ${baseFov}, Z: ${baseZ}`);
+    console.log(`Mobius strip offset - X: ${isSmallMobile ? -2.5 : (isMobile ? -2.0 : 0)}, Y: ${isSmallMobile ? 2.0 : (isMobile ? 1.5 : 0)}`);
     
     const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
     
@@ -163,9 +164,9 @@ export const UniverseBackgroundThree: React.FC = () => {
       const R = (3.2 + deformation) * scaleFactor; // лента длиннее (больше радиус)
       const baseWidth = 1.6 * (1.0 + scrollAmp) * scaleFactor; // лента шире и динамически расширяется
       
-      // Смещение ленты для мобильных устройств
-      const offsetX = isSmallMobile ? -1.0 : (isMobile ? -0.8 : 0);
-      const offsetY = isSmallMobile ? 1.0 : (isMobile ? 0.8 : 0);
+      // Смещение ленты для мобильных устройств - более радикальное
+      const offsetX = isSmallMobile ? -2.5 : (isMobile ? -2.0 : 0);
+      const offsetY = isSmallMobile ? 2.0 : (isMobile ? 1.5 : 0);
       // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
       const c1 = wrap01(0.18 + 0.05 * Math.sin(t * 0.25));
       const c2 = wrap01(0.53 + 0.07 * Math.sin(t * 0.18 + 1.7));
