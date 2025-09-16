@@ -189,7 +189,7 @@ export default function Home() {
             flexDirection: "column", 
             alignItems: "center", 
             justifyContent: "center", 
-            padding: "clamp(1rem, 5vw, 2rem)",
+            padding: "clamp(2rem, 8vw, 2rem)",
             cursor: "default",
             pointerEvents: "auto"
           }}>
@@ -197,7 +197,7 @@ export default function Home() {
           textAlign: "center", 
           color: "white", 
           fontFamily: "Arial, sans-serif",
-          padding: "0 clamp(1rem, 3vw, 0rem)"
+          padding: "0 clamp(2rem, 6vw, 0rem)"
         }}>
           <h1 style={{ 
             fontSize: "clamp(2.5rem, 8vw, 4rem)", 

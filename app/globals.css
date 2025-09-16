@@ -82,6 +82,23 @@ body {
   .cursor-sphere.hover {
     transform: scale(1.2);
   }
+  
+  /* Дополнительные отступы для очень маленьких экранов */
+  main {
+    padding: 3rem 1rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  /* Еще больше отступов для очень маленьких экранов */
+  main {
+    padding: 2rem 0.5rem !important;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+    letter-spacing: 0.05em !important;
+  }
 }
 
 body {
