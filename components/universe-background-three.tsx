@@ -38,8 +38,8 @@ export const UniverseBackgroundThree: React.FC = () => {
     // Адаптивная настройка камеры для мобильных устройств
     const isMobile = window.innerWidth <= 768;
     const isSmallMobile = window.innerWidth <= 480;
-    const baseFov = isSmallMobile ? 85 : (isMobile ? 80 : 60); // Больший угол обзора
-    const baseZ = isSmallMobile ? 10.0 : (isMobile ? 9.0 : 6.0); // Больше расстояние
+    const baseFov = isSmallMobile ? 100 : (isMobile ? 95 : 60); // Максимальный угол обзора
+    const baseZ = isSmallMobile ? 15.0 : (isMobile ? 12.0 : 6.0); // Максимальное расстояние
     
     // Логирование для отладки
     console.log(`Mobile settings - width: ${window.innerWidth}, isMobile: ${isMobile}, isSmallMobile: ${isSmallMobile}, FOV: ${baseFov}, Z: ${baseZ}`);
@@ -102,7 +102,7 @@ export const UniverseBackgroundThree: React.FC = () => {
     const phiAngles = new Float32Array(MOBIUS_COUNT);
     const phiSpeeds = new Float32Array(MOBIUS_COUNT);
     // Адаптивный размер сфер для мобильных устройств
-    const sphereRadius = isSmallMobile ? 0.8 : (isMobile ? 0.9 : 1.0);
+    const sphereRadius = isSmallMobile ? 0.5 : (isMobile ? 0.6 : 1.0);
     const sphereGeo = new THREE.SphereGeometry(sphereRadius, 12, 12);
     const sphereMat = new THREE.MeshPhysicalMaterial({
       color: 0x8fcaff,
@@ -159,7 +159,7 @@ export const UniverseBackgroundThree: React.FC = () => {
       const deformation = wave1 + wave2 + turbulence;
       
       // Адаптивный масштаб для мобильных устройств
-      const scaleFactor = isSmallMobile ? 0.85 : (isMobile ? 0.9 : 1.0); // Меньше уменьшение для лучшей видимости
+      const scaleFactor = isSmallMobile ? 0.5 : (isMobile ? 0.6 : 1.0); // Значительно уменьшаем для мобильных
       const R = (3.2 + deformation) * scaleFactor; // лента длиннее (больше радиус)
       const baseWidth = 1.6 * (1.0 + scrollAmp) * scaleFactor; // лента шире и динамически расширяется
       // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
