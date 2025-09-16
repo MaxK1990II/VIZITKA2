@@ -39,7 +39,18 @@ export const UniverseBackgroundThree: React.FC = () => {
     const baseZ = isSmallMobile ? 9.0 : (isMobile ? 8.0 : 6.0); // Умеренное расстояние
     
     const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
-    camera.position.set(0, 0, baseZ);
+    
+    // Позиционирование камеры с учетом мобильных устройств
+    if (isSmallMobile) {
+      camera.position.set(-1.5, 1.0, baseZ); // Смещение влево и вверх для маленьких экранов
+      camera.lookAt(0.5, -0.3, 0); // Смотрим на центр ленты
+    } else if (isMobile) {
+      camera.position.set(-1.0, 0.5, baseZ); // Смещение влево и вверх для мобильных
+      camera.lookAt(0.3, -0.2, 0); // Смотрим на центр ленты
+    } else {
+      camera.position.set(0, 0, baseZ); // Центр для десктопа
+      camera.lookAt(0, 0, 0); // Смотрим в центр
+    }
 
     // Освещение для объемного вида сфер
     const hemi = new THREE.HemisphereLight(0x88aaff, 0x0a0a12, 0.55);
