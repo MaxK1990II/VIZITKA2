@@ -31,10 +31,14 @@ export const UniverseBackgroundThree: React.FC = () => {
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
-    camera.position.set(0, 0, 6.0);
-    const baseFov = camera.fov;
-    const baseZ = camera.position.z;
+    
+    // Адаптивная настройка камеры для мобильных устройств
+    const isMobile = window.innerWidth <= 768;
+    const baseFov = isMobile ? 75 : 60; // Больший угол обзора для мобильных
+    const baseZ = isMobile ? 8.0 : 6.0; // Больше расстояние для мобильных
+    
+    const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
+    camera.position.set(0, 0, baseZ);
 
     // Освещение для объемного вида сфер
     const hemi = new THREE.HemisphereLight(0x88aaff, 0x0a0a12, 0.55);
@@ -60,15 +64,17 @@ export const UniverseBackgroundThree: React.FC = () => {
       const height = window.innerHeight;
       const pixelRatio = window.devicePixelRatio || 1;
       
-      // Базовое количество для разных разрешений
-      if (width < 768) {
-        return 3000; // мобильные устройства
+      // Базовое количество для разных разрешений (оптимизировано для мобильных)
+      if (width < 480) {
+        return 2000; // очень маленькие мобильные
+      } else if (width < 768) {
+        return 2500; // мобильные устройства
       } else if (width < 1024) {
-        return 5000; // планшеты
+        return 4000; // планшеты
       } else if (width < 1440) {
-        return 7000; // ноутбуки
+        return 6000; // ноутбуки
       } else {
-        return 8400; // большие мониторы
+        return 8000; // большие мониторы
       }
     };
     
@@ -85,7 +91,9 @@ export const UniverseBackgroundThree: React.FC = () => {
     const speeds = new Float32Array(MOBIUS_COUNT);
     const phiAngles = new Float32Array(MOBIUS_COUNT);
     const phiSpeeds = new Float32Array(MOBIUS_COUNT);
-    const sphereGeo = new THREE.SphereGeometry(1, 12, 12);
+    // Адаптивный размер сфер для мобильных устройств
+    const sphereRadius = isMobile ? 0.8 : 1.0;
+    const sphereGeo = new THREE.SphereGeometry(sphereRadius, 12, 12);
     const sphereMat = new THREE.MeshPhysicalMaterial({
       color: 0x8fcaff,
       metalness: 0.0,
@@ -139,8 +147,11 @@ export const UniverseBackgroundThree: React.FC = () => {
       const wave2 = Math.cos(u * 5.0 * Math.PI * 2 + t * 0.8) * 0.15;
       const turbulence = Math.sin(u * 12.0 * Math.PI + t * 1.5) * 0.08;
       const deformation = wave1 + wave2 + turbulence;
-      const R = 3.2 + deformation; // лента длиннее (больше радиус)
-      const baseWidth = 1.6 * (1.0 + scrollAmp); // лента шире и динамически расширяется
+      
+      // Адаптивный масштаб для мобильных устройств
+      const scaleFactor = isMobile ? 0.8 : 1.0; // Уменьшаем ленту на мобильных
+      const R = (3.2 + deformation) * scaleFactor; // лента длиннее (больше радиус)
+      const baseWidth = 1.6 * (1.0 + scrollAmp) * scaleFactor; // лента шире и динамически расширяется
       // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
       const c1 = wrap01(0.18 + 0.05 * Math.sin(t * 0.25));
       const c2 = wrap01(0.53 + 0.07 * Math.sin(t * 0.18 + 1.7));
