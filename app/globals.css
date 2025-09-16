@@ -4,11 +4,21 @@
 
 html {
   cursor: none !important;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 /* Кастомный курсор-сфера */
 body {
   cursor: none !important;
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 * {
@@ -100,46 +110,90 @@ body {
 /* Основной контейнер с адаптивными отступами */
 .main-container {
   padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 @media (max-width: 768px) {
   .main-container {
-    padding: 3rem 2rem !important;
+    padding: 3rem 1.5rem !important;
+    width: 100vw !important;
+    box-sizing: border-box !important;
   }
 }
 
 @media (max-width: 480px) {
   .main-container {
-    padding: 3rem 1rem !important;
+    padding: 2rem 1rem !important;
+    width: 100vw !important;
+    box-sizing: border-box !important;
   }
 }
 
 @media (max-width: 360px) {
   .main-container {
-    padding: 2rem 0.5rem !important;
+    padding: 1.5rem 0.8rem !important;
+    width: 100vw !important;
+    box-sizing: border-box !important;
   }
 }
 
-/* Контейнер для имени с дополнительными отступами */
+/* Контейнер для имени с равномерными отступами */
 .name-container {
-  padding: 0 2rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 @media (max-width: 768px) {
   .name-container {
-    padding: 0 3rem !important;
+    padding: 0 1.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 
 @media (max-width: 480px) {
   .name-container {
-    padding: 0 4rem !important;
+    padding: 0 2rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 
 @media (max-width: 360px) {
   .name-container {
-    padding: 0 5rem !important;
+    padding: 0 2.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Стили для заголовка имени */
+.name-title {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  word-break: break-word !important;
+  hyphens: auto;
+}
+
+@media (max-width: 480px) {
+  .name-title {
+    font-size: clamp(2rem, 7vw, 3rem) !important;
+    letter-spacing: 0.05em !important;
+    line-height: 1.1 !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .name-title {
+    font-size: clamp(1.8rem, 6vw, 2.5rem) !important;
+    letter-spacing: 0.03em !important;
+    line-height: 1.1 !important;
   }
 }
 

@@ -24,3 +24,4 @@ export const SmoothScrollProvider = ({ children }: { children: React.ReactNode }
 };
 
 
+

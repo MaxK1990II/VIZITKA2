@@ -197,7 +197,7 @@ export default function Home() {
           color: "white", 
           fontFamily: "Arial, sans-serif"
         }}>
-          <h1 style={{ 
+          <h1 className="name-title" style={{ 
             fontSize: "clamp(2.5rem, 8vw, 4rem)", 
             fontWeight: "bold", 
             margin: "0 0 1rem 0",
@@ -206,7 +206,10 @@ export default function Home() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            textAlign: "center"
+            textAlign: "center",
+            width: "100%",
+            overflow: "hidden",
+            wordBreak: "break-word"
           }}>
             {name.split('').map((letter, index) => (
               <span 
