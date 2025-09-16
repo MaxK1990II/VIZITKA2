@@ -14,8 +14,29 @@ export default function Home() {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
 
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        setMousePos({ x: touch.clientX, y: touch.clientY });
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        setMousePos({ x: touch.clientX, y: touch.clientY });
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchstart', handleTouchStart);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchstart', handleTouchStart);
+    };
   }, []);
 
   const name = "Максим Каночкин";
@@ -53,6 +74,25 @@ export default function Home() {
   const [isAnimating1, setIsAnimating1] = useState(false);
   const [isAnimating2, setIsAnimating2] = useState(false);
   const [isAnimating3, setIsAnimating3] = useState(false);
+  
+  // Определяем количество ролей для показа в зависимости от размера экрана
+  const [showRolesCount, setShowRolesCount] = useState(3);
+  
+  useEffect(() => {
+    const updateRolesCount = () => {
+      if (window.innerWidth < 480) {
+        setShowRolesCount(1); // только одна роль на очень маленьких экранах
+      } else if (window.innerWidth < 768) {
+        setShowRolesCount(2); // две роли на мобильных
+      } else {
+        setShowRolesCount(3); // все три роли на больших экранах
+      }
+    };
+    
+    updateRolesCount();
+    window.addEventListener('resize', updateRolesCount);
+    return () => window.removeEventListener('resize', updateRolesCount);
+  }, []);
 
   // Функция для случайного выбора новой роли
   const getRandomRole = (currentRole: string) => {
@@ -141,22 +181,23 @@ export default function Home() {
     <>
       <UniverseBackgroundThree />
       <CustomCursor />
-      <main style={{ 
-        position: "relative", 
-        zIndex: 1, 
-        minHeight: "100vh", 
-        display: "flex", 
-        flexDirection: "column", 
-        alignItems: "center", 
-        justifyContent: "center", 
-        padding: "2rem",
-        cursor: "default",
-        pointerEvents: "auto"
-      }}>
+          <main style={{ 
+            position: "relative", 
+            zIndex: 1, 
+            minHeight: "100vh", 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center", 
+            justifyContent: "center", 
+            padding: "clamp(1rem, 5vw, 2rem)",
+            cursor: "default",
+            pointerEvents: "auto"
+          }}>
         <div style={{ 
           textAlign: "center", 
           color: "white", 
-          fontFamily: "Arial, sans-serif"
+          fontFamily: "Arial, sans-serif",
+          padding: "0 clamp(1rem, 3vw, 0rem)"
         }}>
           <h1 style={{ 
             fontSize: "clamp(2.5rem, 8vw, 4rem)", 
@@ -181,7 +222,7 @@ export default function Home() {
               </span>
             ))}
           </h1>
-          {/* Три роли в одну линию с фиксированной шириной */}
+          {/* Адаптивное количество ролей */}
           <div style={{ 
             display: "flex",
             justifyContent: "center",
@@ -196,7 +237,7 @@ export default function Home() {
             maxWidth: "90vw",
             padding: "0 1rem"
           }}>
-            {/* Первая роль - адаптивная ширина */}
+            {/* Первая роль - всегда показываем */}
             <div style={{ 
               display: "flex",
               alignItems: "center",
@@ -220,93 +261,100 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Минималистичный разделитель */}
-            <div style={{
-              width: "1px",
-              height: "1rem",
-              backgroundColor: "rgba(255, 255, 255, 0.3)",
-              position: "relative",
-              flexShrink: 0
-            }}>
-              <div style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                width: "3px",
-                height: "3px",
-                backgroundColor: "rgba(255, 255, 255, 0.6)",
-                borderRadius: "50%",
-                transform: "translate(-50%, -50%)"
-              }} />
-            </div>
+            {/* Разделитель - показываем только если есть вторая роль */}
+            {showRolesCount >= 2 && (
+              <>
+                <div style={{
+                  width: "1px",
+                  height: "1rem",
+                  backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  position: "relative",
+                  flexShrink: 0
+                }}>
+                  <div style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    width: "3px",
+                    height: "3px",
+                    backgroundColor: "rgba(255, 255, 255, 0.6)",
+                    borderRadius: "50%",
+                    transform: "translate(-50%, -50%)"
+                  }} />
+                </div>
 
-            {/* Вторая роль - адаптивная ширина */}
-            <div style={{ 
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              height: "clamp(1.2rem, 3vw, 1.5rem)",
-              width: "clamp(140px, 20vw, 180px)",
-              minWidth: "120px"
-            }}>
-              {role2.split('').map((letter, index) => (
-                <span 
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    transform: `${isAnimating2 ? 'translateY(-100%)' : 'translateY(0%)'}`,
-                    transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  {letter === ' ' ? '\u00A0' : letter}
-                </span>
-              ))}
-            </div>
+                {/* Вторая роль - показываем если экран больше 480px */}
+                <div style={{ 
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  height: "clamp(1.2rem, 3vw, 1.5rem)",
+                  width: "clamp(140px, 20vw, 180px)",
+                  minWidth: "120px"
+                }}>
+                  {role2.split('').map((letter, index) => (
+                    <span 
+                      key={index}
+                      style={{
+                        display: "inline-block",
+                        transform: `${isAnimating2 ? 'translateY(-100%)' : 'translateY(0%)'}`,
+                        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                      }}
+                    >
+                      {letter === ' ' ? '\u00A0' : letter}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
 
-            {/* Минималистичный разделитель */}
-            <div style={{
-              width: "1px",
-              height: "1rem",
-              backgroundColor: "rgba(255, 255, 255, 0.3)",
-              position: "relative",
-              flexShrink: 0
-            }}>
-              <div style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                width: "3px",
-                height: "3px",
-                backgroundColor: "rgba(255, 255, 255, 0.6)",
-                borderRadius: "50%",
-                transform: "translate(-50%, -50%)"
-              }} />
-            </div>
+            {/* Третья роль и разделитель - показываем только на больших экранах */}
+            {showRolesCount >= 3 && (
+              <>
+                <div style={{
+                  width: "1px",
+                  height: "1rem",
+                  backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  position: "relative",
+                  flexShrink: 0
+                }}>
+                  <div style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    width: "3px",
+                    height: "3px",
+                    backgroundColor: "rgba(255, 255, 255, 0.6)",
+                    borderRadius: "50%",
+                    transform: "translate(-50%, -50%)"
+                  }} />
+                </div>
 
-            {/* Третья роль - адаптивная ширина */}
-            <div style={{ 
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              height: "clamp(1.2rem, 3vw, 1.5rem)",
-              width: "clamp(140px, 20vw, 180px)",
-              minWidth: "120px"
-            }}>
-              {role3.split('').map((letter, index) => (
-                <span 
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    transform: `${isAnimating3 ? 'translateY(-100%)' : 'translateY(0%)'}`,
-                    transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  {letter === ' ' ? '\u00A0' : letter}
-                </span>
-              ))}
-            </div>
+                <div style={{ 
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  height: "clamp(1.2rem, 3vw, 1.5rem)",
+                  width: "clamp(140px, 20vw, 180px)",
+                  minWidth: "120px"
+                }}>
+                  {role3.split('').map((letter, index) => (
+                    <span 
+                      key={index}
+                      style={{
+                        display: "inline-block",
+                        transform: `${isAnimating3 ? 'translateY(-100%)' : 'translateY(0%)'}`,
+                        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                      }}
+                    >
+                      {letter === ' ' ? '\u00A0' : letter}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </main>

@@ -195,11 +195,28 @@ export const UniverseBackgroundThree: React.FC = () => {
     // Внутреннее состояние анимации без any
     const animState: { prev: number | null; lastS: number | null; mousePos: { x: number; y: number } | null } = { prev: null, lastS: null, mousePos: null };
 
-    // Обработчик мыши для антигравитации
+    // Обработчики мыши и тапов для черной дыры
     const handleMouseMove = (event: MouseEvent) => {
       animState.mousePos = { x: event.clientX, y: event.clientY };
     };
+    
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length > 0) {
+        const touch = event.touches[0];
+        animState.mousePos = { x: touch.clientX, y: touch.clientY };
+      }
+    };
+    
+    const handleTouchStart = (event: TouchEvent) => {
+      if (event.touches.length > 0) {
+        const touch = event.touches[0];
+        animState.mousePos = { x: touch.clientX, y: touch.clientY };
+      }
+    };
+    
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove);
+    window.addEventListener("touchstart", handleTouchStart);
 
     const animate = () => {
       if (!mountedRef.current) return;
@@ -365,6 +382,8 @@ export const UniverseBackgroundThree: React.FC = () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchStart);
       group.remove(instancedSpheres);
       sphereGeo.dispose();
       sphereMat.dispose();
