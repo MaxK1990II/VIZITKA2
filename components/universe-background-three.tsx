@@ -38,17 +38,25 @@ export const UniverseBackgroundThree: React.FC = () => {
     // Адаптивная настройка камеры для мобильных устройств
     const isMobile = window.innerWidth <= 768;
     const isSmallMobile = window.innerWidth <= 480;
-    const baseFov = isSmallMobile ? 100 : (isMobile ? 95 : 60); // Максимальный угол обзора
-    const baseZ = isSmallMobile ? 15.0 : (isMobile ? 12.0 : 6.0); // Максимальное расстояние
+    const baseFov = isSmallMobile ? 75 : (isMobile ? 70 : 60); // Умеренный угол обзора
+    const baseZ = isSmallMobile ? 8.0 : (isMobile ? 7.0 : 6.0); // Умеренное расстояние
     
     // Логирование для отладки
     console.log(`Mobile settings - width: ${window.innerWidth}, isMobile: ${isMobile}, isSmallMobile: ${isSmallMobile}, FOV: ${baseFov}, Z: ${baseZ}`);
     
     const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
     
-    // Позиционирование камеры - всегда в центре
-    camera.position.set(0, 0, baseZ);
-    camera.lookAt(0, 0, 0); // Всегда смотрим в центр
+    // Позиционирование камеры с учетом мобильных устройств
+    if (isSmallMobile) {
+      camera.position.set(0, 0, baseZ);
+      camera.lookAt(0, 0, 0); // Смотрим в центр
+    } else if (isMobile) {
+      camera.position.set(0, 0, baseZ);
+      camera.lookAt(0, 0, 0); // Смотрим в центр
+    } else {
+      camera.position.set(0, 0, baseZ);
+      camera.lookAt(0, 0, 0); // Смотрим в центр
+    }
 
     // Освещение для объемного вида сфер
     const hemi = new THREE.HemisphereLight(0x88aaff, 0x0a0a12, 0.55);
@@ -102,7 +110,7 @@ export const UniverseBackgroundThree: React.FC = () => {
     const phiAngles = new Float32Array(MOBIUS_COUNT);
     const phiSpeeds = new Float32Array(MOBIUS_COUNT);
     // Адаптивный размер сфер для мобильных устройств
-    const sphereRadius = isSmallMobile ? 0.5 : (isMobile ? 0.6 : 1.0);
+    const sphereRadius = isSmallMobile ? 0.7 : (isMobile ? 0.8 : 1.0);
     const sphereGeo = new THREE.SphereGeometry(sphereRadius, 12, 12);
     const sphereMat = new THREE.MeshPhysicalMaterial({
       color: 0x8fcaff,
@@ -159,7 +167,7 @@ export const UniverseBackgroundThree: React.FC = () => {
       const deformation = wave1 + wave2 + turbulence;
       
       // Адаптивный масштаб для мобильных устройств
-      const scaleFactor = isSmallMobile ? 0.5 : (isMobile ? 0.6 : 1.0); // Значительно уменьшаем для мобильных
+      const scaleFactor = isSmallMobile ? 0.8 : (isMobile ? 0.85 : 1.0); // Нормальный размер
       const R = (3.2 + deformation) * scaleFactor; // лента длиннее (больше радиус)
       const baseWidth = 1.6 * (1.0 + scrollAmp) * scaleFactor; // лента шире и динамически расширяется
       // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
