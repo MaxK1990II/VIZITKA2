@@ -13,6 +13,9 @@ export const UniverseBackgroundThree: React.FC = () => {
   const hostRef = React.useRef<HTMLDivElement | null>(null);
   const rafRef = React.useRef<number | null>(null);
   const mountedRef = React.useRef<boolean>(false);
+  
+  // Версия для принудительного обновления
+  const version = "v2.1";
 
   React.useEffect(() => {
     mountedRef.current = true;
@@ -35,8 +38,11 @@ export const UniverseBackgroundThree: React.FC = () => {
     // Адаптивная настройка камеры для мобильных устройств
     const isMobile = window.innerWidth <= 768;
     const isSmallMobile = window.innerWidth <= 480;
-    const baseFov = isSmallMobile ? 75 : (isMobile ? 70 : 60); // Умеренный угол обзора
-    const baseZ = isSmallMobile ? 9.0 : (isMobile ? 8.0 : 6.0); // Умеренное расстояние
+    const baseFov = isSmallMobile ? 85 : (isMobile ? 80 : 60); // Больший угол обзора
+    const baseZ = isSmallMobile ? 10.0 : (isMobile ? 9.0 : 6.0); // Больше расстояние
+    
+    // Логирование для отладки
+    console.log(`Mobile settings - width: ${window.innerWidth}, isMobile: ${isMobile}, isSmallMobile: ${isSmallMobile}, FOV: ${baseFov}, Z: ${baseZ}`);
     
     const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
     
