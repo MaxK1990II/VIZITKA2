@@ -17,8 +17,8 @@ body {
 
 .cursor-sphere {
   position: fixed;
-  width: 8px;
-  height: 8px;
+  width: clamp(6px, 1.5vw, 8px);
+  height: clamp(6px, 1.5vw, 8px);
   background: radial-gradient(
     circle at 30% 30%, 
     rgba(255, 255, 255, 0.3) 0%,
@@ -41,14 +41,47 @@ body {
   position: absolute;
   top: 20%;
   left: 20%;
-  width: 2px;
-  height: 2px;
+  width: clamp(1.5px, 0.8vw, 2px);
+  height: clamp(1.5px, 0.8vw, 2px);
   background: rgba(255, 255, 255, 0.4);
   border-radius: 50%;
 }
 
 .cursor-sphere.hover {
   transform: scale(1.5);
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+  .cursor-sphere {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .cursor-sphere::before {
+    width: 1.5px;
+    height: 1.5px;
+  }
+  
+  .cursor-sphere.hover {
+    transform: scale(1.3);
+  }
+}
+
+@media (max-width: 480px) {
+  .cursor-sphere {
+    width: 5px;
+    height: 5px;
+  }
+  
+  .cursor-sphere::before {
+    width: 1px;
+    height: 1px;
+  }
+  
+  .cursor-sphere.hover {
+    transform: scale(1.2);
+  }
 }
 
 body {

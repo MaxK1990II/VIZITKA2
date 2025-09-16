@@ -54,7 +54,25 @@ export const UniverseBackgroundThree: React.FC = () => {
     rim.position.set(0, 0, 8);
     scene.add(rim);
 
-    const MOBIUS_COUNT = 8400; // в 2 раза больше сфер
+    // Адаптивное количество частиц в зависимости от размера экрана
+    const getParticleCount = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const pixelRatio = window.devicePixelRatio || 1;
+      
+      // Базовое количество для разных разрешений
+      if (width < 768) {
+        return 3000; // мобильные устройства
+      } else if (width < 1024) {
+        return 5000; // планшеты
+      } else if (width < 1440) {
+        return 7000; // ноутбуки
+      } else {
+        return 8400; // большие мониторы
+      }
+    };
+    
+    const MOBIUS_COUNT = getParticleCount();
     
     // Инициализируем частицы Мёбиуса (инстансами)
     const group = new THREE.Group();
@@ -297,8 +315,18 @@ export const UniverseBackgroundThree: React.FC = () => {
           const dy = screenY - mousePos.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
-          // Гравитация от черной дыры
-          const maxDistance = 120; // уменьшенный радиус влияния
+          // Адаптивный радиус влияния черной дыры
+          const getMaxDistance = () => {
+            const width = window.innerWidth;
+            if (width < 768) {
+              return 80; // мобильные устройства
+            } else if (width < 1024) {
+              return 100; // планшеты
+            } else {
+              return 120; // десктопы
+            }
+          };
+          const maxDistance = getMaxDistance();
           if (distance < maxDistance) {
             const force = (1 - distance / maxDistance) * 0.12; // умеренная сила
             const angle = Math.atan2(dy, dx);

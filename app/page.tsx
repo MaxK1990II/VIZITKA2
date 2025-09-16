@@ -106,8 +106,18 @@ export default function Home() {
     const dy = letterY - mousePos.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     
-    // Эффект притягивания
-    const maxDistance = 150;
+    // Адаптивный радиус притягивания для букв
+    const getMaxDistance = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        return 100; // мобильные устройства
+      } else if (width < 1024) {
+        return 120; // планшеты
+      } else {
+        return 150; // десктопы
+      }
+    };
+    const maxDistance = getMaxDistance();
     if (distance < maxDistance) {
       const force = (1 - distance / maxDistance) * 0.3;
       const angle = Math.atan2(dy, dx);
@@ -149,14 +159,15 @@ export default function Home() {
           fontFamily: "Arial, sans-serif"
         }}>
           <h1 style={{ 
-            fontSize: "4rem", 
+            fontSize: "clamp(2.5rem, 8vw, 4rem)", 
             fontWeight: "bold", 
             margin: "0 0 1rem 0",
             textShadow: "0 0 20px rgba(143, 202, 255, 0.5)",
             letterSpacing: "0.1em",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            textAlign: "center"
           }}>
             {name.split('').map((letter, index) => (
               <span 
@@ -175,21 +186,25 @@ export default function Home() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            gap: "2rem",
-            fontSize: "1.1rem",
+            gap: "clamp(1rem, 4vw, 2rem)",
+            fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)",
             fontWeight: "300",
             letterSpacing: "0.05em",
             color: "rgba(255, 255, 255, 0.85)",
-            marginTop: "1rem"
+            marginTop: "clamp(0.5rem, 2vw, 1rem)",
+            flexWrap: "wrap",
+            maxWidth: "90vw",
+            padding: "0 1rem"
           }}>
-            {/* Первая роль - фиксированная ширина */}
+            {/* Первая роль - адаптивная ширина */}
             <div style={{ 
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
-              height: "1.5rem",
-              width: "180px"
+              height: "clamp(1.2rem, 3vw, 1.5rem)",
+              width: "clamp(140px, 20vw, 180px)",
+              minWidth: "120px"
             }}>
               {role1.split('').map((letter, index) => (
                 <span 
@@ -225,14 +240,15 @@ export default function Home() {
               }} />
             </div>
 
-            {/* Вторая роль - фиксированная ширина */}
+            {/* Вторая роль - адаптивная ширина */}
             <div style={{ 
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
-              height: "1.5rem",
-              width: "180px"
+              height: "clamp(1.2rem, 3vw, 1.5rem)",
+              width: "clamp(140px, 20vw, 180px)",
+              minWidth: "120px"
             }}>
               {role2.split('').map((letter, index) => (
                 <span 
@@ -268,14 +284,15 @@ export default function Home() {
               }} />
             </div>
 
-            {/* Третья роль - фиксированная ширина */}
+            {/* Третья роль - адаптивная ширина */}
             <div style={{ 
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
-              height: "1.5rem",
-              width: "180px"
+              height: "clamp(1.2rem, 3vw, 1.5rem)",
+              width: "clamp(140px, 20vw, 180px)",
+              minWidth: "120px"
             }}>
               {role3.split('').map((letter, index) => (
                 <span 
