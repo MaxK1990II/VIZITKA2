@@ -48,11 +48,11 @@ export const UniverseBackgroundThree: React.FC = () => {
     
     // Позиционирование камеры с учетом мобильных устройств
     if (isSmallMobile) {
-      camera.position.set(0, 0, baseZ);
-      camera.lookAt(0, 0, 0); // Смотрим в центр
+      camera.position.set(-1.0, 1.5, baseZ); // Смещение влево и вверх для маленьких экранов
+      camera.lookAt(-0.5, 0.5, 0); // Смотрим на центр ленты
     } else if (isMobile) {
-      camera.position.set(0, 0, baseZ);
-      camera.lookAt(0, 0, 0); // Смотрим в центр
+      camera.position.set(-0.8, 1.2, baseZ); // Смещение влево и вверх для мобильных
+      camera.lookAt(-0.4, 0.4, 0); // Смотрим на центр ленты
     } else {
       camera.position.set(0, 0, baseZ);
       camera.lookAt(0, 0, 0); // Смотрим в центр
