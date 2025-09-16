@@ -15,7 +15,7 @@ export const UniverseBackgroundThree: React.FC = () => {
   const mountedRef = React.useRef<boolean>(false);
   
   // Версия для принудительного обновления
-  const version = "v2.1";
+  const version = "v2.2";
 
   React.useEffect(() => {
     mountedRef.current = true;
@@ -48,11 +48,13 @@ export const UniverseBackgroundThree: React.FC = () => {
     
     // Позиционирование камеры с учетом мобильных устройств
     if (isSmallMobile) {
-      camera.position.set(-1.0, 1.5, baseZ); // Смещение влево и вверх для маленьких экранов
-      camera.lookAt(-0.5, 0.5, 0); // Смотрим на центр ленты
+      camera.position.set(-2.0, 3.0, baseZ); // Больше смещение влево и вверх
+      camera.lookAt(-1.0, 1.0, 0); // Смотрим на центр ленты
+      console.log("Small mobile camera position set");
     } else if (isMobile) {
-      camera.position.set(-0.8, 1.2, baseZ); // Смещение влево и вверх для мобильных
-      camera.lookAt(-0.4, 0.4, 0); // Смотрим на центр ленты
+      camera.position.set(-1.5, 2.5, baseZ); // Больше смещение влево и вверх
+      camera.lookAt(-0.8, 0.8, 0); // Смотрим на центр ленты
+      console.log("Mobile camera position set");
     } else {
       camera.position.set(0, 0, baseZ);
       camera.lookAt(0, 0, 0); // Смотрим в центр
