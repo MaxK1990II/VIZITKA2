@@ -185,15 +185,10 @@ export default function Home() {
             position: "relative", 
             zIndex: 1, 
             minHeight: "100vh", 
-            display: "flex", 
-            flexDirection: "column", 
-            alignItems: "center", 
-            justifyContent: "center", 
             cursor: "default",
             pointerEvents: "auto"
           }}>
         <div className="name-container" style={{ 
-          textAlign: "center", 
           color: "white", 
           fontFamily: "Arial, sans-serif"
         }}>
@@ -236,7 +231,9 @@ export default function Home() {
             marginTop: "clamp(0.5rem, 2vw, 1rem)",
             flexWrap: "wrap",
             maxWidth: "90vw",
-            padding: "0 1rem"
+            padding: "0 1rem",
+            width: "100%",
+            textAlign: "center"
           }}>
             {/* Первая роль - всегда показываем */}
             <div style={{ 
