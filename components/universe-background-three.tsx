@@ -72,8 +72,9 @@ export const UniverseBackgroundThree: React.FC = () => {
     rim.position.set(0, 0, 8);
     scene.add(rim);
 
-    // Единое количество частиц для всех устройств (как на ПК)
-    const MOBIUS_COUNT = 8000;
+    // Адаптивное количество частиц: меньше для мобильных устройств
+    const isMobile = window.innerWidth <= 768;
+    const MOBIUS_COUNT = isMobile ? 800 : 8000; // В 10 раз меньше на мобильных
     
     // Инициализируем частицы Мёбиуса (инстансами)
     const group = new THREE.Group();
@@ -210,14 +211,15 @@ export const UniverseBackgroundThree: React.FC = () => {
         // Стандартные настройки камеры для всех устройств
         const newBaseFov = 60;
         const newBaseZ = 6.0;
+        const newIsMobile = w <= 768;
         
         // Плавно интерполируем к новым значениям
         camera.fov = THREE.MathUtils.lerp(camera.fov, newBaseFov, 0.1);
         camera.position.z = THREE.MathUtils.lerp(camera.position.z, newBaseZ, 0.1);
         
-      camera.updateProjectionMatrix();
+        camera.updateProjectionMatrix();
         
-        console.log(`Resize - width: ${w}, height: ${h}, FOV: ${newBaseFov}`);
+        console.log(`Resize - width: ${w}, height: ${h}, isMobile: ${newIsMobile}, FOV: ${newBaseFov}`);
       }, 100); // Дебаунсинг 100мс
     };
     resize();
