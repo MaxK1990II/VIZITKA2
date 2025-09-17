@@ -28,31 +28,25 @@ export const UniverseBackgroundThree: React.FC = () => {
       powerPreference: "high-performance"
     });
     
-    // Оптимизированные настройки для мобильных устройств
-    const isMobile = window.innerWidth <= 768;
-    const pixelRatio = isMobile ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2);
-    renderer.setPixelRatio(pixelRatio);
-    
+    // Единые настройки для всех устройств (как на ПК)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
-    renderer.shadowMap.enabled = !isMobile; // Отключаем тени на мобильных для производительности
+    renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.domElement.style.pointerEvents = "none";
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
     
-    // Адаптивная настройка камеры для мобильных устройств
-    const isSmallMobile = window.innerWidth <= 480;
-    const baseFov = isSmallMobile ? 75 : (isMobile ? 70 : 60); // Умеренный угол обзора
-    const baseZ = isSmallMobile ? 8.0 : (isMobile ? 7.0 : 6.0); // Умеренное расстояние
+    // Единые настройки камеры для всех устройств (как на ПК)
+    const baseFov = 60; // Стандартный угол обзора
+    const baseZ = 6.0; // Стандартное расстояние
     
     // Логирование для отладки
-    console.log(`Mobile settings - width: ${window.innerWidth}, isMobile: ${isMobile}, isSmallMobile: ${isSmallMobile}, FOV: ${baseFov}, Z: ${baseZ}`);
-    console.log(`Mobius strip scale: ${isSmallMobile ? 0.4 : (isMobile ? 0.5 : 1.0)}`);
-    console.log(`Mobius strip offset - X: ${isSmallMobile ? -2.0 : (isMobile ? -1.7 : 0)}, Y: ${isSmallMobile ? 2.5 : (isMobile ? 2.0 : 0)}`);
+    console.log(`Settings - width: ${window.innerWidth}, FOV: ${baseFov}, Z: ${baseZ}`);
     
     const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
     
@@ -78,27 +72,8 @@ export const UniverseBackgroundThree: React.FC = () => {
     rim.position.set(0, 0, 8);
     scene.add(rim);
 
-    // Адаптивное количество частиц в зависимости от размера экрана
-    const getParticleCount = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const pixelRatio = window.devicePixelRatio || 1;
-      
-      // Базовое количество для разных разрешений (оптимизировано для мобильных)
-      if (width < 480) {
-        return 2000; // очень маленькие мобильные
-      } else if (width < 768) {
-        return 2500; // мобильные устройства
-      } else if (width < 1024) {
-        return 4000; // планшеты
-      } else if (width < 1440) {
-        return 6000; // ноутбуки
-      } else {
-        return 8000; // большие мониторы
-      }
-    };
-    
-    const MOBIUS_COUNT = getParticleCount();
+    // Единое количество частиц для всех устройств (как на ПК)
+    const MOBIUS_COUNT = 8000;
     
     // Инициализируем частицы Мёбиуса (инстансами)
     const group = new THREE.Group();
@@ -168,14 +143,13 @@ export const UniverseBackgroundThree: React.FC = () => {
       const turbulence = Math.sin(u * 12.0 * Math.PI + t * 1.5) * 0.08;
       const deformation = wave1 + wave2 + turbulence;
       
-      // Адаптивный масштаб для мобильных устройств - уменьшаем диаметр ленты в 2 раза
-      const scaleFactor = isSmallMobile ? 0.4 : (isMobile ? 0.5 : 1.0); // Уменьшаем диаметр ленты в 2 раза
-      const R = (3.2 + deformation) * scaleFactor; // лента длиннее (больше радиус)
-      const baseWidth = 1.6 * (1.0 + scrollAmp) * scaleFactor; // лента шире и динамически расширяется
+      // Стандартные параметры для всех устройств (как на ПК)
+      const R = 3.2 + deformation; // лента длиннее (больше радиус)
+      const baseWidth = 1.6 * (1.0 + scrollAmp); // лента шире и динамически расширяется
       
-      // Смещение ленты для мобильных устройств - корректировка позиции
-      const offsetX = isSmallMobile ? -2.0 : (isMobile ? -1.7 : 0); // Сдвигаем левее на 5%
-      const offsetY = isSmallMobile ? 2.5 : (isMobile ? 2.0 : 0); // Поднимаем выше на 10%
+      // Стандартные смещения для всех устройств
+      const offsetX = 0;
+      const offsetY = 0;
       // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
       const c1 = wrap01(0.18 + 0.05 * Math.sin(t * 0.25));
       const c2 = wrap01(0.53 + 0.07 * Math.sin(t * 0.18 + 1.7));
@@ -233,11 +207,9 @@ export const UniverseBackgroundThree: React.FC = () => {
         // Обновляем aspect ratio камеры
       camera.aspect = w / h;
         
-        // Плавно обновляем позицию камеры при повороте экрана
-        const newIsMobile = w <= 768;
-        const newIsSmallMobile = w <= 480;
-        const newBaseFov = newIsSmallMobile ? 75 : (newIsMobile ? 70 : 60);
-        const newBaseZ = newIsSmallMobile ? 8.0 : (newIsMobile ? 7.0 : 6.0);
+        // Стандартные настройки камеры для всех устройств
+        const newBaseFov = 60;
+        const newBaseZ = 6.0;
         
         // Плавно интерполируем к новым значениям
         camera.fov = THREE.MathUtils.lerp(camera.fov, newBaseFov, 0.1);
@@ -245,7 +217,7 @@ export const UniverseBackgroundThree: React.FC = () => {
         
       camera.updateProjectionMatrix();
         
-        console.log(`Resize - width: ${w}, height: ${h}, isMobile: ${newIsMobile}, FOV: ${newBaseFov}`);
+        console.log(`Resize - width: ${w}, height: ${h}, FOV: ${newBaseFov}`);
       }, 100); // Дебаунсинг 100мс
     };
     resize();
@@ -316,15 +288,11 @@ export const UniverseBackgroundThree: React.FC = () => {
       // на старте почти неподвижно; при скролле ускоряем вращение + сохраняем базу при engaged
       group.rotation.y += (0.0003 + s * 0.002 + 0.002 * zoomImpulse + 0.0015 * engaged) * (1 + 0.5 * dirEMA);
 
-      // Плавный зум камеры с адаптивной скоростью для мобильных
-      const zoomSpeed = isMobile ? 0.08 : 0.12; // Более плавный зум на мобильных
-      const zoomIntensity = isMobile ? 0.25 : 0.30; // Менее агрессивный зум на мобильных
-      const zIntensity = isMobile ? 0.35 : 0.50; // Менее агрессивное изменение Z на мобильных
-      
-      const targetFov = baseFov * (1.0 - zoomIntensity * persistentZoom);
-      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, zoomSpeed);
-      const targetZ = baseZ * (1.0 - zIntensity * persistentZoom);
-      camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, zoomSpeed);
+      // Стандартный зум камеры для всех устройств (как на ПК)
+      const targetFov = baseFov * (1.0 - 0.30 * persistentZoom);
+      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, 0.12);
+      const targetZ = baseZ * (1.0 - 0.50 * persistentZoom);
+      camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.12);
       camera.updateProjectionMatrix();
 
       // Движение сфер вдоль ленты + простое взаимодействие (раздвижение соседей)
