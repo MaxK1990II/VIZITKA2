@@ -149,9 +149,10 @@ export const UniverseBackgroundThree: React.FC = () => {
       const R = baseR + deformation; // лента длиннее (больше радиус)
       const baseWidth = 1.6 * (1.0 + scrollAmp); // лента шире и динамически расширяется
       
-      // Стандартные смещения для всех устройств
-      const offsetX = 0;
-      const offsetY = 0;
+      // Центрирование петли Мёбиуса для мобильных устройств
+      // На мобильных устройствах петля должна быть точно по центру экрана
+      const offsetX = isMobile ? 0 : 0; // Центрируем по X
+      const offsetY = isMobile ? 0 : 0; // Центрируем по Y
       // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
       const c1 = wrap01(0.18 + 0.05 * Math.sin(t * 0.25));
       const c2 = wrap01(0.53 + 0.07 * Math.sin(t * 0.18 + 1.7));
