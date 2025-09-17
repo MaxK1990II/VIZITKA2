@@ -144,8 +144,9 @@ export const UniverseBackgroundThree: React.FC = () => {
       const turbulence = Math.sin(u * 12.0 * Math.PI + t * 1.5) * 0.08;
       const deformation = wave1 + wave2 + turbulence;
       
-      // Стандартные параметры для всех устройств (как на ПК)
-      const R = 3.2 + deformation; // лента длиннее (больше радиус)
+      // Адаптивный радиус петли: в 2 раза меньше для мобильных устройств
+      const baseR = isMobile ? 1.6 : 3.2; // Уменьшаем диаметр в 2 раза на мобильных
+      const R = baseR + deformation; // лента длиннее (больше радиус)
       const baseWidth = 1.6 * (1.0 + scrollAmp); // лента шире и динамически расширяется
       
       // Стандартные смещения для всех устройств
