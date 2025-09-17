@@ -22,13 +22,22 @@ export const UniverseBackgroundThree: React.FC = () => {
     const host = hostRef.current;
     if (!host) return;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      alpha: true,
+      powerPreference: "high-performance"
+    });
+    
+    // Оптимизированные настройки для мобильных устройств
+    const isMobile = window.innerWidth <= 768;
+    const pixelRatio = isMobile ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2);
+    renderer.setPixelRatio(pixelRatio);
+    
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
-    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.enabled = !isMobile; // Отключаем тени на мобильных для производительности
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.domElement.style.pointerEvents = "none";
     host.appendChild(renderer.domElement);
@@ -36,7 +45,6 @@ export const UniverseBackgroundThree: React.FC = () => {
     const scene = new THREE.Scene();
     
     // Адаптивная настройка камеры для мобильных устройств
-    const isMobile = window.innerWidth <= 768;
     const isSmallMobile = window.innerWidth <= 480;
     const baseFov = isSmallMobile ? 75 : (isMobile ? 70 : 60); // Умеренный угол обзора
     const baseZ = isSmallMobile ? 8.0 : (isMobile ? 7.0 : 6.0); // Умеренное расстояние
@@ -209,15 +217,40 @@ export const UniverseBackgroundThree: React.FC = () => {
     }
     instancedSpheres.instanceMatrix.needsUpdate = true;
 
+    // Улучшенная функция ресайза с дебаунсингом
+    let resizeTimeout: NodeJS.Timeout;
     const resize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (!mountedRef.current) return;
+        
       const w = host.clientWidth || window.innerWidth;
       const h = host.clientHeight || window.innerHeight;
+        
+        // Обновляем размер рендерера
       renderer.setSize(w, h, false);
+        
+        // Обновляем aspect ratio камеры
       camera.aspect = w / h;
+        
+        // Плавно обновляем позицию камеры при повороте экрана
+        const newIsMobile = w <= 768;
+        const newIsSmallMobile = w <= 480;
+        const newBaseFov = newIsSmallMobile ? 75 : (newIsMobile ? 70 : 60);
+        const newBaseZ = newIsSmallMobile ? 8.0 : (newIsMobile ? 7.0 : 6.0);
+        
+        // Плавно интерполируем к новым значениям
+        camera.fov = THREE.MathUtils.lerp(camera.fov, newBaseFov, 0.1);
+        camera.position.z = THREE.MathUtils.lerp(camera.position.z, newBaseZ, 0.1);
+        
       camera.updateProjectionMatrix();
+        
+        console.log(`Resize - width: ${w}, height: ${h}, isMobile: ${newIsMobile}, FOV: ${newBaseFov}`);
+      }, 100); // Дебаунсинг 100мс
     };
     resize();
     window.addEventListener("resize", resize);
+    window.addEventListener("orientationchange", resize);
 
     // Внутреннее состояние анимации без any
     const animState: { prev: number | null; lastS: number | null; mousePos: { x: number; y: number } | null } = { prev: null, lastS: null, mousePos: null };
@@ -283,11 +316,15 @@ export const UniverseBackgroundThree: React.FC = () => {
       // на старте почти неподвижно; при скролле ускоряем вращение + сохраняем базу при engaged
       group.rotation.y += (0.0003 + s * 0.002 + 0.002 * zoomImpulse + 0.0015 * engaged) * (1 + 0.5 * dirEMA);
 
-      // кинематический «резкий зум» камеры (FOV и Z)
-      const targetFov = baseFov * (1.0 - 0.30 * persistentZoom);
-      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, 0.12);
-      const targetZ = baseZ * (1.0 - 0.50 * persistentZoom);
-      camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.12);
+      // Плавный зум камеры с адаптивной скоростью для мобильных
+      const zoomSpeed = isMobile ? 0.08 : 0.12; // Более плавный зум на мобильных
+      const zoomIntensity = isMobile ? 0.25 : 0.30; // Менее агрессивный зум на мобильных
+      const zIntensity = isMobile ? 0.35 : 0.50; // Менее агрессивное изменение Z на мобильных
+      
+      const targetFov = baseFov * (1.0 - zoomIntensity * persistentZoom);
+      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, zoomSpeed);
+      const targetZ = baseZ * (1.0 - zIntensity * persistentZoom);
+      camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, zoomSpeed);
       camera.updateProjectionMatrix();
 
       // Движение сфер вдоль ленты + простое взаимодействие (раздвижение соседей)
@@ -407,7 +444,9 @@ export const UniverseBackgroundThree: React.FC = () => {
     return () => {
       mountedRef.current = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      clearTimeout(resizeTimeout);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("orientationchange", resize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchstart", handleTouchStart);
