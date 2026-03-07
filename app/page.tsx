@@ -5,6 +5,30 @@ import { CustomCursor } from "@/components/custom-cursor";
 import { useState, useEffect, useCallback } from "react";
 
 export const dynamic = "force-dynamic";
+const ROLES = [
+  "Робототехник",
+  "3D-дизайнер",
+  "Программист",
+  "Инженер",
+  "Разработчик",
+  "Автоматизатор",
+  "ИИ-специалист",
+  "Визуализатор",
+  "Кодер",
+  "Системщик",
+  "Дизайнер",
+  "Художник",
+  "Креатор",
+  "Изобретатель",
+  "Новатор",
+  "Наставник",
+  "Педагог",
+  "Руководитель",
+  "Исследователь",
+  "Аналитик",
+  "Эксперт",
+  "Специалист",
+];
 
 export default function Home() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -41,36 +65,10 @@ export default function Home() {
 
   const name = "Максим Каночкин";
   
-  // Массив возможных амплуа
-  const roles = [
-    "Робототехник",
-    "3D-дизайнер",
-    "Программист",
-    "Инженер",
-    "Разработчик",
-    "Автоматизатор",
-    "ИИ-специалист",
-    "Визуализатор",
-    "Кодер",
-    "Системщик",
-    "Дизайнер",
-    "Художник",
-    "Креатор",
-    "Изобретатель",
-    "Новатор",
-    "Наставник",
-    "Педагог",
-    "Руководитель",
-    "Исследователь",
-    "Аналитик",
-    "Эксперт",
-    "Специалист"
-  ];
-
   // Состояние для каждой из 3 надписей
-  const [role1, setRole1] = useState(roles[0]);
-  const [role2, setRole2] = useState(roles[1]);
-  const [role3, setRole3] = useState(roles[2]);
+  const [role1, setRole1] = useState(ROLES[0]);
+  const [role2, setRole2] = useState(ROLES[1]);
+  const [role3, setRole3] = useState(ROLES[2]);
   const [isAnimating1, setIsAnimating1] = useState(false);
   const [isAnimating2, setIsAnimating2] = useState(false);
   const [isAnimating3, setIsAnimating3] = useState(false);
@@ -95,21 +93,21 @@ export default function Home() {
   }, []);
 
   // Функция для случайного выбора новой роли
-  const getRandomRole = (currentRole: string) => {
-    const availableRoles = roles.filter(role => role !== currentRole);
+  const getRandomRole = useCallback((currentRole: string) => {
+    const availableRoles = ROLES.filter(role => role !== currentRole);
     return availableRoles[Math.floor(Math.random() * availableRoles.length)];
-  };
+  }, []);
 
   // Функция для анимации смены роли
-  const animateRoleChange = useCallback((setRole: (role: string) => void, setIsAnimating: (animating: boolean) => void) => {
+  const animateRoleChange = useCallback((setRole: React.Dispatch<React.SetStateAction<string>>, setIsAnimating: (animating: boolean) => void) => {
     setIsAnimating(true);
     setTimeout(() => {
-      setRole(getRandomRole(role1)); // Используем role1 как базовую для фильтрации
+      setRole((currentRole) => getRandomRole(currentRole));
       setTimeout(() => {
         setIsAnimating(false);
       }, 300);
     }, 300);
-  }, [role1]);
+  }, [getRandomRole]);
 
   // Автоматическая смена ролей с разными интервалами
   useEffect(() => {
