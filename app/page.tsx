@@ -209,6 +209,8 @@ export default function Home() {
                 key={index}
                 style={{
                   display: "inline-block",
+                  color: index === 0 ? "#ff6b6b" : undefined,
+                  textShadow: index === 0 ? "0 0 14px rgba(255, 107, 107, 0.55)" : undefined,
                   ...getLetterStyle(index, name.length, 0)
                 }}
               >
