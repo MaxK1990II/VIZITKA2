@@ -6,8 +6,24 @@ export const CustomCursor: React.FC = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [supportsFinePointer, setSupportsFinePointer] = useState(false);
 
   useEffect(() => {
+    const media = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const updateCapability = () => setSupportsFinePointer(media.matches);
+
+    updateCapability();
+    media.addEventListener('change', updateCapability);
+
+    return () => media.removeEventListener('change', updateCapability);
+  }, []);
+
+  useEffect(() => {
+    if (!supportsFinePointer) {
+      setIsVisible(false);
+      return;
+    }
+
     const updateCursor = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
       setIsVisible(true);
@@ -51,9 +67,9 @@ export const CustomCursor: React.FC = () => {
       document.removeEventListener('mouseover', handlePointerOver);
       document.removeEventListener('mouseout', handlePointerOut);
     };
-  }, []);
+  }, [supportsFinePointer]);
 
-  if (!isVisible) return null;
+  if (!supportsFinePointer || !isVisible) return null;
 
   return (
     <div

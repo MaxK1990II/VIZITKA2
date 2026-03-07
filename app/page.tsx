@@ -21,36 +21,32 @@ export const dynamic = "force-dynamic";
 export default function Home() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [activePanel, setActivePanel] = useState<PanelId>(null);
+  const [supportsFinePointer, setSupportsFinePointer] = useState(false);
 
   useEffect(() => {
+    const media = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const updateCapability = () => setSupportsFinePointer(media.matches);
+
+    updateCapability();
+    media.addEventListener("change", updateCapability);
+    return () => media.removeEventListener("change", updateCapability);
+  }, []);
+
+  useEffect(() => {
+    if (!supportsFinePointer) {
+      return;
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        setMousePos({ x: touch.clientX, y: touch.clientY });
-      }
-    };
+    window.addEventListener("mousemove", handleMouseMove);
 
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        setMousePos({ x: touch.clientX, y: touch.clientY });
-      }
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchstart', handleTouchStart);
-    
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [supportsFinePointer]);
 
   // Состояние для каждой из 3 надписей
   const [role1, setRole1] = useState(HERO_ROLES[0]);
@@ -118,11 +114,11 @@ export default function Home() {
   }, [animateRoleChange]);
 
   const getLetterStyle = (index: number, total: number, roleOffset: number) => {
-    // Проверяем, что мы на клиенте
-    if (typeof window === 'undefined') {
+    // На touch-устройствах отключаем cursor-based микроанимацию букв.
+    if (!supportsFinePointer || typeof window === "undefined") {
       return {
-        transform: 'translate(0px, 0px) scale(1)',
-        transition: 'transform 0.1s ease-out'
+        transform: "translate(0px, 0px) scale(1)",
+        transition: "transform 0.1s ease-out",
       };
     }
 
@@ -160,13 +156,13 @@ export default function Home() {
       
       return {
         transform: `translate(${offsetX}px, ${offsetY}px) scale(${1 + force * 0.1})`,
-        transition: 'transform 0.1s ease-out'
+        transition: "transform 0.1s ease-out",
       };
     }
     
     return {
-      transform: 'translate(0px, 0px) scale(1)',
-      transition: 'transform 0.1s ease-out'
+      transform: "translate(0px, 0px) scale(1)",
+      transition: "transform 0.1s ease-out",
     };
   };
 
@@ -179,7 +175,7 @@ export default function Home() {
   return (
     <>
       <UniverseBackgroundThree />
-      <CustomCursor />
+      {supportsFinePointer ? <CustomCursor /> : null}
       <main className="main-container hero-main">
         <section className="hero-shell">
           <p className="hero-kicker">Digital visiting card</p>

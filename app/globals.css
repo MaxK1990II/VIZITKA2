@@ -3,7 +3,6 @@
 @custom-variant dark (&:is(.dark *));
 
 html {
-  cursor: none !important;
   overflow-x: hidden;
   width: 100%;
 }
@@ -14,15 +13,18 @@ html {
 
 /* Кастомный курсор-сфера */
 body {
-  cursor: none !important;
   overflow-x: hidden;
   width: 100%;
   margin: 0;
   padding: 0;
 }
 
-* {
-  cursor: none !important;
+@media (hover: hover) and (pointer: fine) {
+  html,
+  body,
+  * {
+    cursor: none !important;
+  }
 }
 
 .cursor-sphere {
@@ -214,8 +216,10 @@ body {
 .name-title {
   width: 100% !important;
   max-width: 100% !important;
-  overflow: hidden !important;
-  word-break: break-word !important;
+  overflow: visible !important;
+  word-break: normal !important;
+  white-space: normal;
+  line-height: 1.12;
   hyphens: auto;
 }
 
@@ -272,6 +276,8 @@ body {
   position: relative;
   z-index: 1;
   min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   pointer-events: auto;
 }
 
@@ -435,6 +441,7 @@ body {
   width: min(100%, 1120px);
   max-height: min(88vh, 920px);
   overflow: auto;
+  overflow-x: hidden;
   border-radius: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background:
@@ -601,7 +608,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.7rem;
+  min-height: 2.85rem;
   border-radius: 999px;
   padding: 0.7rem 1rem;
   font-size: 0.9rem;
@@ -730,6 +737,19 @@ body {
 }
 
 @media (max-width: 768px) {
+  .hero-main {
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .hero-shell {
+    gap: 1.1rem;
+  }
+
+  .hero-title {
+    line-height: 1.08;
+  }
+
   .hero-actions {
     gap: 0.75rem;
   }
@@ -739,16 +759,44 @@ body {
   }
 
   .panel-layer {
-    padding: 0.75rem;
+    place-items: end center;
+    padding: 0;
   }
 
   .panel-shell {
-    max-height: 92vh;
-    border-radius: 1.5rem;
+    width: 100%;
+    max-height: 90svh;
+    max-height: 90dvh;
+    border-radius: 1.35rem 1.35rem 0 0;
+    border-bottom: 0;
+  }
+
+  .panel-header {
+    padding: 1rem 1rem 0.85rem;
+  }
+
+  .panel-content {
+    padding: 1rem;
+  }
+
+  .contact-link,
+  .contact-copy {
+    min-height: 3rem;
+    flex: 1 1 140px;
   }
 }
 
 @media (max-width: 640px) {
+  .hero-shell {
+    width: min(100%, 520px);
+    gap: 1rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 11vw, 3.2rem) !important;
+    letter-spacing: 0.055em !important;
+  }
+
   .hero-actions {
     grid-template-columns: 1fr;
   }
@@ -764,6 +812,12 @@ body {
 
   .hero-caption {
     font-size: 0.9rem;
+    line-height: 1.65;
+  }
+
+  .contact-qr-frame svg {
+    width: min(42vw, 150px);
+    height: auto;
   }
 }
 
