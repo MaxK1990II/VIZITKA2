@@ -62,7 +62,7 @@ export const HERO_ACTIONS = [
 ] as const;
 
 export const CONTACT_INTRO = {
-  eyebrow: "Direct channel",
+  eyebrow: "Прямой канал",
   title: "Контактный профиль",
   description:
     "Минималистичная панель для быстрого контакта, переноса визитки в телефон и мгновенного перехода к нужному каналу связи.",
@@ -105,7 +105,7 @@ export const CONTACT_ACTIONS: ContactAction[] = [
 ];
 
 export const PORTRAIT_CONTENT = {
-  eyebrow: "Personal frame",
+  eyebrow: "Личный портрет",
   title: "Инженерный портрет",
   description:
     "Технологическое мышление, системный взгляд и тяга к будущему. Я соединяю инженерную дисциплину, цифровое творчество и прикладные инновации.",
@@ -127,7 +127,7 @@ export const FEATURED_PROJECTS: ProjectEntry[] = [
   {
     id: "robotics",
     title: "Роботизированные системы",
-    category: "Automation",
+    category: "Автоматизация",
     role: "Архитектура и интеграция",
     summary:
       "Проектирование сценариев автоматизации, в которых механика, логика и пользовательский опыт работают как единый контур.",
@@ -136,7 +136,7 @@ export const FEATURED_PROJECTS: ProjectEntry[] = [
   {
     id: "additive",
     title: "Аддитивное производство",
-    category: "3D / Manufacturing",
+    category: "3D и производство",
     role: "Стратегия применения",
     summary:
       "Выбор точек, где 3D-печать и цифровое моделирование дают максимальную скорость в прототипировании и производственных улучшениях.",
@@ -145,7 +145,7 @@ export const FEATURED_PROJECTS: ProjectEntry[] = [
   {
     id: "vision",
     title: "Компьютерное зрение",
-    category: "Vision Systems",
+    category: "Системы зрения",
     role: "Исследование и внедрение",
     summary:
       "Создание прикладных сценариев контроля, анализа и интеллектуального наблюдения на базе машинного зрения.",
@@ -154,7 +154,7 @@ export const FEATURED_PROJECTS: ProjectEntry[] = [
   {
     id: "ai",
     title: "ИИ-инструменты",
-    category: "AI Systems",
+    category: "AI-системы",
     role: "Продуктовый дизайн",
     summary:
       "Подбор и внедрение AI-подходов там, где они усиливают экспертизу, а не просто добавляют модный слой поверх процесса.",

@@ -12,7 +12,7 @@ export function ProjectsPanel({ open, onClose }: ProjectsPanelProps) {
     <PanelShell
       open={open}
       onClose={onClose}
-      eyebrow="Selected work"
+      eyebrow="Избранные работы"
       title="Фокусные направления"
       description="Не перегруженная витрина направлений, которые лучше всего передают мой инженерный профиль и технологический вектор."
     >

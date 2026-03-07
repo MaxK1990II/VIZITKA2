@@ -1,22 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+
+import { usePointerCapability } from "@/hooks/use-pointer-capability";
 
 export const CustomCursor: React.FC = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [supportsFinePointer, setSupportsFinePointer] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia('(hover: hover) and (pointer: fine)');
-    const updateCapability = () => setSupportsFinePointer(media.matches);
-
-    updateCapability();
-    media.addEventListener('change', updateCapability);
-
-    return () => media.removeEventListener('change', updateCapability);
-  }, []);
+  const supportsFinePointer = usePointerCapability();
 
   useEffect(() => {
     if (!supportsFinePointer) {
@@ -42,7 +34,7 @@ export const CustomCursor: React.FC = () => {
         return false;
       }
 
-      return Boolean(target.closest('h1, h2, h3, button, a, [data-hover]'));
+      return Boolean(target.closest("h1, h2, h3, button, a, [data-hover]"));
     };
 
     const handlePointerOver = (event: MouseEvent) => {
@@ -54,18 +46,18 @@ export const CustomCursor: React.FC = () => {
       setIsHovering(isInteractiveElement(nextTarget));
     };
 
-    document.addEventListener('mousemove', updateCursor);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    document.addEventListener('mouseover', handlePointerOver);
-    document.addEventListener('mouseout', handlePointerOut);
+    document.addEventListener("mousemove", updateCursor);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("mouseover", handlePointerOver);
+    document.addEventListener("mouseout", handlePointerOut);
 
     return () => {
-      document.removeEventListener('mousemove', updateCursor);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('mouseenter', handleMouseEnter);
-      document.removeEventListener('mouseover', handlePointerOver);
-      document.removeEventListener('mouseout', handlePointerOut);
+      document.removeEventListener("mousemove", updateCursor);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mouseenter", handleMouseEnter);
+      document.removeEventListener("mouseover", handlePointerOver);
+      document.removeEventListener("mouseout", handlePointerOut);
     };
   }, [supportsFinePointer]);
 
@@ -73,10 +65,10 @@ export const CustomCursor: React.FC = () => {
 
   return (
     <div
-      className={`cursor-sphere ${isHovering ? 'hover' : ''}`}
+      className={`cursor-sphere ${isHovering ? "hover" : ""}`}
       style={{
-        left: position.x - 10,
-        top: position.y - 10,
+        left: position.x,
+        top: position.y,
       }}
     />
   );

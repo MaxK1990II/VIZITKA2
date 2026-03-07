@@ -5,32 +5,29 @@ import { CustomCursor } from "@/components/custom-cursor";
 import { PortraitPanel } from "@/components/portrait-panel";
 import { ProjectsPanel } from "@/components/projects-panel";
 import { UniverseBackgroundThree } from "@/components/universe-background-three";
+import { usePointerCapability } from "@/hooks/use-pointer-capability";
 import {
-  useState,
-  useEffect,
   useCallback,
-  type Dispatch,
-  type SetStateAction,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 import { HERO_ACTIONS, HERO_NAME, HERO_ROLES } from "@/lib/site-content";
 
 type PanelId = "contacts" | "projects" | "portrait" | null;
-
-export const dynamic = "force-dynamic";
+type RoleSlot = {
+  current: string;
+  upcoming: string;
+  phase: "idle" | "out" | "in";
+};
+const ROLE_OUT_MS = 230;
+const ROLE_IN_MS = 250;
 
 export default function Home() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [activePanel, setActivePanel] = useState<PanelId>(null);
-  const [supportsFinePointer, setSupportsFinePointer] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const updateCapability = () => setSupportsFinePointer(media.matches);
-
-    updateCapability();
-    media.addEventListener("change", updateCapability);
-    return () => media.removeEventListener("change", updateCapability);
-  }, []);
+  const supportsFinePointer = usePointerCapability();
 
   useEffect(() => {
     if (!supportsFinePointer) {
@@ -48,31 +45,27 @@ export default function Home() {
     };
   }, [supportsFinePointer]);
 
-  // Состояние для каждой из 3 надписей
-  const [role1, setRole1] = useState(HERO_ROLES[0]);
-  const [role2, setRole2] = useState(HERO_ROLES[1]);
-  const [role3, setRole3] = useState(HERO_ROLES[2]);
-  const [isAnimating1, setIsAnimating1] = useState(false);
-  const [isAnimating2, setIsAnimating2] = useState(false);
-  const [isAnimating3, setIsAnimating3] = useState(false);
-  
-  // Определяем количество ролей для показа в зависимости от размера экрана
+  const [roleSlots, setRoleSlots] = useState<RoleSlot[]>(() => [
+    { current: HERO_ROLES[0], upcoming: HERO_ROLES[0], phase: "idle" },
+    { current: HERO_ROLES[1], upcoming: HERO_ROLES[1], phase: "idle" },
+    { current: HERO_ROLES[2], upcoming: HERO_ROLES[2], phase: "idle" },
+  ]);
+
   const [showRolesCount, setShowRolesCount] = useState(3);
-  
   useEffect(() => {
     const updateRolesCount = () => {
       if (window.innerWidth < 480) {
-        setShowRolesCount(1); // только одна роль на очень маленьких экранах
+        setShowRolesCount(1);
       } else if (window.innerWidth < 768) {
-        setShowRolesCount(2); // две роли на мобильных
+        setShowRolesCount(2);
       } else {
-        setShowRolesCount(3); // все три роли на больших экранах
+        setShowRolesCount(3);
       }
     };
-    
+
     updateRolesCount();
-    window.addEventListener('resize', updateRolesCount);
-    return () => window.removeEventListener('resize', updateRolesCount);
+    window.addEventListener("resize", updateRolesCount);
+    return () => window.removeEventListener("resize", updateRolesCount);
   }, []);
 
   useEffect(() => {
@@ -83,38 +76,138 @@ export default function Home() {
     };
   }, [activePanel]);
 
-  // Функция для случайного выбора новой роли
   const getRandomRole = useCallback((currentRole: string) => {
-    const availableRoles = HERO_ROLES.filter(role => role !== currentRole);
+    const availableRoles = HERO_ROLES.filter((role) => role !== currentRole);
     return availableRoles[Math.floor(Math.random() * availableRoles.length)];
   }, []);
 
-  // Функция для анимации смены роли
-  const animateRoleChange = useCallback((setRole: Dispatch<SetStateAction<string>>, setIsAnimating: (animating: boolean) => void) => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setRole((currentRole) => getRandomRole(currentRole));
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 300);
-    }, 300);
-  }, [getRandomRole]);
+  const setSlotPhase = useCallback((slotIndex: number, phase: RoleSlot["phase"]) => {
+    setRoleSlots((prev) =>
+      prev.map((slot, index) => (index === slotIndex ? { ...slot, phase } : slot))
+    );
+  }, []);
 
-  // Автоматическая смена ролей с разными интервалами
   useEffect(() => {
-    const interval1 = setInterval(() => animateRoleChange(setRole1, setIsAnimating1), 3000 + Math.random() * 2000);
-    const interval2 = setInterval(() => animateRoleChange(setRole2, setIsAnimating2), 4000 + Math.random() * 3000);
-    const interval3 = setInterval(() => animateRoleChange(setRole3, setIsAnimating3), 3500 + Math.random() * 2500);
+    const outTimers: number[] = [];
+    const inTimers: number[] = [];
+    const loopTimers: number[] = [];
+    const ranges = [
+      { min: 3200, max: 5200 },
+      { min: 3800, max: 6800 },
+      { min: 3500, max: 6100 },
+    ];
+
+    const runSlot = (slotIndex: number) => {
+      const loop = window.setTimeout(
+        () => {
+          setRoleSlots((prev) =>
+            prev.map((slot, index) =>
+              index === slotIndex
+                ? {
+                    ...slot,
+                    upcoming: getRandomRole(slot.current),
+                    phase: "out",
+                  }
+                : slot
+            )
+          );
+
+          const outTimer = window.setTimeout(() => {
+            setRoleSlots((prev) =>
+              prev.map((slot, index) =>
+                index === slotIndex
+                  ? {
+                      current: slot.upcoming,
+                      upcoming: slot.upcoming,
+                      phase: "in",
+                    }
+                  : slot
+              )
+            );
+
+            const inTimer = window.setTimeout(() => {
+              setSlotPhase(slotIndex, "idle");
+              runSlot(slotIndex);
+            }, ROLE_IN_MS);
+
+            inTimers.push(inTimer);
+          }, ROLE_OUT_MS);
+
+          outTimers.push(outTimer);
+        },
+        ranges[slotIndex].min +
+          Math.random() * (ranges[slotIndex].max - ranges[slotIndex].min)
+      );
+
+      loopTimers.push(loop);
+    };
+
+    runSlot(0);
+    runSlot(1);
+    runSlot(2);
 
     return () => {
-      clearInterval(interval1);
-      clearInterval(interval2);
-      clearInterval(interval3);
+      outTimers.forEach((id) => window.clearTimeout(id));
+      inTimers.forEach((id) => window.clearTimeout(id));
+      loopTimers.forEach((id) => window.clearTimeout(id));
     };
-  }, [animateRoleChange]);
+  }, [getRandomRole, setSlotPhase]);
 
-  const getLetterStyle = (index: number, total: number, roleOffset: number) => {
-    // На touch-устройствах отключаем cursor-based микроанимацию букв.
+  const magneticFrame = useRef<number | null>(null);
+  useEffect(() => {
+    const clearMagnet = () => {
+      const buttons = document.querySelectorAll<HTMLElement>(".hero-action[data-hover]");
+      buttons.forEach((button) => {
+        button.style.setProperty("--mag-x", "0px");
+        button.style.setProperty("--mag-y", "0px");
+      });
+    };
+
+    if (!supportsFinePointer) {
+      clearMagnet();
+      return;
+    }
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (magneticFrame.current) {
+        cancelAnimationFrame(magneticFrame.current);
+      }
+      magneticFrame.current = requestAnimationFrame(() => {
+        const buttons = document.querySelectorAll<HTMLElement>(".hero-action[data-hover]");
+        buttons.forEach((button) => {
+          const rect = button.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const dx = event.clientX - centerX;
+          const dy = event.clientY - centerY;
+          const distance = Math.hypot(dx, dy);
+          const maxDistance = 96;
+
+          if (distance < maxDistance) {
+            const power = (1 - distance / maxDistance) * 6;
+            const x = (dx / maxDistance) * power;
+            const y = (dy / maxDistance) * power;
+            button.style.setProperty("--mag-x", `${x.toFixed(2)}px`);
+            button.style.setProperty("--mag-y", `${y.toFixed(2)}px`);
+          } else {
+            button.style.setProperty("--mag-x", "0px");
+            button.style.setProperty("--mag-y", "0px");
+          }
+        });
+      });
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      if (magneticFrame.current) {
+        cancelAnimationFrame(magneticFrame.current);
+      }
+      clearMagnet();
+    };
+  }, [supportsFinePointer]);
+
+  const getLetterStyle = (index: number, total: number) => {
     if (!supportsFinePointer || typeof window === "undefined") {
       return {
         transform: "translate(0px, 0px) scale(1)",
@@ -124,53 +217,48 @@ export default function Home() {
 
     const elementCenterX = window.innerWidth / 2;
     const elementCenterY = window.innerHeight / 2;
-    
-    // Позиция буквы в одной линии (горизонтально)
     const letterOffset = (index - total / 2) * 8;
-    const letterX = elementCenterX + roleOffset + letterOffset;
-    const letterY = elementCenterY + 40; // все на одной высоте
-    
-    // Расстояние от курсора до буквы
+    const letterX = elementCenterX + letterOffset;
+    const letterY = elementCenterY + 40;
     const dx = letterX - mousePos.x;
     const dy = letterY - mousePos.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    
-    // Адаптивный радиус притягивания для букв
+
     const getMaxDistance = () => {
       const width = window.innerWidth;
       if (width < 768) {
-        return 100; // мобильные устройства
+        return 100;
       } else if (width < 1024) {
-        return 120; // планшеты
+        return 120;
       } else {
-        return 150; // десктопы
+        return 150;
       }
     };
+
     const maxDistance = getMaxDistance();
     if (distance < maxDistance) {
       const force = (1 - distance / maxDistance) * 0.3;
       const angle = Math.atan2(dy, dx);
-      
+
       const offsetX = -Math.cos(angle) * force * 8;
       const offsetY = -Math.sin(angle) * force * 8;
-      
+
       return {
         transform: `translate(${offsetX}px, ${offsetY}px) scale(${1 + force * 0.1})`,
         transition: "transform 0.1s ease-out",
       };
     }
-    
+
     return {
       transform: "translate(0px, 0px) scale(1)",
       transition: "transform 0.1s ease-out",
     };
   };
 
-  const roleItems = [
-    { value: role1, isAnimating: isAnimating1 },
-    { value: role2, isAnimating: isAnimating2 },
-    { value: role3, isAnimating: isAnimating3 },
-  ].slice(0, showRolesCount);
+  const roleItems = useMemo(
+    () => roleSlots.slice(0, showRolesCount),
+    [roleSlots, showRolesCount]
+  );
 
   return (
     <>
@@ -178,7 +266,7 @@ export default function Home() {
       {supportsFinePointer ? <CustomCursor /> : null}
       <main className="main-container hero-main">
         <section className="hero-shell">
-          <p className="hero-kicker">Digital visiting card</p>
+          <p className="hero-kicker">Цифровая визитка</p>
           <div className="name-container hero-copy">
             <h1 className="name-title hero-title">
               {HERO_NAME.split("").map((letter, index) => (
@@ -186,12 +274,12 @@ export default function Home() {
                   key={`${letter}-${index}`}
                   style={{
                     display: "inline-block",
-                    color: index === 0 ? "#ff6b6b" : undefined,
+                    color: index === 0 ? "var(--accent)" : undefined,
                     textShadow:
                       index === 0
-                        ? "0 0 14px rgba(255, 107, 107, 0.55)"
+                        ? "0 0 14px var(--accent-glow)"
                         : undefined,
-                    ...getLetterStyle(index, HERO_NAME.length, 0),
+                    ...getLetterStyle(index, HERO_NAME.length),
                   }}
                 >
                   {letter === " " ? "\u00A0" : letter}
@@ -201,23 +289,22 @@ export default function Home() {
 
             <div className="hero-roles" aria-label="Ключевые роли">
               {roleItems.map((item, itemIndex) => (
-                <div key={`${item.value}-${itemIndex}`} className="hero-role-block">
+                <div key={`${item.current}-${itemIndex}`} className="hero-role-block">
                   <div className="hero-role-track">
-                    {item.value.split("").map((letter, letterIndex) => (
-                      <span
-                        key={`${item.value}-${letterIndex}`}
-                        className="hero-role-letter"
-                        style={{
-                          transform: item.isAnimating
-                            ? "translateY(-100%)"
-                            : "translateY(0%)",
-                          transition:
-                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                        }}
-                      >
-                        {letter === " " ? "\u00A0" : letter}
-                      </span>
-                    ))}
+                    <span
+                      className={`hero-role-word hero-role-word-current ${
+                        item.phase === "out" ? "is-out" : ""
+                      }`}
+                    >
+                      {item.current}
+                    </span>
+                    <span
+                      className={`hero-role-word hero-role-word-upcoming ${
+                        item.phase === "in" ? "is-in" : ""
+                      }`}
+                    >
+                      {item.upcoming}
+                    </span>
                   </div>
                   {itemIndex < roleItems.length - 1 ? (
                     <span className="hero-role-divider" aria-hidden="true" />

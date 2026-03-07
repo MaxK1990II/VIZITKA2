@@ -101,7 +101,7 @@ export function ContactPanel({ open, onClose }: ContactPanelProps) {
               className="contact-link"
               data-hover
             >
-              Скачать `.vcf`
+              Скачать .vcf
             </a>
             <a
               href={CONTACT_INTRO.website}
@@ -136,7 +136,7 @@ export function ContactPanel({ open, onClose }: ContactPanelProps) {
 
       <div className="contact-footer">
         <p className="contact-footnote">
-          Статусы `Setup` отмечают поля, для которых ещё не внесены публичные
+          Статусы Setup отмечают поля, для которых ещё не внесены публичные
           данные. Структура готова, достаточно подставить реальные значения.
         </p>
         <span className="contact-copy-feedback">
