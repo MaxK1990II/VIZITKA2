@@ -21,32 +21,35 @@ export const CustomCursor: React.FC = () => {
       setIsVisible(true);
     };
 
-    // Добавляем обработчики для элементов, которые должны увеличивать курсор
-    const addHoverListeners = () => {
-      const hoverElements = document.querySelectorAll('h1, h2, h3, button, a, [data-hover]');
-      hoverElements.forEach(element => {
-        element.addEventListener('mouseenter', () => setIsHovering(true));
-        element.addEventListener('mouseleave', () => setIsHovering(false));
-      });
+    const isInteractiveElement = (target: EventTarget | null) => {
+      if (!(target instanceof Element)) {
+        return false;
+      }
+
+      return Boolean(target.closest('h1, h2, h3, button, a, [data-hover]'));
     };
 
-    // Инициализируем обработчики
-    addHoverListeners();
+    const handlePointerOver = (event: MouseEvent) => {
+      setIsHovering(isInteractiveElement(event.target));
+    };
 
-    // Добавляем глобальные обработчики
+    const handlePointerOut = (event: MouseEvent) => {
+      const nextTarget = event.relatedTarget;
+      setIsHovering(isInteractiveElement(nextTarget));
+    };
+
     document.addEventListener('mousemove', updateCursor);
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
-
-    // Обновляем обработчики при изменении DOM
-    const observer = new MutationObserver(addHoverListeners);
-    observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener('mouseover', handlePointerOver);
+    document.addEventListener('mouseout', handlePointerOut);
 
     return () => {
       document.removeEventListener('mousemove', updateCursor);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
-      observer.disconnect();
+      document.removeEventListener('mouseover', handlePointerOver);
+      document.removeEventListener('mouseout', handlePointerOut);
     };
   }, []);
 
