@@ -3,8 +3,6 @@
 import React from "react";
 import * as THREE from "three";
 
-import { usePointerCapability } from "@/hooks/use-pointer-capability";
-
 function getScrollNorm(): number {
   const scrollTop = window.scrollY || document.documentElement.scrollTop;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -15,46 +13,25 @@ export const UniverseBackgroundThree: React.FC = () => {
   const hostRef = React.useRef<HTMLDivElement | null>(null);
   const rafRef = React.useRef<number | null>(null);
   const mountedRef = React.useRef<boolean>(false);
-  const supportsFinePointer = usePointerCapability();
-  const [useFallback, setUseFallback] = React.useState(false);
 
   React.useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setUseFallback(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-
-  React.useEffect(() => {
-    if (useFallback) {
-      return;
-    }
-
     mountedRef.current = true;
     const host = hostRef.current;
     if (!host) return;
 
-    const isMobile = window.innerWidth <= 768;
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
     const renderer = new THREE.WebGLRenderer({ 
-      antialias: !isMobile, 
+      antialias: true, 
       alpha: true,
       powerPreference: "high-performance"
     });
     
-    // Для мобильных ограничиваем DPR, чтобы стабилизировать FPS и нагрев.
-    renderer.setPixelRatio(
-      Math.min(window.devicePixelRatio, isMobile ? 1.25 : 2)
-    );
+    // Единые настройки для всех устройств (как на ПК)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
-    renderer.shadowMap.enabled = !isMobile;
+    renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.domElement.style.pointerEvents = "none";
     host.appendChild(renderer.domElement);
@@ -74,17 +51,15 @@ export const UniverseBackgroundThree: React.FC = () => {
     // Освещение для объемного вида сфер
     const hemi = new THREE.HemisphereLight(0x88aaff, 0x0a0a12, 0.55);
     scene.add(hemi);
-    const key = new THREE.DirectionalLight(0xffffff, 1.0);
+    const key = new THREE.DirectionalLight(0xffffff, 1.2);
     key.position.set(6, 9, 7);
-    key.castShadow = !isMobile;
-    if (!isMobile) {
-      key.shadow.mapSize.set(1024, 1024);
-      key.shadow.camera.near = 1;
-      key.shadow.camera.far = 40;
-      key.shadow.radius = 2;
-    }
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.near = 1;
+    key.shadow.camera.far = 40;
+    key.shadow.radius = 2;
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0x4aa0ff, 0.36);
+    const fill = new THREE.DirectionalLight(0x4aa0ff, 0.45);
     fill.position.set(-4, 3, -6);
     scene.add(fill);
     const rim = new THREE.PointLight(0x99ddff, 0.5, 50);
@@ -92,13 +67,8 @@ export const UniverseBackgroundThree: React.FC = () => {
     scene.add(rim);
 
     // Адаптивное количество частиц: меньше для мобильных устройств
-    const MOBIUS_COUNT = prefersReducedMotion
-      ? isMobile
-        ? 220
-        : 1200
-      : isMobile
-        ? 600
-        : 8000;
+    const isMobile = window.innerWidth <= 768;
+    const MOBIUS_COUNT = isMobile ? 800 : 8000; // В 10 раз меньше на мобильных
     
     // Инициализируем частицы Мёбиуса (инстансами)
     const group = new THREE.Group();
@@ -115,20 +85,19 @@ export const UniverseBackgroundThree: React.FC = () => {
     const sphereRadius = 1.0;
     const sphereGeo = new THREE.SphereGeometry(sphereRadius, 12, 12);
     const sphereMat = new THREE.MeshPhysicalMaterial({
-      color: 0x93acc4,
+      color: 0x8fcaff,
       metalness: 0.0,
-      roughness: 0.4,
-      clearcoat: 0.42,
-      clearcoatRoughness: 0.24,
+      roughness: 0.28,
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.15,
       sheen: 0.0,
-      emissive: 0x0a0f15,
-      emissiveIntensity: 0.08,
+      emissive: 0x0a1118,
+      emissiveIntensity: 0.12,
       transparent: false,
       opacity: 1.0,
       depthWrite: true,
       depthTest: true,
-      blending: THREE.NormalBlending,
-      vertexColors: true,
+      blending: THREE.NormalBlending
     });
     const instancedSpheres = new THREE.InstancedMesh(sphereGeo, sphereMat, MOBIUS_COUNT);
     instancedSpheres.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -170,10 +139,14 @@ export const UniverseBackgroundThree: React.FC = () => {
       const deformation = wave1 + wave2 + turbulence;
       
       // Адаптивный радиус петли: в 2 раза меньше для мобильных устройств
-      const baseR = isMobile ? 1.6 : 3.2;
+      const baseR = isMobile ? 1.6 : 3.2; // Уменьшаем диаметр в 2 раза на мобильных
       const R = baseR + deformation; // лента длиннее (больше радиус)
       const baseWidth = 1.6 * (1.0 + scrollAmp); // лента шире и динамически расширяется
-
+      
+      // Центрирование петли Мёбиуса для мобильных устройств
+      // На мобильных устройствах петля должна быть точно по центру экрана
+      const offsetX = isMobile ? 0 : 0; // Центрируем по X
+      const offsetY = isMobile ? 0 : 0; // Центрируем по Y
       // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
       const c1 = wrap01(0.18 + 0.05 * Math.sin(t * 0.25));
       const c2 = wrap01(0.53 + 0.07 * Math.sin(t * 0.18 + 1.7));
@@ -195,8 +168,8 @@ export const UniverseBackgroundThree: React.FC = () => {
       const vcos = v * (1 + ringScale * Math.cos(phi));
       const vsin = v * (1 + ringScale * Math.sin(phi));
       const base = R + vcos * width * cosTw;
-      const x = base * Math.cos(angle);
-      const y = base * Math.sin(angle) + vsin * width * sinTw * 0.5;
+      const x = base * Math.cos(angle) + offsetX;
+      const y = base * Math.sin(angle) + vsin * width * sinTw * 0.5 + offsetY;
       const z = vsin * width * sinTw + deformation * 0.3;
       out.set(x, y, z);
     };
@@ -204,13 +177,6 @@ export const UniverseBackgroundThree: React.FC = () => {
     // Первичная расстановка инстансов
     const dummy = new THREE.Object3D();
     const tmpVec = new THREE.Vector3();
-    const pA = new THREE.Vector3();
-    const pB = new THREE.Vector3();
-    const pI = new THREE.Vector3();
-    const screenVec = new THREE.Vector3();
-    const baseColor = new THREE.Color(0x90aec6);
-    const accentColor = new THREE.Color(0xff6b6b);
-    const tempColor = new THREE.Color();
     for (let i = 0; i < MOBIUS_COUNT; i++) {
       sampleMobius(uValues[i], vValues[i], phiAngles[i], 0, tmpVec);
       dummy.position.copy(tmpVec);
@@ -219,15 +185,8 @@ export const UniverseBackgroundThree: React.FC = () => {
       dummy.rotation.set(0, 0, 0);
       dummy.updateMatrix();
       instancedSpheres.setMatrixAt(i, dummy.matrix);
-
-      const accentWeight = Math.max(0, 0.24 - Math.abs(vValues[i]) * 0.28);
-      tempColor.copy(baseColor).lerp(accentColor, accentWeight);
-      instancedSpheres.setColorAt(i, tempColor);
     }
     instancedSpheres.instanceMatrix.needsUpdate = true;
-    if (instancedSpheres.instanceColor) {
-      instancedSpheres.instanceColor.needsUpdate = true;
-    }
 
     // Улучшенная функция ресайза с дебаунсингом
     let resizeTimeout: NodeJS.Timeout;
@@ -260,38 +219,33 @@ export const UniverseBackgroundThree: React.FC = () => {
     window.addEventListener("orientationchange", resize);
 
     // Внутреннее состояние анимации без any
-    const animState: {
-      prev: number | null;
-      lastS: number | null;
-      mousePos: { x: number; y: number } | null;
-      tapBoost: number;
-      rafRunning: boolean;
-    } = { prev: null, lastS: null, mousePos: null, tapBoost: 0, rafRunning: false };
+    const animState: { prev: number | null; lastS: number | null; mousePos: { x: number; y: number } | null } = { prev: null, lastS: null, mousePos: null };
 
     // Обработчики мыши и тапов для черной дыры
     const handleMouseMove = (event: MouseEvent) => {
       animState.mousePos = { x: event.clientX, y: event.clientY };
     };
     
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length > 0) {
+        const touch = event.touches[0];
+        animState.mousePos = { x: touch.clientX, y: touch.clientY };
+      }
+    };
+    
     const handleTouchStart = (event: TouchEvent) => {
       if (event.touches.length > 0) {
         const touch = event.touches[0];
         animState.mousePos = { x: touch.clientX, y: touch.clientY };
-        animState.tapBoost = 1;
       }
     };
     
-    if (supportsFinePointer) {
-      window.addEventListener("mousemove", handleMouseMove);
-    } else {
-      window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    }
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove);
+    window.addEventListener("touchstart", handleTouchStart);
 
     const animate = () => {
-      if (!mountedRef.current || document.hidden) {
-        animState.rafRunning = false;
-        return;
-      }
+      if (!mountedRef.current) return;
       const s = getScrollNorm();
       const time = performance.now() * 0.001; // время в секундах
       // delta-время для стабильной физики
@@ -299,19 +253,16 @@ export const UniverseBackgroundThree: React.FC = () => {
       const prev = animState.prev as number;
       const dt = Math.min(0.05, Math.max(0.001, time - prev));
       animState.prev = time;
-      animState.tapBoost = Math.max(0, animState.tapBoost - dt * 1.8);
       // скорость скролла (привязываем динамику к скроллу)
       if (animState.lastS === null) animState.lastS = s;
       const lastS = animState.lastS as number;
       const ds = s - lastS;
       animState.lastS = s;
       const rawVel = ds / Math.max(0.001, dt); // может быть отрицательной (направление)
-      const motionScale = prefersReducedMotion ? 0.35 : 1;
       // EMA сглаживание скорости и направления (плавная общая динамика)
       velEMA = THREE.MathUtils.lerp(velEMA, Math.abs(rawVel), 0.12);
       dirEMA = THREE.MathUtils.lerp(dirEMA, Math.sign(rawVel), 0.25);
-      const baseSpeed =
-        THREE.MathUtils.clamp(velEMA * 3.0, 0, 12) * 0.7 * motionScale;
+      const baseSpeed = THREE.MathUtils.clamp(velEMA * 3.0, 0, 12) * 0.7; // -30% общая скорость
       // мгновенный джолт по началу скролла (взрыв) и затухание импульса
       const jolt = Math.min(1, Math.abs(rawVel) * 2.0);
       zoomImpulse = Math.max(zoomImpulse * 0.85, jolt);
@@ -329,10 +280,7 @@ export const UniverseBackgroundThree: React.FC = () => {
       scrollAmp = THREE.MathUtils.lerp(scrollAmp, ampTarget, 0.12);
 
       // на старте почти неподвижно; при скролле ускоряем вращение + сохраняем базу при engaged
-      group.rotation.y +=
-        (0.0003 + s * 0.002 + 0.002 * zoomImpulse + 0.0015 * engaged) *
-        (1 + 0.5 * dirEMA) *
-        motionScale;
+      group.rotation.y += (0.0003 + s * 0.002 + 0.002 * zoomImpulse + 0.0015 * engaged) * (1 + 0.5 * dirEMA);
 
       // Стандартный зум камеры для всех устройств (как на ПК)
       const targetFov = baseFov * (1.0 - 0.30 * persistentZoom);
@@ -343,23 +291,16 @@ export const UniverseBackgroundThree: React.FC = () => {
 
       // Движение сфер вдоль ленты + простое взаимодействие (раздвижение соседей)
       const baseSpacing = 0.06; // базовый зазор, чтобы сферы не были плотными
+      const pA = new THREE.Vector3();
+      const pB = new THREE.Vector3();
+      const pI = new THREE.Vector3();
+
       for (let i = 0; i < MOBIUS_COUNT; i++) {
         // Продвижение вдоль ленты привязано к скорости скролла + хаос (умеренный при простое)
-        const chaosU =
-          0.04 *
-          (0.2 + flowFactor) *
-          dt *
-          motionScale *
-          (Math.sin(i * 17.11 + time * 2.3) +
-            Math.cos(i * 9.97 + time * 1.7));
+        const chaosU = 0.04 * (0.2 + flowFactor) * dt * (Math.sin(i * 17.11 + time * 2.3) + Math.cos(i * 9.97 + time * 1.7));
         uValues[i] = (uValues[i] + speeds[i] * dt * flowFactor + chaosU) % 1.0;
         // Поперечная дрожь по v (меньше разлёт)
-        const chaosV =
-          0.002 *
-          (0.3 + 0.7 * flowFactor) *
-          motionScale *
-          (Math.sin(i * 13.37 + time * 2.1) +
-            Math.cos(i * 7.21 + time * 1.6));
+        const chaosV = 0.002 * (0.3 + 0.7 * flowFactor) * (Math.sin(i * 13.37 + time * 2.1) + Math.cos(i * 7.21 + time * 1.6));
         vValues[i] = THREE.MathUtils.clamp(vValues[i] + chaosV, -0.8, 0.8);
         // Вращение по окружности сечения
         phiAngles[i] = (phiAngles[i] + phiSpeeds[i] * dt * (1 + 0.8 * flowFactor)) % (Math.PI * 2);
@@ -399,31 +340,38 @@ export const UniverseBackgroundThree: React.FC = () => {
       }
 
       // Применяем гравитацию от курсора к координатам сфер ПЕРЕД обновлением позиций
-      const hasInteractivePointer =
-        supportsFinePointer || animState.tapBoost > 0.08;
-      if (animState.mousePos && hasInteractivePointer) {
+      if (animState.mousePos) {
         const mousePos = animState.mousePos;
-        const maxDistance = isMobile ? 84 : 120;
-        const step = isMobile ? 4 : 1;
         
-        for (let i = 0; i < MOBIUS_COUNT; i += step) {
+        for (let i = 0; i < MOBIUS_COUNT; i++) { // применяем ко всем сферам
           // Сначала получаем текущую позицию сферы
           sampleMobius(uValues[i], vValues[i], phiAngles[i], time, pI);
           
           // Конвертируем 3D позицию сферы в 2D экранные координаты
-          screenVec.copy(pI).project(camera);
-          const screenX = (screenVec.x * 0.5 + 0.5) * window.innerWidth;
-          const screenY = (screenVec.y * -0.5 + 0.5) * window.innerHeight;
+          const tempVector = pI.clone();
+          tempVector.project(camera);
+          const screenX = (tempVector.x * 0.5 + 0.5) * window.innerWidth;
+          const screenY = (tempVector.y * -0.5 + 0.5) * window.innerHeight;
           
           // Вычисляем расстояние от курсора до сферы на экране
           const dx = screenX - mousePos.x;
           const dy = screenY - mousePos.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-
+          
+          // Адаптивный радиус влияния черной дыры
+          const getMaxDistance = () => {
+            const width = window.innerWidth;
+            if (width < 768) {
+              return 80; // мобильные устройства
+            } else if (width < 1024) {
+              return 100; // планшеты
+            } else {
+              return 120; // десктопы
+            }
+          };
+          const maxDistance = getMaxDistance();
           if (distance < maxDistance) {
-            const tapMultiplier = supportsFinePointer ? 1 : 0.75 + animState.tapBoost;
-            const force =
-              (1 - distance / maxDistance) * 0.12 * tapMultiplier;
+            const force = (1 - distance / maxDistance) * 0.12; // умеренная сила
             const angle = Math.atan2(dy, dx);
             
             // Применяем силу притягивания К курсору
@@ -447,55 +395,30 @@ export const UniverseBackgroundThree: React.FC = () => {
         instancedSpheres.setMatrixAt(i, dummy.matrix);
       }
       instancedSpheres.instanceMatrix.needsUpdate = true;
-      sphereMat.emissiveIntensity = 0.19 + 0.07 * Math.sin(time * 1.3);
+      sphereMat.emissiveIntensity = 0.4 + 0.2 * Math.sin(time * 1.3);
 
       renderer.render(scene, camera);
-      animState.rafRunning = true;
       rafRef.current = requestAnimationFrame(animate);
     };
 
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        if (rafRef.current) {
-          cancelAnimationFrame(rafRef.current);
-          rafRef.current = null;
-        }
-        animState.rafRunning = false;
-        return;
-      }
-
-      if (!animState.rafRunning) {
-        animState.prev = null;
-        rafRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
     rafRef.current = requestAnimationFrame(animate);
 
     return () => {
       mountedRef.current = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       clearTimeout(resizeTimeout);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("resize", resize);
       window.removeEventListener("orientationchange", resize);
-      if (supportsFinePointer) {
-        window.removeEventListener("mousemove", handleMouseMove);
-      } else {
-        window.removeEventListener("touchstart", handleTouchStart);
-      }
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchStart);
       group.remove(instancedSpheres);
       sphereGeo.dispose();
       sphereMat.dispose();
       renderer.dispose();
       if (renderer.domElement.parentElement === host) host.removeChild(renderer.domElement);
     };
-  }, [supportsFinePointer, useFallback]);
-
-  if (useFallback) {
-    return <div className="universe-bg-fallback" />;
-  }
+  }, []);
 
   return <div ref={hostRef} style={{ position: "fixed", inset: 0, zIndex: 0 }} />;
 };
