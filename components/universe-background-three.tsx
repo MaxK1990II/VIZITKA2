@@ -1,424 +1,575 @@
 "use client";
 
-import React from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import type { ScenePhase } from "@/lib/site-content";
 
-function getScrollNorm(): number {
+type UniverseBackgroundThreeProps = {
+  mode: "desktop" | "mobile";
+  phase: ScenePhase;
+};
+
+const dummy = new THREE.Object3D();
+const tmp = new THREE.Vector3();
+const current = new THREE.Vector3();
+const prevNeighbor = new THREE.Vector3();
+const nextNeighbor = new THREE.Vector3();
+const screenVector = new THREE.Vector3();
+
+function getScrollNorm() {
   const scrollTop = window.scrollY || document.documentElement.scrollTop;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
   return docHeight > 0 ? Math.min(1, Math.max(0, scrollTop / docHeight)) : 0;
 }
 
-export const UniverseBackgroundThree: React.FC = () => {
-  const hostRef = React.useRef<HTMLDivElement | null>(null);
-  const rafRef = React.useRef<number | null>(null);
-  const mountedRef = React.useRef<boolean>(false);
+export function UniverseBackgroundThree({
+  mode,
+  phase,
+}: UniverseBackgroundThreeProps) {
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const phaseRef = useRef<ScenePhase>(phase);
 
-  React.useEffect(() => {
-    mountedRef.current = true;
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
+
+  useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const isMobile = mode === "mobile";
+    const particleCount = prefersReducedMotion
+      ? isMobile ? 140 : 1200
+      : isMobile ? 260 : 4500;
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: !isMobile,
       alpha: true,
-      powerPreference: "high-performance"
+      powerPreference: "high-performance",
     });
-    
-    // Единые настройки для всех устройств (как на ПК)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.2 : 1.8));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMappingExposure = isMobile ? 0.94 : 1.02;
     renderer.domElement.style.pointerEvents = "none";
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    
-    // Единые настройки камеры для всех устройств (как на ПК)
-    const baseFov = 60; // Стандартный угол обзора
-    const baseZ = 6.0; // Стандартное расстояние
-    
-    const camera = new THREE.PerspectiveCamera(baseFov, 1, 0.1, 100);
-    
-    // Позиционирование камеры - всегда в центре
-    camera.position.set(0, 0, baseZ);
-    camera.lookAt(0, 0, 0); // Всегда смотрим в центр
+    const camera = new THREE.PerspectiveCamera(isMobile ? 64 : 58, 1, 0.1, 100);
+    camera.position.set(0, 0, isMobile ? 6.6 : 6);
+    camera.lookAt(0, 0, 0);
 
-    // Освещение для объемного вида сфер
-    const hemi = new THREE.HemisphereLight(0x88aaff, 0x0a0a12, 0.55);
-    scene.add(hemi);
-    const key = new THREE.DirectionalLight(0xffffff, 1.2);
-    key.position.set(6, 9, 7);
-    key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
-    key.shadow.camera.near = 1;
-    key.shadow.camera.far = 40;
-    key.shadow.radius = 2;
+    scene.add(new THREE.HemisphereLight(0xb8dcff, 0x0b1017, isMobile ? 0.72 : 0.95));
+
+    const key = new THREE.DirectionalLight(0xffffff, isMobile ? 1.15 : 1.5);
+    key.position.set(6, 8, 7);
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0x4aa0ff, 0.45);
-    fill.position.set(-4, 3, -6);
+
+    const fill = new THREE.DirectionalLight(0x8bbcff, isMobile ? 0.48 : 0.6);
+    fill.position.set(-5, 2, -6);
     scene.add(fill);
-    const rim = new THREE.PointLight(0x99ddff, 0.5, 50);
+
+    const rim = new THREE.PointLight(0xd7ebff, isMobile ? 0.35 : 0.45, 40);
     rim.position.set(0, 0, 8);
     scene.add(rim);
 
-    // Адаптивное количество частиц: меньше для мобильных устройств
-    const isMobile = window.innerWidth <= 768;
-    const MOBIUS_COUNT = isMobile ? 800 : 8000; // В 10 раз меньше на мобильных
-    
-    // Инициализируем частицы Мёбиуса (инстансами)
     const group = new THREE.Group();
     scene.add(group);
 
-    // Данные и инстансы сфер ленты
-    const uValues = new Float32Array(MOBIUS_COUNT);
-    const vValues = new Float32Array(MOBIUS_COUNT);
-    const radii = new Float32Array(MOBIUS_COUNT);
-    const speeds = new Float32Array(MOBIUS_COUNT);
-    const phiAngles = new Float32Array(MOBIUS_COUNT);
-    const phiSpeeds = new Float32Array(MOBIUS_COUNT);
-    // Размер сфер одинаковый для всех устройств
-    const sphereRadius = 1.0;
-    const sphereGeo = new THREE.SphereGeometry(sphereRadius, 12, 12);
-    const sphereMat = new THREE.MeshPhysicalMaterial({
-      color: 0x8fcaff,
-      metalness: 0.0,
-      roughness: 0.28,
-      clearcoat: 0.55,
-      clearcoatRoughness: 0.15,
-      sheen: 0.0,
-      emissive: 0x0a1118,
-      emissiveIntensity: 0.12,
-      transparent: false,
-      opacity: 1.0,
-      depthWrite: true,
-      depthTest: true,
-      blending: THREE.NormalBlending
+    const geometry = new THREE.SphereGeometry(1, 10, 10);
+    const material = new THREE.MeshPhysicalMaterial({
+      color: 0xc4def6,
+      roughness: 0.24,
+      metalness: 0,
+      clearcoat: 0.58,
+      clearcoatRoughness: 0.14,
+      emissive: 0x2a4a66,
+      emissiveIntensity: 0.42,
+      vertexColors: true,
+      transparent: true,
+      opacity: 1,
     });
-    const instancedSpheres = new THREE.InstancedMesh(sphereGeo, sphereMat, MOBIUS_COUNT);
-    instancedSpheres.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    instancedSpheres.renderOrder = 2;
-    instancedSpheres.castShadow = true;
-    instancedSpheres.receiveShadow = true;
-    group.add(instancedSpheres);
 
-    // Инициализация параметров сфер на ленте
-    for (let i = 0; i < MOBIUS_COUNT; i++) {
-      uValues[i] = i / MOBIUS_COUNT;
-      vValues[i] = (Math.random() - 0.5) * 0.8; // шире полоса
-      radii[i] = 0.003 + Math.random() * 0.012; // сферы меньше ~в 5 раз
-      speeds[i] = 0.05 + Math.random() * 0.12; // разная скорость движения вдоль ленты
-      // ориентация по окружности с небольшой собственной скоростью
+    const mesh = new THREE.InstancedMesh(geometry, material, particleCount);
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    group.add(mesh);
+
+    const uValues = new Float32Array(particleCount);
+    const vValues = new Float32Array(particleCount);
+    const radii = new Float32Array(particleCount);
+    const speeds = new Float32Array(particleCount);
+    const phiAngles = new Float32Array(particleCount);
+    const phiSpeeds = new Float32Array(particleCount);
+
+    const posX = new Float32Array(particleCount);
+    const posY = new Float32Array(particleCount);
+    const posZ = new Float32Array(particleCount);
+    const velX = new Float32Array(particleCount);
+    const velY = new Float32Array(particleCount);
+    const velZ = new Float32Array(particleCount);
+    const nebulaX = new Float32Array(particleCount);
+    const nebulaY = new Float32Array(particleCount);
+    const nebulaZ = new Float32Array(particleCount);
+
+    const baseColor = new THREE.Color(0xc0dbf5);
+    const accentColor = new THREE.Color(0xff8a8a);
+    const colorMix = new THREE.Color();
+
+    for (let i = 0; i < particleCount; i++) {
+      uValues[i] = i / particleCount;
+      vValues[i] = (Math.random() - 0.5) * 0.8;
+      radii[i] = 0.012 + Math.random() * 0.028;
+      speeds[i] = 0.05 + Math.random() * 0.12;
       phiAngles[i] = Math.random() * Math.PI * 2;
-      phiSpeeds[i] = (Math.random() * 2 - 1) * 0.8; // рад/с
+      phiSpeeds[i] = (Math.random() * 2 - 1) * 0.8;
+
+      colorMix.copy(baseColor).lerp(accentColor, Math.max(0.05, 0.28 - Math.abs(vValues[i]) * 0.2));
+      mesh.setColorAt(i, colorMix);
+
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 2.5 + Math.random() * 6;
+      nebulaX[i] = r * Math.sin(phi) * Math.cos(theta);
+      nebulaY[i] = r * Math.sin(phi) * Math.sin(theta);
+      nebulaZ[i] = r * Math.cos(phi);
     }
 
-    // Параметры реакции на скролл (глобальные для семплинга и камеры)
-    let velEMA = 0; // сглаженная скорость скролла
-    let dirEMA = 0; // сглаженное направление
-    let scrollAmp = 0; // амплитуда расширения ленты от скролла
-    let zoomImpulse = 0; // импульс для резкого зума (быстро затухает)
-    let persistentZoom = 0; // накопительный зум, не уменьшается
-    let engaged = 0; // фиксируем, что скролл начался, и сохраняем «динамичный» режим
-
-    // Вспомогательная функция для выборки точки ленты (без аллокаций)
-    const wrap01 = (x: number) => (x % 1 + 1) % 1;
+    const wrap01 = (v: number) => (v % 1 + 1) % 1;
     const ringDist = (a: number, b: number) => {
       const d = Math.abs(a - b);
       return Math.min(d, 1 - d);
     };
 
-    const sampleMobius = (u: number, v: number, phi: number, t: number, out: THREE.Vector3) => {
-      const wave1 = Math.sin(u * 3.0 * Math.PI * 2 + t * 0.6) * 0.2;
-      const wave2 = Math.cos(u * 5.0 * Math.PI * 2 + t * 0.8) * 0.15;
-      const turbulence = Math.sin(u * 12.0 * Math.PI + t * 1.5) * 0.08;
+    let scrollAmp = 0;
+    let velEMA = 0;
+    let zoomImpulse = 0;
+    let persistentZoom = 0;
+    let engaged = 0;
+    let previousTime = 0;
+    let previousScroll = 0;
+    let tapBoost = 0;
+    let pointer: { x: number; y: number } | null = null;
+
+    let transitionProgress = 0;
+    const implodeCenter = new THREE.Vector3(0, 0, 0);
+
+    let implodeInited = false;
+    let burstInited = false;
+    let reformInited = false;
+
+    const sampleMobius = (
+      u: number, v: number, phi: number, time: number, out: THREE.Vector3
+    ) => {
+      const wave1 = Math.sin(u * Math.PI * 6 + time * 0.6) * 0.2;
+      const wave2 = Math.cos(u * Math.PI * 10 + time * 0.8) * 0.14;
+      const turbulence = Math.sin(u * Math.PI * 12 + time * 1.4) * 0.07;
       const deformation = wave1 + wave2 + turbulence;
-      
-      // Адаптивный радиус петли: в 2 раза меньше для мобильных устройств
-      const baseR = isMobile ? 1.6 : 3.2; // Уменьшаем диаметр в 2 раза на мобильных
-      const R = baseR + deformation; // лента длиннее (больше радиус)
-      const baseWidth = 1.6 * (1.0 + scrollAmp); // лента шире и динамически расширяется
-      
-      // Центрирование петли Мёбиуса для мобильных устройств
-      // На мобильных устройствах петля должна быть точно по центру экрана
-      const offsetX = isMobile ? 0 : 0; // Центрируем по X
-      const offsetY = isMobile ? 0 : 0; // Центрируем по Y
-      // утолщения ("трубы") вдоль ленты: несколько бегущих бамперов
-      const c1 = wrap01(0.18 + 0.05 * Math.sin(t * 0.25));
-      const c2 = wrap01(0.53 + 0.07 * Math.sin(t * 0.18 + 1.7));
-      const c3 = wrap01(0.87 + 0.06 * Math.cos(t * 0.21 + 0.9));
+      const baseR = isMobile ? 1.85 : 3.2;
+      const baseWidth = isMobile ? 1.1 : 1.6;
+      const R = baseR + deformation;
+      const widthBase = baseWidth * (1 + scrollAmp);
+
+      const c1 = wrap01(0.18 + 0.05 * Math.sin(time * 0.25));
+      const c2 = wrap01(0.53 + 0.07 * Math.sin(time * 0.18 + 1.7));
+      const c3 = wrap01(0.87 + 0.06 * Math.cos(time * 0.21 + 0.9));
       const sigma = 0.06;
-      const amp = 1.4;
-      const L = amp * (
-        Math.exp(-(ringDist(u, c1) ** 2) / (2 * sigma * sigma)) +
-        Math.exp(-(ringDist(u, c2) ** 2) / (2 * sigma * sigma)) +
-        Math.exp(-(ringDist(u, c3) ** 2) / (2 * sigma * sigma))
-      );
-      const width = baseWidth * (1.0 + L); // локальное утолщение
-      const ringScale = 0.6 * L; // круговая составляющая поперёк ленты
+      const amp = 1.1;
+      const localWidth =
+        amp *
+        (Math.exp(-(ringDist(u, c1) ** 2) / (2 * sigma * sigma)) +
+          Math.exp(-(ringDist(u, c2) ** 2) / (2 * sigma * sigma)) +
+          Math.exp(-(ringDist(u, c3) ** 2) / (2 * sigma * sigma)));
+
+      const width = widthBase * (1 + localWidth);
+      const ringScale = 0.45 * localWidth;
       const angle = u * Math.PI * 2;
       const twist = u * Math.PI;
       const cosTw = Math.cos(twist);
       const sinTw = Math.sin(twist);
-      // эллиптическое сечение с дополнительным круговым "утолщением" по углу phi
       const vcos = v * (1 + ringScale * Math.cos(phi));
       const vsin = v * (1 + ringScale * Math.sin(phi));
       const base = R + vcos * width * cosTw;
-      const x = base * Math.cos(angle) + offsetX;
-      const y = base * Math.sin(angle) + vsin * width * sinTw * 0.5 + offsetY;
-      const z = vsin * width * sinTw + deformation * 0.3;
-      out.set(x, y, z);
+
+      out.set(
+        base * Math.cos(angle),
+        base * Math.sin(angle) + vsin * width * sinTw * 0.5,
+        vsin * width * sinTw + deformation * 0.25
+      );
     };
 
-    // Первичная расстановка инстансов
-    const dummy = new THREE.Object3D();
-    const tmpVec = new THREE.Vector3();
-    for (let i = 0; i < MOBIUS_COUNT; i++) {
-      sampleMobius(uValues[i], vValues[i], phiAngles[i], 0, tmpVec);
-      dummy.position.copy(tmpVec);
-      const r = radii[i];
-      dummy.scale.set(r, r, r);
-      dummy.rotation.set(0, 0, 0);
+    for (let i = 0; i < particleCount; i++) {
+      sampleMobius(uValues[i], vValues[i], phiAngles[i], 0, tmp);
+      posX[i] = tmp.x;
+      posY[i] = tmp.y;
+      posZ[i] = tmp.z;
+      velX[i] = 0;
+      velY[i] = 0;
+      velZ[i] = 0;
+      dummy.position.copy(tmp);
+      dummy.scale.setScalar(radii[i]);
       dummy.updateMatrix();
-      instancedSpheres.setMatrixAt(i, dummy.matrix);
+      mesh.setMatrixAt(i, dummy.matrix);
     }
-    instancedSpheres.instanceMatrix.needsUpdate = true;
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
 
-    // Улучшенная функция ресайза с дебаунсингом
-    let resizeTimeout: NodeJS.Timeout;
     const resize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        if (!mountedRef.current) return;
-        
       const w = host.clientWidth || window.innerWidth;
       const h = host.clientHeight || window.innerHeight;
-        
-        // Обновляем размер рендерера
       renderer.setSize(w, h, false);
-        
-        // Обновляем aspect ratio камеры
-      camera.aspect = w / h;
-        
-        // Стандартные настройки камеры для всех устройств
-        const newBaseFov = 60;
-        const newBaseZ = 6.0;
-        // Плавно интерполируем к новым значениям
-        camera.fov = THREE.MathUtils.lerp(camera.fov, newBaseFov, 0.1);
-        camera.position.z = THREE.MathUtils.lerp(camera.position.z, newBaseZ, 0.1);
-        
-        camera.updateProjectionMatrix();
-      }, 100); // Дебаунсинг 100мс
-    };
-    resize();
-    window.addEventListener("resize", resize);
-    window.addEventListener("orientationchange", resize);
-
-    // Внутреннее состояние анимации без any
-    const animState: { prev: number | null; lastS: number | null; mousePos: { x: number; y: number } | null } = { prev: null, lastS: null, mousePos: null };
-
-    // Обработчики мыши и тапов для черной дыры
-    const handleMouseMove = (event: MouseEvent) => {
-      animState.mousePos = { x: event.clientX, y: event.clientY };
-    };
-    
-    const handleTouchMove = (event: TouchEvent) => {
-      if (event.touches.length > 0) {
-        const touch = event.touches[0];
-        animState.mousePos = { x: touch.clientX, y: touch.clientY };
-      }
-    };
-    
-    const handleTouchStart = (event: TouchEvent) => {
-      if (event.touches.length > 0) {
-        const touch = event.touches[0];
-        animState.mousePos = { x: touch.clientX, y: touch.clientY };
-      }
-    };
-    
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("touchmove", handleTouchMove);
-    window.addEventListener("touchstart", handleTouchStart);
-
-    const animate = () => {
-      if (!mountedRef.current) return;
-      const s = getScrollNorm();
-      const time = performance.now() * 0.001; // время в секундах
-      // delta-время для стабильной физики
-      if (animState.prev === null) animState.prev = time;
-      const prev = animState.prev as number;
-      const dt = Math.min(0.05, Math.max(0.001, time - prev));
-      animState.prev = time;
-      // скорость скролла (привязываем динамику к скроллу)
-      if (animState.lastS === null) animState.lastS = s;
-      const lastS = animState.lastS as number;
-      const ds = s - lastS;
-      animState.lastS = s;
-      const rawVel = ds / Math.max(0.001, dt); // может быть отрицательной (направление)
-      // EMA сглаживание скорости и направления (плавная общая динамика)
-      velEMA = THREE.MathUtils.lerp(velEMA, Math.abs(rawVel), 0.12);
-      dirEMA = THREE.MathUtils.lerp(dirEMA, Math.sign(rawVel), 0.25);
-      const baseSpeed = THREE.MathUtils.clamp(velEMA * 3.0, 0, 12) * 0.7; // -30% общая скорость
-      // мгновенный джолт по началу скролла (взрыв) и затухание импульса
-      const jolt = Math.min(1, Math.abs(rawVel) * 2.0);
-      zoomImpulse = Math.max(zoomImpulse * 0.85, jolt);
-      // накапливаем постоянный зум, не возвращается назад
-      persistentZoom = Math.min(1, Math.max(persistentZoom, jolt, persistentZoom + 0.05 * jolt));
-      // фиксируем активный режим после первого ощутимого скролла
-      if (Math.abs(rawVel) > 0.001) {
-        engaged = Math.min(1, engaged + 0.05);
-      }
-      // минимальный пол для скорости и амплитуды после активации
-      const flowFloor = 2.2 * engaged; // не даём потоку вернуться к «тихому» режиму
-      const flowFactor = Math.max(flowFloor, baseSpeed * (1 + 2.0 * zoomImpulse));
-      // амплитуда ширины ленты от скорости (менее агрессивно)
-      const ampTarget = THREE.MathUtils.clamp(velEMA * 0.35 + 0.4 * zoomImpulse, engaged * 0.35, 0.9);
-      scrollAmp = THREE.MathUtils.lerp(scrollAmp, ampTarget, 0.12);
-
-      // на старте почти неподвижно; при скролле ускоряем вращение + сохраняем базу при engaged
-      group.rotation.y += (0.0003 + s * 0.002 + 0.002 * zoomImpulse + 0.0015 * engaged) * (1 + 0.5 * dirEMA);
-
-      // Стандартный зум камеры для всех устройств (как на ПК)
-      const targetFov = baseFov * (1.0 - 0.30 * persistentZoom);
-      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, 0.12);
-      const targetZ = baseZ * (1.0 - 0.50 * persistentZoom);
-      camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.12);
+      camera.aspect = w / Math.max(h, 1);
       camera.updateProjectionMatrix();
+    };
 
-      // Движение сфер вдоль ленты + простое взаимодействие (раздвижение соседей)
-      const baseSpacing = 0.06; // базовый зазор, чтобы сферы не были плотными
-      const pA = new THREE.Vector3();
-      const pB = new THREE.Vector3();
-      const pI = new THREE.Vector3();
-
-      for (let i = 0; i < MOBIUS_COUNT; i++) {
-        // Продвижение вдоль ленты привязано к скорости скролла + хаос (умеренный при простое)
-        const chaosU = 0.04 * (0.2 + flowFactor) * dt * (Math.sin(i * 17.11 + time * 2.3) + Math.cos(i * 9.97 + time * 1.7));
-        uValues[i] = (uValues[i] + speeds[i] * dt * flowFactor + chaosU) % 1.0;
-        // Поперечная дрожь по v (меньше разлёт)
-        const chaosV = 0.002 * (0.3 + 0.7 * flowFactor) * (Math.sin(i * 13.37 + time * 2.1) + Math.cos(i * 7.21 + time * 1.6));
-        vValues[i] = THREE.MathUtils.clamp(vValues[i] + chaosV, -0.8, 0.8);
-        // Вращение по окружности сечения
-        phiAngles[i] = (phiAngles[i] + phiSpeeds[i] * dt * (1 + 0.8 * flowFactor)) % (Math.PI * 2);
+    const handlePointerMove = (e: MouseEvent) => {
+      pointer = { x: e.clientX, y: e.clientY };
+    };
+    const handleTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      pointer = { x: touch.clientX, y: touch.clientY };
+      tapBoost = 1;
+    };
+    const handleVisibilityChange = () => {
+      if (!document.hidden && rafRef.current === null) {
+        previousTime = 0;
+        rafRef.current = requestAnimationFrame(animate);
       }
+    };
 
-      // Локальное столкновение только с соседями (кольцевой индекс)
-      for (let i = 0; i < MOBIUS_COUNT; i++) {
-        const jPrev = (i - 1 + MOBIUS_COUNT) % MOBIUS_COUNT;
-        const jNext = (i + 1) % MOBIUS_COUNT;
+    const animate = (timestamp: number) => {
+      rafRef.current = null;
+      if (document.hidden) return;
 
-        sampleMobius(uValues[i], vValues[i], phiAngles[i], time, pI);
-        sampleMobius(uValues[jPrev], vValues[jPrev], phiAngles[jPrev], time, pA);
-        sampleMobius(uValues[jNext], vValues[jNext], phiAngles[jNext], time, pB);
+      const time = timestamp * 0.001;
+      const dt = previousTime === 0 ? 0.016 : Math.min(0.05, time - previousTime);
+      previousTime = time;
+      const currentPhase = phaseRef.current;
+      const motionScale = prefersReducedMotion ? 0.35 : 1;
 
-        const ri = radii[i];
-        const rPrev = radii[jPrev];
-        const rNext = radii[jNext];
+      // === PHASE: INTRO (ambient Mobius) ===
+      if (currentPhase === "intro") {
+        transitionProgress = 0;
+        implodeInited = false;
+        burstInited = false;
+        reformInited = false;
 
-        const minPrev = baseSpacing + (ri + rPrev) * 1.1;
-        const minNext = baseSpacing + (ri + rNext) * 1.1;
+        const scroll = getScrollNorm();
+        const rawVel = (scroll - previousScroll) / Math.max(0.001, dt);
+        previousScroll = scroll;
 
-        const dPrev = pI.distanceTo(pA);
-        const dNext = pI.distanceTo(pB);
+        velEMA = THREE.MathUtils.lerp(velEMA, Math.abs(rawVel), 0.12);
+        zoomImpulse = Math.max(zoomImpulse * 0.86, Math.min(1, Math.abs(rawVel) * 2));
+        persistentZoom = Math.min(1, Math.max(persistentZoom, zoomImpulse, persistentZoom + 0.05 * zoomImpulse));
+        if (Math.abs(rawVel) > 0.001) engaged = Math.min(1, engaged + 0.05);
+        scrollAmp = THREE.MathUtils.lerp(
+          scrollAmp,
+          THREE.MathUtils.clamp(velEMA * 0.28 + 0.34 * zoomImpulse, engaged * 0.2, 0.82),
+          0.12
+        );
 
-        // если слишком близко к предыдущему — тормозим/сдвигаем назад по u
-        if (dPrev < minPrev) {
-          const overlap = (minPrev - dPrev) / minPrev;
-          uValues[i] = (uValues[i] + overlap * -0.03 + 1.0) % 1.0;
-          vValues[i] += (Math.random() - 0.5) * 0.002; // чуть больше поперечный уход
+        group.rotation.y += (0.00035 + scroll * 0.0017 + 0.0015 * zoomImpulse + 0.0012 * engaged) * motionScale;
+        camera.fov = THREE.MathUtils.lerp(camera.fov, (isMobile ? 64 : 58) * (1 - 0.24 * persistentZoom), 0.12);
+        camera.position.z = THREE.MathUtils.lerp(camera.position.z, (isMobile ? 6.6 : 6) * (1 - 0.35 * persistentZoom), 0.12);
+        camera.updateProjectionMatrix();
+
+        tapBoost = Math.max(0, tapBoost - dt * 1.5);
+        const flowFactor = Math.max(1.2 * engaged, THREE.MathUtils.clamp(velEMA * 2.5, 0, 10));
+
+        for (let i = 0; i < particleCount; i++) {
+          const chaosU = 0.035 * (0.25 + flowFactor) * dt * motionScale * (Math.sin(i * 17.11 + time * 2.3) + Math.cos(i * 9.97 + time * 1.7));
+          const chaosV = 0.002 * (0.3 + 0.7 * flowFactor) * motionScale * (Math.sin(i * 13.37 + time * 2.1) + Math.cos(i * 7.21 + time * 1.6));
+          uValues[i] = (uValues[i] + speeds[i] * dt * (1.1 + flowFactor) + chaosU) % 1;
+          vValues[i] = THREE.MathUtils.clamp(vValues[i] + chaosV, -0.8, 0.8);
+          phiAngles[i] = (phiAngles[i] + phiSpeeds[i] * dt * (1 + 0.8 * flowFactor)) % (Math.PI * 2);
         }
-        // если слишком близко к следующему — ускоряем/сдвигаем вперёд по u
-        if (dNext < minNext) {
-          const overlap = (minNext - dNext) / minNext;
-          uValues[i] = (uValues[i] + overlap * 0.03) % 1.0;
-          vValues[i] += (Math.random() - 0.5) * 0.002;
-        }
-      }
 
-      // Применяем гравитацию от курсора к координатам сфер ПЕРЕД обновлением позиций
-      if (animState.mousePos) {
-        const mousePos = animState.mousePos;
-        
-        for (let i = 0; i < MOBIUS_COUNT; i++) { // применяем ко всем сферам
-          // Сначала получаем текущую позицию сферы
-          sampleMobius(uValues[i], vValues[i], phiAngles[i], time, pI);
-          
-          // Конвертируем 3D позицию сферы в 2D экранные координаты
-          const tempVector = pI.clone();
-          tempVector.project(camera);
-          const screenX = (tempVector.x * 0.5 + 0.5) * window.innerWidth;
-          const screenY = (tempVector.y * -0.5 + 0.5) * window.innerHeight;
-          
-          // Вычисляем расстояние от курсора до сферы на экране
-          const dx = screenX - mousePos.x;
-          const dy = screenY - mousePos.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          // Адаптивный радиус влияния черной дыры
-          const getMaxDistance = () => {
-            const width = window.innerWidth;
-            if (width < 768) {
-              return 80; // мобильные устройства
-            } else if (width < 1024) {
-              return 100; // планшеты
-            } else {
-              return 120; // десктопы
+        for (let i = 0; i < particleCount; i++) {
+          const prev = (i - 1 + particleCount) % particleCount;
+          const next = (i + 1) % particleCount;
+          sampleMobius(uValues[i], vValues[i], phiAngles[i], time, current);
+          sampleMobius(uValues[prev], vValues[prev], phiAngles[prev], time, prevNeighbor);
+          sampleMobius(uValues[next], vValues[next], phiAngles[next], time, nextNeighbor);
+          const minPrev = 0.06 + (radii[i] + radii[prev]) * 1.1;
+          const minNext = 0.06 + (radii[i] + radii[next]) * 1.1;
+          const dPrev = current.distanceTo(prevNeighbor);
+          const dNext = current.distanceTo(nextNeighbor);
+          if (dPrev < minPrev) uValues[i] = (uValues[i] - ((minPrev - dPrev) / minPrev) * 0.03 + 1) % 1;
+          if (dNext < minNext) uValues[i] = (uValues[i] + ((minNext - dNext) / minNext) * 0.03) % 1;
+        }
+
+        const pointerActive = pointer && (!isMobile || tapBoost > 0.08);
+        if (pointerActive && pointer) {
+          const maxDist = isMobile ? 88 : 130;
+          const step = isMobile ? 3 : 1;
+          for (let i = 0; i < particleCount; i += step) {
+            sampleMobius(uValues[i], vValues[i], phiAngles[i], time, current);
+            screenVector.copy(current).project(camera);
+            const sx = (screenVector.x * 0.5 + 0.5) * window.innerWidth;
+            const sy = (screenVector.y * -0.5 + 0.5) * window.innerHeight;
+            const dx = sx - pointer.x;
+            const dy = sy - pointer.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < maxDist) {
+              const force = (1 - dist / maxDist) * 0.1 * (isMobile ? 0.8 + tapBoost : 1);
+              const angle = Math.atan2(dy, dx);
+              uValues[i] = (uValues[i] - Math.cos(angle) * force * dt + 1) % 1;
+              vValues[i] = THREE.MathUtils.clamp(vValues[i] - Math.sin(angle) * force * dt * 0.7, -0.8, 0.8);
             }
-          };
-          const maxDistance = getMaxDistance();
-          if (distance < maxDistance) {
-            const force = (1 - distance / maxDistance) * 0.12; // умеренная сила
-            const angle = Math.atan2(dy, dx);
-            
-            // Применяем силу притягивания К курсору
-            const forceU = -Math.cos(angle) * force * dt;
-            const forceV = -Math.sin(angle) * force * dt * 0.7;
-            
-            uValues[i] = (uValues[i] + forceU + 1.0) % 1.0;
-            vValues[i] = THREE.MathUtils.clamp(vValues[i] + forceV, -0.8, 0.8);
+          }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+          sampleMobius(uValues[i], vValues[i], phiAngles[i], time, current);
+          posX[i] = current.x;
+          posY[i] = current.y;
+          posZ[i] = current.z;
+          dummy.position.copy(current);
+          dummy.scale.setScalar(radii[i]);
+          dummy.rotation.set(0, 0, 0);
+          dummy.updateMatrix();
+          mesh.setMatrixAt(i, dummy.matrix);
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+        material.emissiveIntensity = isMobile ? 0.32 : 0.42 + 0.1 * Math.sin(time * 1.2);
+        material.opacity = 1;
+      }
+
+      // === PHASE: IMPLODE (chaotic rush to center) ===
+      if (currentPhase === "implode") {
+        if (!implodeInited) {
+          implodeInited = true;
+          transitionProgress = 0;
+          for (let i = 0; i < particleCount; i++) {
+            const hash = Math.sin(i * 91.17 + 7.31) * 43758.5453;
+            const jitterAngle1 = (hash - Math.floor(hash)) * Math.PI * 2;
+            const hash2 = Math.sin(i * 43.23 + 11.07) * 28461.327;
+            const jitterAngle2 = Math.acos(2 * (hash2 - Math.floor(hash2)) - 1);
+            const jitterStrength = 1.5 + (Math.sin(i * 7.77) * 0.5 + 0.5) * 3.5;
+
+            velX[i] = Math.sin(jitterAngle2) * Math.cos(jitterAngle1) * jitterStrength;
+            velY[i] = Math.sin(jitterAngle2) * Math.sin(jitterAngle1) * jitterStrength;
+            velZ[i] = Math.cos(jitterAngle2) * jitterStrength;
+          }
+        }
+
+        transitionProgress = Math.min(1, transitionProgress + dt * 1.25);
+        const ease = transitionProgress * transitionProgress;
+        group.rotation.y += 0.005 * (1 + ease * 6) * motionScale;
+
+        for (let i = 0; i < particleCount; i++) {
+          const tx = implodeCenter.x;
+          const ty = implodeCenter.y;
+          const tz = implodeCenter.z;
+
+          const dx = tx - posX[i];
+          const dy = ty - posY[i];
+          const dz = tz - posZ[i];
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) + 0.001;
+
+          const pullStrength = ease * 12 + 2;
+          velX[i] += (dx / dist) * pullStrength * dt;
+          velY[i] += (dy / dist) * pullStrength * dt;
+          velZ[i] += (dz / dist) * pullStrength * dt;
+
+          const turbulence = (1 - ease) * 2;
+          velX[i] += Math.sin(time * 8 + i * 3.17) * turbulence * dt;
+          velY[i] += Math.cos(time * 7 + i * 2.43) * turbulence * dt;
+          velZ[i] += Math.sin(time * 9 + i * 1.89) * turbulence * dt;
+
+          const damping = 0.92 - ease * 0.08;
+          velX[i] *= damping;
+          velY[i] *= damping;
+          velZ[i] *= damping;
+
+          posX[i] += velX[i] * dt;
+          posY[i] += velY[i] * dt;
+          posZ[i] += velZ[i] * dt;
+
+          const particleScale = radii[i] * (1 - ease * 0.6);
+          const spin = time * (3 + i % 7) * ease;
+          dummy.position.set(posX[i], posY[i], posZ[i]);
+          dummy.scale.setScalar(particleScale);
+          dummy.rotation.set(spin, spin * 0.7, 0);
+          dummy.updateMatrix();
+          mesh.setMatrixAt(i, dummy.matrix);
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+        material.emissiveIntensity = 0.42 + ease * 0.8;
+        material.opacity = 1;
+      }
+
+      // === PHASE: BURST (radial explosion from center) ===
+      if (currentPhase === "burst") {
+        if (!burstInited) {
+          burstInited = true;
+          transitionProgress = 0;
+          for (let i = 0; i < particleCount; i++) {
+            const angle1 = (i / particleCount) * Math.PI * 2 + Math.sin(i * 3.7) * 0.4;
+            const angle2 = Math.acos(2 * ((i * 0.618) % 1) - 1);
+            const burstSpeed = 8 + Math.random() * 14;
+            velX[i] = Math.sin(angle2) * Math.cos(angle1) * burstSpeed;
+            velY[i] = Math.sin(angle2) * Math.sin(angle1) * burstSpeed;
+            velZ[i] = Math.cos(angle2) * burstSpeed;
+          }
+        }
+
+        transitionProgress = Math.min(1, transitionProgress + dt * 1.67);
+        const ease = transitionProgress;
+
+        for (let i = 0; i < particleCount; i++) {
+          posX[i] += velX[i] * dt;
+          posY[i] += velY[i] * dt;
+          posZ[i] += velZ[i] * dt;
+          velX[i] *= 0.96;
+          velY[i] *= 0.96;
+          velZ[i] *= 0.96;
+
+          const scale = radii[i] * Math.max(0, 1 - ease * 0.8);
+          dummy.position.set(posX[i], posY[i], posZ[i]);
+          dummy.scale.setScalar(scale);
+          dummy.rotation.set(0, 0, 0);
+          dummy.updateMatrix();
+          mesh.setMatrixAt(i, dummy.matrix);
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+        material.opacity = Math.max(0, 1 - ease * 1.2);
+        material.emissiveIntensity = 1 - ease * 0.66;
+
+        group.rotation.y += 0.01 * motionScale;
+      }
+
+      // === PHASE: NEBULA (calm star field background) ===
+      if (currentPhase === "nebula") {
+        transitionProgress = Math.min(1, transitionProgress + dt * 0.5);
+        const ease = Math.min(1, transitionProgress);
+
+        group.rotation.y += 0.0002 * motionScale;
+
+        for (let i = 0; i < particleCount; i++) {
+          posX[i] = THREE.MathUtils.lerp(posX[i], nebulaX[i], ease * 0.03);
+          posY[i] = THREE.MathUtils.lerp(posY[i], nebulaY[i], ease * 0.03);
+          posZ[i] = THREE.MathUtils.lerp(posZ[i], nebulaZ[i], ease * 0.03);
+
+          const drift = Math.sin(time * 0.3 + i * 0.01) * 0.002;
+          posX[i] += drift;
+          posY[i] += Math.cos(time * 0.2 + i * 0.02) * 0.001;
+
+          const nebulaScale = radii[i] * 0.4 * ease;
+          dummy.position.set(posX[i], posY[i], posZ[i]);
+          dummy.scale.setScalar(nebulaScale);
+          dummy.rotation.set(0, 0, 0);
+          dummy.updateMatrix();
+          mesh.setMatrixAt(i, dummy.matrix);
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+
+        material.opacity = Math.min(0.65, ease * 0.65);
+        material.emissiveIntensity = 0.2;
+
+        if (pointer && !isMobile) {
+          const maxDist = 200;
+          for (let i = 0; i < particleCount; i += 3) {
+            screenVector.set(posX[i], posY[i], posZ[i]).project(camera);
+            const sx = (screenVector.x * 0.5 + 0.5) * window.innerWidth;
+            const sy = (screenVector.y * -0.5 + 0.5) * window.innerHeight;
+            const dx = sx - pointer.x;
+            const dy = sy - pointer.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < maxDist) {
+              const force = (1 - dist / maxDist) * 0.008;
+              const angle = Math.atan2(dy, dx);
+              posX[i] -= Math.cos(angle) * force;
+              posY[i] -= Math.sin(angle) * force * 0.5;
+            }
           }
         }
       }
 
-      // Обновляем инстансы
-      for (let i = 0; i < MOBIUS_COUNT; i++) {
-        sampleMobius(uValues[i], vValues[i], phiAngles[i], time, pI);
-        dummy.position.copy(pI);
-        const r = radii[i];
-        dummy.scale.set(r, r, r);
-        dummy.rotation.set(0, 0, 0);
-        dummy.updateMatrix();
-        instancedSpheres.setMatrixAt(i, dummy.matrix);
+      // === PHASE: REFORM (nebula gathers back into Mobius) ===
+      if (currentPhase === "reform") {
+        if (!reformInited) {
+          reformInited = true;
+          transitionProgress = 0;
+          for (let i = 0; i < particleCount; i++) {
+            velX[i] = 0;
+            velY[i] = 0;
+            velZ[i] = 0;
+          }
+        }
+
+        transitionProgress = Math.min(1, transitionProgress + dt * 0.72);
+        const ease = transitionProgress * transitionProgress * (3 - 2 * transitionProgress);
+
+        group.rotation.y += (0.0002 + ease * 0.002) * motionScale;
+
+        camera.fov = THREE.MathUtils.lerp(camera.fov, isMobile ? 64 : 58, 0.06);
+        camera.position.z = THREE.MathUtils.lerp(camera.position.z, isMobile ? 6.6 : 6, 0.06);
+        camera.updateProjectionMatrix();
+
+        for (let i = 0; i < particleCount; i++) {
+          sampleMobius(uValues[i], vValues[i], phiAngles[i], time, tmp);
+          const targetX = tmp.x;
+          const targetY = tmp.y;
+          const targetZ = tmp.z;
+
+          posX[i] = THREE.MathUtils.lerp(posX[i], targetX, ease * 0.06 + 0.005);
+          posY[i] = THREE.MathUtils.lerp(posY[i], targetY, ease * 0.06 + 0.005);
+          posZ[i] = THREE.MathUtils.lerp(posZ[i], targetZ, ease * 0.06 + 0.005);
+
+          const spiralT = (1 - ease) * 0.8;
+          posX[i] += Math.sin(time * 2 + i * 0.47) * spiralT * dt;
+          posY[i] += Math.cos(time * 1.7 + i * 0.33) * spiralT * dt;
+
+          const scale = THREE.MathUtils.lerp(radii[i] * 0.4, radii[i], ease);
+          dummy.position.set(posX[i], posY[i], posZ[i]);
+          dummy.scale.setScalar(scale);
+          dummy.rotation.set(0, 0, 0);
+          dummy.updateMatrix();
+          mesh.setMatrixAt(i, dummy.matrix);
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+
+        material.opacity = THREE.MathUtils.lerp(0.65, 1, ease);
+        material.emissiveIntensity = THREE.MathUtils.lerp(0.2, 0.42, ease);
       }
-      instancedSpheres.instanceMatrix.needsUpdate = true;
-      sphereMat.emissiveIntensity = 0.4 + 0.2 * Math.sin(time * 1.3);
 
       renderer.render(scene, camera);
       rafRef.current = requestAnimationFrame(animate);
     };
 
+    resize();
+    window.addEventListener("resize", resize);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    if (isMobile) {
+      window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    } else {
+      window.addEventListener("mousemove", handlePointerMove);
+    }
     rafRef.current = requestAnimationFrame(animate);
 
     return () => {
-      mountedRef.current = false;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      clearTimeout(resizeTimeout);
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("orientationchange", resize);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchstart", handleTouchStart);
-      group.remove(instancedSpheres);
-      sphereGeo.dispose();
-      sphereMat.dispose();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (isMobile) {
+        window.removeEventListener("touchstart", handleTouchStart);
+      } else {
+        window.removeEventListener("mousemove", handlePointerMove);
+      }
+      geometry.dispose();
+      material.dispose();
       renderer.dispose();
-      if (renderer.domElement.parentElement === host) host.removeChild(renderer.domElement);
+      if (renderer.domElement.parentElement === host) {
+        host.removeChild(renderer.domElement);
+      }
     };
-  }, []);
+  }, [mode]);
 
-  return <div ref={hostRef} style={{ position: "fixed", inset: 0, zIndex: 0 }} />;
-};
+  return <div ref={hostRef} className="universe-layer" />;
+}

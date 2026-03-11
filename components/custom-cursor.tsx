@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 export const CustomCursor: React.FC = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -21,32 +21,34 @@ export const CustomCursor: React.FC = () => {
       setIsVisible(true);
     };
 
-    // Добавляем обработчики для элементов, которые должны увеличивать курсор
-    const addHoverListeners = () => {
-      const hoverElements = document.querySelectorAll('h1, h2, h3, button, a, [data-hover]');
-      hoverElements.forEach(element => {
-        element.addEventListener('mouseenter', () => setIsHovering(true));
-        element.addEventListener('mouseleave', () => setIsHovering(false));
-      });
+    const isInteractiveElement = (target: EventTarget | null) => {
+      if (!(target instanceof Element)) {
+        return false;
+      }
+
+      return Boolean(target.closest("button, a, [data-hover]"));
     };
 
-    // Инициализируем обработчики
-    addHoverListeners();
+    const handlePointerOver = (event: MouseEvent) => {
+      setIsHovering(isInteractiveElement(event.target));
+    };
 
-    // Добавляем глобальные обработчики
-    document.addEventListener('mousemove', updateCursor);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseenter', handleMouseEnter);
+    const handlePointerOut = (event: MouseEvent) => {
+      setIsHovering(isInteractiveElement(event.relatedTarget));
+    };
 
-    // Обновляем обработчики при изменении DOM
-    const observer = new MutationObserver(addHoverListeners);
-    observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("mousemove", updateCursor);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("mouseover", handlePointerOver);
+    document.addEventListener("mouseout", handlePointerOut);
 
     return () => {
-      document.removeEventListener('mousemove', updateCursor);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('mouseenter', handleMouseEnter);
-      observer.disconnect();
+      document.removeEventListener("mousemove", updateCursor);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mouseenter", handleMouseEnter);
+      document.removeEventListener("mouseover", handlePointerOver);
+      document.removeEventListener("mouseout", handlePointerOut);
     };
   }, []);
 
@@ -54,10 +56,10 @@ export const CustomCursor: React.FC = () => {
 
   return (
     <div
-      className={`cursor-sphere ${isHovering ? 'hover' : ''}`}
+      className={`cursor-sphere ${isHovering ? "hover" : ""}`}
       style={{
-        left: position.x - 10,
-        top: position.y - 10,
+        left: position.x,
+        top: position.y,
       }}
     />
   );

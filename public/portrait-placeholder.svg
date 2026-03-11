@@ -1,0 +1,25 @@
+<svg width="1200" height="1500" viewBox="0 0 1200 1500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1500" fill="#07090D"/>
+  <rect width="1200" height="1500" fill="url(#bg)"/>
+  <circle cx="841" cy="305" r="271" fill="url(#accent)" fill-opacity="0.28"/>
+  <circle cx="261" cy="1230" r="322" fill="#22344D" fill-opacity="0.22"/>
+  <path d="M360 1134C360 923.043 530.043 753 741 753V753C951.957 753 1122 923.043 1122 1134V1500H360V1134Z" fill="#121821"/>
+  <circle cx="741" cy="531" r="218" fill="#161D27"/>
+  <path d="M239 1263L334 1148L511 1233L417 1348L239 1263Z" fill="#0E131A" stroke="rgba(255,255,255,0.12)"/>
+  <path d="M813 186L1030 285L912 544L695 445L813 186Z" fill="#0F1620" stroke="rgba(255,255,255,0.12)"/>
+  <path d="M107 117H514" stroke="#FF6B6B" stroke-opacity="0.75" stroke-width="4"/>
+  <path d="M107 143H409" stroke="white" stroke-opacity="0.32" stroke-width="2"/>
+  <text x="105" y="1305" fill="white" fill-opacity="0.9" font-family="Inter, Arial, sans-serif" font-size="92" letter-spacing="0.18em">MAKSIM</text>
+  <text x="105" y="1388" fill="white" fill-opacity="0.42" font-family="Inter, Arial, sans-serif" font-size="28" letter-spacing="0.22em">PORTRAIT PLACEHOLDER</text>
+  <defs>
+    <radialGradient id="bg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(816 237) rotate(112.388) scale(1539.21 1187.54)">
+      <stop stop-color="#111827"/>
+      <stop offset="0.50217" stop-color="#090C11"/>
+      <stop offset="1" stop-color="#040507"/>
+    </radialGradient>
+    <radialGradient id="accent" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(841 305) rotate(90) scale(271)">
+      <stop stop-color="#FF6B6B"/>
+      <stop offset="1" stop-color="#FF6B6B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>
