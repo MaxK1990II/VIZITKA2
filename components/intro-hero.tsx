@@ -48,9 +48,16 @@ export function IntroHero({ onExplore, isReforming = false }: IntroHeroProps) {
       </motion.p>
 
       <motion.h1 className="intro-name" variants={itemVariants}>
-        {PROFILE.name.split("").map((letter, i) => (
-          <span key={`${letter}-${i}`} className="intro-letter">
-            {letter === " " ? "\u00A0" : letter}
+        {PROFILE.name.split(" ").map((word, wi) => (
+          <span key={wi} className="intro-word">
+            {word.split("").map((letter, li) => (
+              <span key={`${wi}-${li}`} className="intro-letter">
+                {letter}
+              </span>
+            ))}
+            {wi < PROFILE.name.split(" ").length - 1 && (
+              <span className="intro-letter">{"\u00A0"}</span>
+            )}
           </span>
         ))}
       </motion.h1>
