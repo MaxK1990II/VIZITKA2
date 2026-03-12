@@ -64,17 +64,17 @@ export function UniverseBackgroundThree({
     camera.position.set(0, 0, isMobile ? 6.6 : 6);
     camera.lookAt(0, 0, 0);
 
-    scene.add(new THREE.HemisphereLight(0xb8dcff, 0x0b1017, isMobile ? 0.72 : 0.95));
+    scene.add(new THREE.HemisphereLight(0xb8dcff, 0x0b1017, isMobile ? 0.79 : 1.04));
 
-    const key = new THREE.DirectionalLight(0xffffff, isMobile ? 1.15 : 1.5);
+    const key = new THREE.DirectionalLight(0xffffff, isMobile ? 1.26 : 1.65);
     key.position.set(6, 8, 7);
     scene.add(key);
 
-    const fill = new THREE.DirectionalLight(0x8bbcff, isMobile ? 0.48 : 0.6);
+    const fill = new THREE.DirectionalLight(0x8bbcff, isMobile ? 0.53 : 0.66);
     fill.position.set(-5, 2, -6);
     scene.add(fill);
 
-    const rim = new THREE.PointLight(0xd7ebff, isMobile ? 0.35 : 0.45, 40);
+    const rim = new THREE.PointLight(0xd7ebff, isMobile ? 0.39 : 0.5, 40);
     rim.position.set(0, 0, 8);
     scene.add(rim);
 
@@ -89,7 +89,7 @@ export function UniverseBackgroundThree({
       clearcoat: 0.58,
       clearcoatRoughness: 0.14,
       emissive: 0x2a4a66,
-      emissiveIntensity: 0.42,
+      emissiveIntensity: 0.46,
       vertexColors: true,
       transparent: true,
       opacity: 1,
@@ -124,7 +124,7 @@ export function UniverseBackgroundThree({
       uValues[i] = i / particleCount;
       vValues[i] = (Math.random() - 0.5) * 0.8;
       radii[i] = 0.012 + Math.random() * 0.028;
-      speeds[i] = 0.05 + Math.random() * 0.12;
+      speeds[i] = 0.042 + Math.random() * 0.10;
       phiAngles[i] = Math.random() * Math.PI * 2;
       phiSpeeds[i] = (Math.random() * 2 - 1) * 0.8;
 
@@ -273,7 +273,7 @@ export function UniverseBackgroundThree({
           0.12
         );
 
-        group.rotation.y += (0.00035 + scroll * 0.0017 + 0.0015 * zoomImpulse + 0.0012 * engaged) * motionScale;
+        group.rotation.y += (0.0003 + scroll * 0.0014 + 0.0012 * zoomImpulse + 0.001 * engaged) * motionScale;
         camera.fov = THREE.MathUtils.lerp(camera.fov, (isMobile ? 64 : 58) * (1 - 0.24 * persistentZoom), 0.12);
         camera.position.z = THREE.MathUtils.lerp(camera.position.z, (isMobile ? 6.6 : 6) * (1 - 0.35 * persistentZoom), 0.12);
         camera.updateProjectionMatrix();
@@ -282,11 +282,11 @@ export function UniverseBackgroundThree({
         const flowFactor = Math.max(1.2 * engaged, THREE.MathUtils.clamp(velEMA * 2.5, 0, 10));
 
         for (let i = 0; i < particleCount; i++) {
-          const chaosU = 0.035 * (0.25 + flowFactor) * dt * motionScale * (Math.sin(i * 17.11 + time * 2.3) + Math.cos(i * 9.97 + time * 1.7));
-          const chaosV = 0.002 * (0.3 + 0.7 * flowFactor) * motionScale * (Math.sin(i * 13.37 + time * 2.1) + Math.cos(i * 7.21 + time * 1.6));
-          uValues[i] = (uValues[i] + speeds[i] * dt * (1.1 + flowFactor) + chaosU) % 1;
+          const chaosU = 0.029 * (0.25 + flowFactor) * dt * motionScale * (Math.sin(i * 17.11 + time * 2.3) + Math.cos(i * 9.97 + time * 1.7));
+          const chaosV = 0.0017 * (0.3 + 0.7 * flowFactor) * motionScale * (Math.sin(i * 13.37 + time * 2.1) + Math.cos(i * 7.21 + time * 1.6));
+          uValues[i] = (uValues[i] + speeds[i] * dt * (0.92 + flowFactor) + chaosU) % 1;
           vValues[i] = THREE.MathUtils.clamp(vValues[i] + chaosV, -0.8, 0.8);
-          phiAngles[i] = (phiAngles[i] + phiSpeeds[i] * dt * (1 + 0.8 * flowFactor)) % (Math.PI * 2);
+          phiAngles[i] = (phiAngles[i] + phiSpeeds[i] * dt * (0.83 + 0.67 * flowFactor)) % (Math.PI * 2);
         }
 
         for (let i = 0; i < particleCount; i++) {
@@ -336,7 +336,7 @@ export function UniverseBackgroundThree({
           mesh.setMatrixAt(i, dummy.matrix);
         }
         mesh.instanceMatrix.needsUpdate = true;
-        material.emissiveIntensity = isMobile ? 0.32 : 0.42 + 0.1 * Math.sin(time * 1.2);
+        material.emissiveIntensity = isMobile ? 0.36 : 0.46 + 0.1 * Math.sin(time * 1.2);
         material.opacity = 1;
       }
 
