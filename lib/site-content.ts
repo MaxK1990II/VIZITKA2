@@ -27,12 +27,12 @@ export type ProjectItem = {
 
 export const PROFILE = {
   name: "Максим Каночкин",
-  title: "Head of Innovation and Additive Tech",
+  title: "Начальник отдела развития, инноваций и аддитивных технологий",
   company: "Автомобильный завод ГАЗ",
   location: "Нижний Новгород",
   website: "https://www.kanochkinmm.ru",
-  email: "kanochkin@example.com",
-  phone: "+7 000 000 00 00",
+  email: "kanochkinmm@gaz.ru",
+  phone: "+7 953 565 50 88",
   telegram: "@kanochkin",
   photoSrc: "/portrait-placeholder.svg",
   photoAlt: "Портрет Максима Каночкина",
@@ -168,8 +168,9 @@ export const PROFILE = {
 
   contacts: [
     { id: "website", label: "Сайт", value: "kanochkinmm.ru", href: "https://www.kanochkinmm.ru" },
-    { id: "email", label: "Email", value: "kanochkin@example.com", href: "mailto:kanochkin@example.com" },
+    { id: "email", label: "Email", value: "kanochkinmm@gaz.ru", href: "mailto:kanochkinmm@gaz.ru" },
     { id: "telegram", label: "Telegram", value: "@kanochkin", href: "https://t.me/kanochkin" },
+    { id: "phone", label: "Телефон", value: "+7 953 565 50 88", href: "tel:+79535655088" },
     { id: "company", label: "Компания", value: "Автомобильный завод ГАЗ" },
     { id: "location", label: "Город", value: "Нижний Новгород" },
   ] satisfies ContactItem[],

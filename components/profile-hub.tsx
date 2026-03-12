@@ -86,6 +86,7 @@ export function ProfileHub({ isMobile, onReturn }: ProfileHubProps) {
 
         <div className="hub-profile-info">
           <h1 className="hub-name">{PROFILE.name}</h1>
+          <p className="hub-title">{PROFILE.title}</p>
           <p className="hub-status">{PROFILE.statusLine}</p>
 
           <div className="hub-actions">
