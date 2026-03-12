@@ -14,7 +14,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.14, delayChildren: 0.25 },
   },
   exit: {
     opacity: 0,
@@ -24,11 +24,11 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.33, 1, 0.68, 1] },
+    transition: { duration: 0.7, ease: [0.33, 1, 0.68, 1] },
   },
 };
 
@@ -62,17 +62,15 @@ export function IntroHero({ onExplore, isReforming = false }: IntroHeroProps) {
         ))}
       </motion.h1>
 
-      <motion.div variants={itemVariants}>
+      <motion.div className="intro-roles-wrap" variants={itemVariants}>
+        <span className="intro-roles-line" aria-hidden="true" />
         <PortfolioRoles roles={PROFILE.roles} visibleCount={3} />
       </motion.div>
 
-      <motion.div className="intro-chevron-row" variants={itemVariants}>
-        <ChevronDown className="intro-chevron" size={28} />
+      <motion.div className="intro-bottom" variants={itemVariants}>
+        <ChevronDown className="intro-chevron" size={24} />
+        <p className="intro-hint">нажмите в любое место</p>
       </motion.div>
-
-      <motion.p className="intro-hint" variants={itemVariants}>
-        нажмите в любое место
-      </motion.p>
     </motion.main>
   );
 }
