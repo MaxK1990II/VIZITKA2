@@ -22,21 +22,18 @@ export function PortfolioRoles({
   visibleCount,
   compact = false,
 }: PortfolioRolesProps) {
-  const [items, setItems] = useState<RoleState[]>(() => [
-    { current: roles[0], upcoming: roles[0], phase: "idle" },
-    { current: roles[1] ?? roles[0], upcoming: roles[1] ?? roles[0], phase: "idle" },
-    { current: roles[2] ?? roles[0], upcoming: roles[2] ?? roles[0], phase: "idle" },
-  ]);
+  const [items, setItems] = useState<RoleState[]>(() => {
+    const initial: string[] = [];
+    for (let i = 0; i < 3; i++) {
+      const candidates = roles.filter((r) => !initial.includes(r));
+      initial.push(
+        candidates[Math.floor(Math.random() * candidates.length)] ?? roles[i % roles.length]
+      );
+    }
+    return initial.map((r) => ({ current: r, upcoming: r, phase: "idle" as const }));
+  });
 
   useEffect(() => {
-    const getRandomRole = (currentRole: string) => {
-      const availableRoles = roles.filter((role) => role !== currentRole);
-      return (
-        availableRoles[Math.floor(Math.random() * availableRoles.length)] ??
-        currentRole
-      );
-    };
-
     const ranges = [
       { min: 3200, max: 5200 },
       { min: 3900, max: 6600 },
@@ -47,17 +44,30 @@ export function PortfolioRoles({
 
     const schedule = (index: number) => {
       const timeout = window.setTimeout(() => {
-        setItems((prev) =>
-          prev.map((item, itemIndex) =>
-            itemIndex === index
-              ? {
-                  ...item,
-                  phase: "out",
-                  upcoming: getRandomRole(item.current),
-                }
+        setItems((prev) => {
+          const othersVisible = prev
+            .filter((_, i) => i !== index)
+            .map((item) =>
+              item.phase === "out" ? item.upcoming : item.current
+            );
+          const excluded = new Set([prev[index].current, ...othersVisible]);
+          const candidates = roles.filter((r) => !excluded.has(r));
+          const next =
+            candidates[Math.floor(Math.random() * candidates.length)] ??
+            roles.filter((r) => r !== prev[index].current)[
+              Math.floor(
+                Math.random() *
+                  roles.filter((r) => r !== prev[index].current).length
+              )
+            ] ??
+            prev[index].current;
+
+          return prev.map((item, i) =>
+            i === index
+              ? { ...item, phase: "out" as const, upcoming: next }
               : item
-          )
-        );
+          );
+        });
 
         const outTimer = window.setTimeout(() => {
           setItems((prev) =>
