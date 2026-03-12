@@ -12,7 +12,7 @@ import type { ScenePhase } from "@/lib/site-content";
 
 const IMPLODE_MS = 800;
 const BURST_MS = 600;
-const REFORM_MS = 1400;
+const REFORM_MS = 1800;
 
 export function PortfolioShell() {
   const { isMobile, isCoarsePointer } = useDeviceProfile();

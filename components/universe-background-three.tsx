@@ -161,6 +161,7 @@ export function UniverseBackgroundThree({
     let implodeInited = false;
     let burstInited = false;
     let reformInited = false;
+    let introBlend = 0;
 
     const sampleMobius = (
       u: number, v: number, phi: number, time: number, out: THREE.Vector3
@@ -259,6 +260,10 @@ export function UniverseBackgroundThree({
         burstInited = false;
         reformInited = false;
 
+        if (introBlend > 0) {
+          introBlend = Math.max(0, introBlend - dt * 1.2);
+        }
+
         const scroll = getScrollNorm();
         const rawVel = (scroll - previousScroll) / Math.max(0.001, dt);
         previousScroll = scroll;
@@ -326,10 +331,17 @@ export function UniverseBackgroundThree({
 
         for (let i = 0; i < particleCount; i++) {
           sampleMobius(uValues[i], vValues[i], phiAngles[i], time, current);
-          posX[i] = current.x;
-          posY[i] = current.y;
-          posZ[i] = current.z;
-          dummy.position.copy(current);
+          if (introBlend > 0.001) {
+            const blend = 1 - introBlend;
+            posX[i] = THREE.MathUtils.lerp(posX[i], current.x, blend * 0.15 + 0.02);
+            posY[i] = THREE.MathUtils.lerp(posY[i], current.y, blend * 0.15 + 0.02);
+            posZ[i] = THREE.MathUtils.lerp(posZ[i], current.z, blend * 0.15 + 0.02);
+          } else {
+            posX[i] = current.x;
+            posY[i] = current.y;
+            posZ[i] = current.z;
+          }
+          dummy.position.set(posX[i], posY[i], posZ[i]);
           dummy.scale.setScalar(radii[i]);
           dummy.rotation.set(0, 0, 0);
           dummy.updateMatrix();
@@ -346,23 +358,31 @@ export function UniverseBackgroundThree({
           implodeInited = true;
           transitionProgress = 0;
           for (let i = 0; i < particleCount; i++) {
-            const hash = Math.sin(i * 91.17 + 7.31) * 43758.5453;
-            const jitterAngle1 = (hash - Math.floor(hash)) * Math.PI * 2;
-            const hash2 = Math.sin(i * 43.23 + 11.07) * 28461.327;
-            const jitterAngle2 = Math.acos(2 * (hash2 - Math.floor(hash2)) - 1);
-            const jitterStrength = 1.5 + (Math.sin(i * 7.77) * 0.5 + 0.5) * 3.5;
-
-            velX[i] = Math.sin(jitterAngle2) * Math.cos(jitterAngle1) * jitterStrength;
-            velY[i] = Math.sin(jitterAngle2) * Math.sin(jitterAngle1) * jitterStrength;
-            velZ[i] = Math.cos(jitterAngle2) * jitterStrength;
+            velX[i] = 0;
+            velY[i] = 0;
+            velZ[i] = 0;
           }
         }
 
         transitionProgress = Math.min(1, transitionProgress + dt * 1.25);
-        const ease = transitionProgress * transitionProgress;
+
+        const rampIn = Math.min(1, transitionProgress * 5);
+        const ease = rampIn * transitionProgress * transitionProgress;
+
         group.rotation.y += 0.005 * (1 + ease * 6) * motionScale;
 
         for (let i = 0; i < particleCount; i++) {
+          if (rampIn < 1) {
+            const chaosU = 0.029 * 0.25 * dt * motionScale * (Math.sin(i * 17.11 + time * 2.3) + Math.cos(i * 9.97 + time * 1.7));
+            uValues[i] = (uValues[i] + speeds[i] * dt * 0.92 * (1 - rampIn) + chaosU * (1 - rampIn)) % 1;
+            phiAngles[i] = (phiAngles[i] + phiSpeeds[i] * dt * 0.83 * (1 - rampIn)) % (Math.PI * 2);
+
+            sampleMobius(uValues[i], vValues[i], phiAngles[i], time, tmp);
+            posX[i] = THREE.MathUtils.lerp(posX[i], tmp.x, 0.3);
+            posY[i] = THREE.MathUtils.lerp(posY[i], tmp.y, 0.3);
+            posZ[i] = THREE.MathUtils.lerp(posZ[i], tmp.z, 0.3);
+          }
+
           const tx = implodeCenter.x;
           const ty = implodeCenter.y;
           const tz = implodeCenter.z;
@@ -372,17 +392,19 @@ export function UniverseBackgroundThree({
           const dz = tz - posZ[i];
           const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) + 0.001;
 
-          const pullStrength = ease * 12 + 2;
+          const pullStrength = ease * 14;
           velX[i] += (dx / dist) * pullStrength * dt;
           velY[i] += (dy / dist) * pullStrength * dt;
           velZ[i] += (dz / dist) * pullStrength * dt;
 
-          const turbulence = (1 - ease) * 2;
-          velX[i] += Math.sin(time * 8 + i * 3.17) * turbulence * dt;
-          velY[i] += Math.cos(time * 7 + i * 2.43) * turbulence * dt;
-          velZ[i] += Math.sin(time * 9 + i * 1.89) * turbulence * dt;
+          const jitter = ease * (1 - ease) * 4;
+          const hash1 = Math.sin(i * 91.17 + 7.31) * 43758.5453;
+          const hash2 = Math.sin(i * 43.23 + 11.07) * 28461.327;
+          velX[i] += Math.sin(time * 8 + hash1) * jitter * dt;
+          velY[i] += Math.cos(time * 7 + hash2) * jitter * dt;
+          velZ[i] += Math.sin(time * 9 + i * 1.89) * jitter * dt;
 
-          const damping = 0.92 - ease * 0.08;
+          const damping = 0.93 - ease * 0.07;
           velX[i] *= damping;
           velY[i] *= damping;
           velZ[i] *= damping;
@@ -400,7 +422,7 @@ export function UniverseBackgroundThree({
           mesh.setMatrixAt(i, dummy.matrix);
         }
         mesh.instanceMatrix.needsUpdate = true;
-        material.emissiveIntensity = 0.42 + ease * 0.8;
+        material.emissiveIntensity = 0.46 + ease * 0.7;
         material.opacity = 1;
       }
 
@@ -503,7 +525,7 @@ export function UniverseBackgroundThree({
           }
         }
 
-        transitionProgress = Math.min(1, transitionProgress + dt * 0.72);
+        transitionProgress = Math.min(1, transitionProgress + dt * 0.55);
         const ease = transitionProgress * transitionProgress * (3 - 2 * transitionProgress);
 
         group.rotation.y += (0.0002 + ease * 0.002) * motionScale;
@@ -512,17 +534,16 @@ export function UniverseBackgroundThree({
         camera.position.z = THREE.MathUtils.lerp(camera.position.z, isMobile ? 6.6 : 6, 0.06);
         camera.updateProjectionMatrix();
 
+        const lerpRate = 0.008 + ease * ease * 0.14;
+
         for (let i = 0; i < particleCount; i++) {
           sampleMobius(uValues[i], vValues[i], phiAngles[i], time, tmp);
-          const targetX = tmp.x;
-          const targetY = tmp.y;
-          const targetZ = tmp.z;
 
-          posX[i] = THREE.MathUtils.lerp(posX[i], targetX, ease * 0.06 + 0.005);
-          posY[i] = THREE.MathUtils.lerp(posY[i], targetY, ease * 0.06 + 0.005);
-          posZ[i] = THREE.MathUtils.lerp(posZ[i], targetZ, ease * 0.06 + 0.005);
+          posX[i] = THREE.MathUtils.lerp(posX[i], tmp.x, lerpRate);
+          posY[i] = THREE.MathUtils.lerp(posY[i], tmp.y, lerpRate);
+          posZ[i] = THREE.MathUtils.lerp(posZ[i], tmp.z, lerpRate);
 
-          const spiralT = (1 - ease) * 0.8;
+          const spiralT = (1 - ease) * 0.6;
           posX[i] += Math.sin(time * 2 + i * 0.47) * spiralT * dt;
           posY[i] += Math.cos(time * 1.7 + i * 0.33) * spiralT * dt;
 
@@ -536,7 +557,9 @@ export function UniverseBackgroundThree({
         mesh.instanceMatrix.needsUpdate = true;
 
         material.opacity = THREE.MathUtils.lerp(0.65, 1, ease);
-        material.emissiveIntensity = THREE.MathUtils.lerp(0.2, 0.42, ease);
+        material.emissiveIntensity = THREE.MathUtils.lerp(0.2, 0.46, ease);
+
+        introBlend = 1;
       }
 
       renderer.render(scene, camera);
