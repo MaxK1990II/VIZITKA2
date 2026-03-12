@@ -32,6 +32,7 @@ export const PROFILE = {
   location: "Нижний Новгород",
   website: "https://www.kanochkinmm.ru",
   email: "kanochkin@example.com",
+  phone: "+7 000 000 00 00",
   telegram: "@kanochkin",
   photoSrc: "/portrait-placeholder.svg",
   photoAlt: "Портрет Максима Каночкина",
@@ -167,6 +168,8 @@ export const PROFILE = {
 
   contacts: [
     { id: "website", label: "Сайт", value: "kanochkinmm.ru", href: "https://www.kanochkinmm.ru" },
+    { id: "email", label: "Email", value: "kanochkin@example.com", href: "mailto:kanochkin@example.com" },
+    { id: "telegram", label: "Telegram", value: "@kanochkin", href: "https://t.me/kanochkin" },
     { id: "company", label: "Компания", value: "Автомобильный завод ГАЗ" },
     { id: "location", label: "Город", value: "Нижний Новгород" },
   ] satisfies ContactItem[],

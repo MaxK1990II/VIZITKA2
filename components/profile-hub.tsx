@@ -4,10 +4,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowLeft, Download, ExternalLink, Share2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { useState } from "react";
 
 import { PROFILE } from "@/lib/site-content";
-import { downloadVCard, shareOrDownloadVCard } from "@/lib/vcard";
+import { downloadVCard, saveContact } from "@/lib/vcard";
 import { PowerStackSection } from "@/components/power-stack-section";
 import { TechStack } from "@/components/tech-stack";
 import { ContactButton } from "@/components/contact-button";
@@ -31,17 +30,11 @@ const sectionVariants = {
 };
 
 export function ProfileHub({ isMobile, onReturn }: ProfileHubProps) {
-  const [shareState, setShareState] = useState<
-    "idle" | "shared" | "downloaded"
-  >("idle");
-
-  const handleShare = async () => {
+  const handleSaveBottom = async () => {
     try {
-      const result = await shareOrDownloadVCard();
-      setShareState(result);
+      await saveContact();
     } catch {
       downloadVCard();
-      setShareState("downloaded");
     }
   };
 
@@ -96,16 +89,8 @@ export function ProfileHub({ isMobile, onReturn }: ProfileHubProps) {
           <p className="hub-status">{PROFILE.statusLine}</p>
 
           <div className="hub-actions">
-            <ContactButton isMobile={isMobile} onAction={handleShare} />
+            <ContactButton isMobile={isMobile} />
           </div>
-
-          {shareState !== "idle" && (
-            <p className="hub-feedback">
-              {shareState === "shared"
-                ? "Контакт отправлен."
-                : "Файл визитки сохранён."}
-            </p>
-          )}
         </div>
       </motion.section>
 
@@ -217,26 +202,15 @@ export function ProfileHub({ isMobile, onReturn }: ProfileHubProps) {
             ))}
 
             <div className="contacts-actions">
-              {isMobile ? (
-                <button
-                  type="button"
-                  className="contact-cta-primary"
-                  onClick={handleShare}
-                >
-                  <Share2 size={16} />
-                  Добавить в контакты
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="contact-cta-primary"
-                  data-hover
-                  onClick={() => downloadVCard()}
-                >
-                  <Download size={16} />
-                  Сохранить контакт
-                </button>
-              )}
+              <button
+                type="button"
+                className="contact-cta-primary"
+                data-hover
+                onClick={handleSaveBottom}
+              >
+                {isMobile ? <Share2 size={16} /> : <Download size={16} />}
+                Сохранить контакт
+              </button>
             </div>
           </div>
 
