@@ -1,27 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import { CustomCursor } from "@/components/custom-cursor";
 import { IntroHero } from "@/components/intro-hero";
-import { ProfileHub } from "@/components/profile-hub";
+import { BentoProfileHub } from "@/components/bento-profile-hub";
 import { UniverseBackgroundThree } from "@/components/universe-background-three";
 import { useDeviceProfile } from "@/hooks/use-device-profile";
+import { LocaleProvider } from "@/lib/i18n/locale-provider";
 import type { ScenePhase } from "@/lib/site-content";
 
 const IMPLODE_MS = 800;
 const BURST_MS = 600;
 const REFORM_MS = 1800;
 
-export function PortfolioShell() {
+function PortfolioShellInner() {
   const { isMobile, isCoarsePointer } = useDeviceProfile();
-  const [mounted, setMounted] = useState(false);
   const [phase, setPhase] = useState<ScenePhase>("intro");
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleExplore = useCallback(() => {
     if (phase !== "intro") return;
@@ -44,8 +40,6 @@ export function PortfolioShell() {
     }, REFORM_MS);
   }, [phase]);
 
-  if (!mounted) return null;
-
   const showCursor = !isMobile && !isCoarsePointer;
 
   return (
@@ -64,7 +58,7 @@ export function PortfolioShell() {
             isReforming={phase === "reform"}
           />
         ) : phase === "nebula" ? (
-          <ProfileHub
+          <BentoProfileHub
             key="hub"
             isMobile={isMobile}
             onReturn={handleReturn}
@@ -72,5 +66,13 @@ export function PortfolioShell() {
         ) : null}
       </AnimatePresence>
     </>
+  );
+}
+
+export function PortfolioShell() {
+  return (
+    <LocaleProvider>
+      <PortfolioShellInner />
+    </LocaleProvider>
   );
 }

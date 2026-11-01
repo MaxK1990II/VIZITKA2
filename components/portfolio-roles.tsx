@@ -22,16 +22,13 @@ export function PortfolioRoles({
   visibleCount,
   compact = false,
 }: PortfolioRolesProps) {
-  const [items, setItems] = useState<RoleState[]>(() => {
-    const initial: string[] = [];
-    for (let i = 0; i < 3; i++) {
-      const candidates = roles.filter((r) => !initial.includes(r));
-      initial.push(
-        candidates[Math.floor(Math.random() * candidates.length)] ?? roles[i % roles.length]
-      );
-    }
-    return initial.map((r) => ({ current: r, upcoming: r, phase: "idle" as const }));
-  });
+  const [items, setItems] = useState<RoleState[]>(() =>
+    roles.slice(0, 3).map((role) => ({
+      current: role,
+      upcoming: role,
+      phase: "idle" as const,
+    })),
+  );
 
   useEffect(() => {
     const ranges = [

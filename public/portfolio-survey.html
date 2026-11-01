@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Глубинный профессиональный бриф: Максим Каночкин</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: #111b31;
+      --surface-2: #172541;
+      --border: #2a3a61;
+      --text: #ecf2ff;
+      --muted: #a8b8da;
+      --accent: #4c7dff;
+      --accent-2: #6ce0ff;
+      --danger: #ff7474;
+      --success: #4ade80;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at 10% 5%, #1a2f5a, var(--bg) 45%);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .progress-container {
+      margin-bottom: 30px;
+      background: #0e1830;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      height: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      margin-top: -20px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--surface), var(--surface-2));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .step {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      margin: 0 0 5px 0;
+      font-size: 24px;
+      color: var(--accent-2);
+    }
+
+    .step-desc {
+      margin: 0 0 25px 0;
+      color: var(--muted);
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 15px;
+    }
+
+    .q-group {
+      margin-bottom: 25px;
+    }
+
+    .q-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .q-hint {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+      font-weight: normal;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      background: #0d1529;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 12px 15px;
+      font-family: inherit;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .option-card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+
+    .option-card:hover {
+      border-color: var(--muted);
+    }
+
+    .option-card input {
+      margin-top: 4px;
+      cursor: pointer;
+    }
+
+    .option-card span {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .other-input {
+      margin-top: 10px;
+      display: none;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    button {
+      background: #101a31;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover:not(:disabled) {
+      background: #1a294d;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    button.primary {
+      background: linear-gradient(90deg, var(--accent), #2188f1);
+      border: none;
+    }
+
+    button.primary:hover {
+      background: linear-gradient(90deg, #5c8aff, #3a98f5);
+    }
+
+    .result-container {
+      display: none;
+    }
+
+    .result-container.active {
+      display: block;
+    }
+
+    #result-json {
+      width: 100%;
+      height: 400px;
+      background: #0d1529;
+      color: #a8b8da;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Глубинный бриф: Профессиональное портфолио</h1>
+      <p class="subtitle">Опрос для сбора фактуры, кейсов и достижений, чтобы составить мощное резюме/портфолио уровня топ-компаний.</p>
+    </header>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="progress-text" id="progress-text">Шаг 1 из 8</div>
+
+    <div class="card">
+      <form id="portfolio-form">
+        
+        <!-- ШАГ 1 -->
+        <div class="step active" data-step="1">
+          <h2>1. Идентичность и позиционирование</h2>
+          <p class="step-desc">Как вы себя определяете на рынке труда и в профессиональном сообществе.</p>
+          
+          <div class="q-group">
+            <label class="q-label">Кто вы в одном предложении?
+              <span class="q-hint">Например: "R&D лидер, внедряющий AI и робототехнику на реальном производстве"</span>
+            </label>
+            <input type="text" name="core_identity" placeholder="Ваш ответ..." />
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Выберите 3-4 роли, которые максимально точно вас описывают:</label>
+            <div class="options-grid">
+              <label class="option-card"><input type="checkbox" name="roles" value="R&D Руководитель" /> <span>R&D Руководитель</span></label>
+              <label class="option-card"><input type="checkbox" name="roles" value="AI/CV Инженер" /> <span>AI/CV Инженер</span></label>
+              <label class="option-card"><input type="checkbox" name="roles" value="Инженер-робототехник" /> <span>Инженер-робототехник</span></label>
+              <label class="option-card"><input type="checkbox" name="roles" value="Системный архитектор" /> <span>Системный архитектор</span></label>
+              <label class="option-card"><input type="checkbox" name="roles" value="Fullstack разработчик" /> <span>Fullstack разработчик</span></label>
+              <label class="option-card"><input type="checkbox" name="roles" value="Специалист по аддитивным технологиям" /> <span>Специалист по аддитивным технологиям</span></label>
+              <label class="option-card"><input type="checkbox" name="roles" value="Технический эксперт/Аудитор" /> <span>Технический эксперт/Аудитор</span></label>
+              <label class="option-card"><input type="checkbox" name="roles" value="Product Owner (Tech)" /> <span>Product Owner (Tech)</span></label>
+            </div>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">В чем ваше главное отличие (Unfair Advantage) от других инженеров/руководителей?
+              <span class="q-hint">Что вы делаете такого, что другие не могут или боятся делать?</span>
+            </label>
+            <textarea name="unfair_advantage" placeholder="Например: Я не просто пишу код, я иду в цех и добиваюсь, чтобы модель работала в условиях грязи, шума и нестабильного освещения..."></textarea>
+          </div>
+        </div>
+
+        <!-- ШАГ 2 -->
+        <div class="step" data-step="2">
+          <h2>2. Экспертиза и Hard Skills</h2>
+          <p class="step-desc">В чем вы действительно разбираетесь на уровне Senior/Lead.</p>
+
+          <div class="q-group">
+            <label class="q-label">Оцените свой уровень в ключевых доменах (отметьте те, где вы эксперт):</label>
+            <div class="options-grid">
+              <label class="option-card"><input type="checkbox" name="domains" value="Computer Vision (YOLO, DINO, etc)" /> <span>Computer Vision (детекция, сегментация)</span></label>
+              <label class="option-card"><input type="checkbox" name="domains" value="Edge AI / Локальные LLM" /> <span>Edge AI / Локальные LLM (Qwen, Vosk)</span></label>
+              <label class="option-card"><input type="checkbox" name="domains" value="Программирование коботов" /> <span>Программирование коботов (JAKA, UR)</span></label>
+              <label class="option-card"><input type="checkbox" name="domains" value="Оффлайн-программирование (RoboDK)" /> <span>Оффлайн-программирование (RoboDK)</span></label>
+              <label class="option-card"><input type="checkbox" name="domains" value="Fullstack разработка (React, Node, Python)" /> <span>Fullstack (React, Node.js, Python)</span></label>
+              <label class="option-card"><input type="checkbox" name="domains" value="3D-печать и реверс-инжиниринг" /> <span>3D-печать и реверс-инжиниринг</span></label>
+              <label class="option-card"><input type="checkbox" name="domains" value="Проектирование архитектуры IoT" /> <span>Проектирование архитектуры IoT</span></label>
+              <label class="option-card"><input type="checkbox" name="domains" value="Управление R&D командой" /> <span>Управление R&D командой</span></label>
+            </div>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">С каким стеком технологий вы работаете "руками" прямо сейчас?
+              <span class="q-hint">Перечислите языки, фреймворки, железо</span>
+            </label>
+            <textarea name="tech_stack_current" placeholder="Python, React, YOLOv8, RoboDK, JAKA, Bambu Lab..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Какую самую сложную техническую проблему вы решили за последний год?
+              <span class="q-hint">Опишите суть проблемы и как вы ее обошли</span>
+            </label>
+            <textarea name="hardest_tech_problem" placeholder="Расскажите о нестандартном решении..."></textarea>
+          </div>
+        </div>
+
+        <!-- ШАГ 3 -->
+        <div class="step" data-step="3">
+          <h2>3. Главные достижения (Кейс 1: AI & Vision)</h2>
+          <p class="step-desc">Разбираем ваш самый сильный проект в сфере искусственного интеллекта.</p>
+
+          <div class="q-group">
+            <label class="q-label">Название проекта / Суть задачи</label>
+            <input type="text" name="case1_title" placeholder="Например: Система голосового управления и CV-мониторинга для цеха окраски" />
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Какая была проблема (Боль бизнеса)?</label>
+            <textarea name="case1_problem" placeholder="Шум в цехе не позволял..., облачные решения были запрещены из-за безопасности..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Что конкретно вы сделали? (Ваша роль и решение)</label>
+            <textarea name="case1_solution" placeholder="Спроектировал архитектуру Edge AI, развернул локальные модели Vosk/Qwen, написал пайплайн..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Результат в цифрах или бизнес-метриках
+              <span class="q-hint">Если нельзя точные цифры — пишите проценты, "в Х раз", или качественный сдвиг</span>
+            </label>
+            <textarea name="case1_result" placeholder="Обеспечили 100% автономность без интернета, сократили время реакции оператора на Х секунд..."></textarea>
+          </div>
+        </div>
+
+        <!-- ШАГ 4 -->
+        <div class="step" data-step="4">
+          <h2>4. Главные достижения (Кейс 2: Робототехника)</h2>
+          <p class="step-desc">Разбираем ваш опыт автоматизации и внедрения роботов.</p>
+
+          <div class="q-group">
+            <label class="q-label">Название проекта / Суть задачи</label>
+            <input type="text" name="case2_title" placeholder="Например: Внедрение коботов JAKA для нанесения мастики на кузова" />
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Какая была проблема (Боль бизнеса)?</label>
+            <textarea name="case2_problem" placeholder="Человеческий фактор приводил к браку, сложная геометрия кузова..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Что конкретно вы сделали? (Ваша роль и решение)</label>
+            <textarea name="case2_solution" placeholder="Смоделировал траектории в RoboDK, провел пусконаладку, интегрировал с конвейером..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Результат в цифрах или бизнес-метриках</label>
+            <textarea name="case2_result" placeholder="Исключили ручной труд на критическом участке, снизили количество дефектов на Х%..."></textarea>
+          </div>
+        </div>
+
+        <!-- ШАГ 5 -->
+        <div class="step" data-step="5">
+          <h2>5. Управление и Лидерство</h2>
+          <p class="step-desc">Как вы руководите процессами и людьми.</p>
+
+          <div class="q-group">
+            <label class="q-label">Какой у вас масштаб ответственности?
+              <span class="q-hint">Размер команды, бюджеты (если можно), количество площадок/цехов</span>
+            </label>
+            <textarea name="leadership_scale" placeholder="Руковожу отделом из Х человек, отвечаю за R&D на заводе с N тысячами сотрудников..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Как вы принимаете решения о внедрении технологий?
+              <span class="q-hint">Ваш подход к выбору стека, оценке рисков, тестированию гипотез</span>
+            </label>
+            <textarea name="decision_making" placeholder="Сначала быстрый PoC, проверка в реальных условиях, только потом масштабирование..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Чем вы гордитесь как руководитель?
+              <span class="q-hint">Вырастили специалистов, выстроили процесс с нуля, создали Центр компетенций...</span>
+            </label>
+            <textarea name="leadership_pride" placeholder="Создал Центр аддитивных технологий с нуля..."></textarea>
+          </div>
+        </div>
+
+        <!-- ШАГ 6 -->
+        <div class="step" data-step="6">
+          <h2>6. Признание и Экспертность</h2>
+          <p class="step-desc">Факты, подтверждающие ваш статус на рынке.</p>
+
+          <div class="q-group">
+            <label class="q-label">В каких конкурсах/хакатонах вы участвовали как эксперт или судья?</label>
+            <textarea name="expert_judging" placeholder="Судья на международных инженерных соревнованиях, оценка проектов по робототехнике..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Есть ли у вас публикации, патенты, выступления на профильных конференциях?</label>
+            <textarea name="expert_public" placeholder="Выступал там-то, рассказывал о том-то..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Кого вы менторите или обучаете?</label>
+            <textarea name="expert_mentoring" placeholder="Наставничество молодых инженеров, формирование кадрового резерва..."></textarea>
+          </div>
+        </div>
+
+        <!-- ШАГ 7 -->
+        <div class="step" data-step="7">
+          <h2>7. Карьерные цели и Ожидания</h2>
+          <p class="step-desc">Для чего мы собираем это портфолио? Кто его будет читать?</p>
+
+          <div class="q-group">
+            <label class="q-label">Кто целевая аудитория этого портфолио?</label>
+            <div class="options-grid">
+              <label class="option-card"><input type="checkbox" name="target_audience" value="HR топ-тех компаний (Яндекс, Сбер, VK)" /> <span>HR топ-тех компаний (Яндекс, Сбер, VK)</span></label>
+              <label class="option-card"><input type="checkbox" name="target_audience" value="CEO/CTO промышленных холдингов" /> <span>CEO/CTO промышленных холдингов</span></label>
+              <label class="option-card"><input type="checkbox" name="target_audience" value="Зарубежные рекрутеры (Relocate)" /> <span>Зарубежные рекрутеры (Relocate)</span></label>
+              <label class="option-card"><input type="checkbox" name="target_audience" value="Партнеры для консалтинга/B2B" /> <span>Партнеры для консалтинга/B2B</span></label>
+            </div>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Какая позиция/роль вас интересует в будущем?
+              <span class="q-hint">Куда вы целитесь? (CTO, Head of AI, Lead Robotics Engineer...)</span>
+            </label>
+            <input type="text" name="future_role" placeholder="Например: Head of R&D / CTO в Tech-компании" />
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Что для вас критически важно в новой компании/проекте?
+              <span class="q-hint">Культура, масштаб задач, свобода принятия решений...</span>
+            </label>
+            <textarea name="job_expectations" placeholder="Важно отсутствие бюрократии при тестировании гипотез..."></textarea>
+          </div>
+        </div>
+
+        <!-- ШАГ 8 -->
+        <div class="step" data-step="8">
+          <h2>8. Личное и Soft Skills</h2>
+          <p class="step-desc">То, что делает вас живым человеком, а не просто функцией.</p>
+
+          <div class="q-group">
+            <label class="q-label">Ваши профессиональные принципы (3-4 правила, которые вы не нарушаете)</label>
+            <textarea name="principles" placeholder="1. Не внедрять ИИ ради ИИ. 2. Безопасность людей важнее скорости..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Как коллеги или подчиненные охарактеризовали бы ваш стиль работы?
+              <span class="q-hint">Например: требовательный, но справедливый; всегда готов залезть в код вместе с командой...</span>
+            </label>
+            <textarea name="soft_skills" placeholder="Ваш ответ..."></textarea>
+          </div>
+
+          <div class="q-group">
+            <label class="q-label">Что вас по-настоящему драйвит в профессии?</label>
+            <textarea name="passion" placeholder="Видеть, как написанный мной код заставляет двигаться многотонную железку..."></textarea>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button type="button" id="btn-prev" disabled>Назад</button>
+          <button type="button" id="btn-next" class="primary">Далее</button>
+        </div>
+      </form>
+
+      <div class="result-container" id="result-container">
+        <h2>Опрос завершен!</h2>
+        <p class="step-desc">Все данные собраны. Скопируйте этот JSON — на его основе мы соберем идеальное портфолио/резюме.</p>
+        
+        <textarea id="result-json" readonly></textarea>
+        
+        <button type="button" class="primary copy-btn" id="btn-copy">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Скопировать данные
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const steps = document.querySelectorAll('.step');
+    const btnNext = document.getElementById('btn-next');
+    const btnPrev = document.getElementById('btn-prev');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const form = document.getElementById('portfolio-form');
+    const resultContainer = document.getElementById('result-container');
+    const resultJson = document.getElementById('result-json');
+    const btnCopy = document.getElementById('btn-copy');
+    
+    let currentStep = 0;
+    const totalSteps = steps.length;
+
+    function updateUI() {
+      steps.forEach((step, index) => {
+        if (index === currentStep) {
+          step.classList.add('active');
+        } else {
+          step.classList.remove('active');
+        }
+      });
+
+      btnPrev.disabled = currentStep === 0;
+      
+      if (currentStep === totalSteps - 1) {
+        btnNext.textContent = 'Завершить и получить результат';
+      } else {
+        btnNext.textContent = 'Далее';
+      }
+
+      const progress = ((currentStep + 1) / totalSteps) * 100;
+      progressBar.style.width = `${progress}%`;
+      progressText.textContent = `Шаг ${currentStep + 1} из ${totalSteps}`;
+    }
+
+    btnNext.addEventListener('click', () => {
+      if (currentStep < totalSteps - 1) {
+        currentStep++;
+        updateUI();
+        window.scrollTo(0, 0);
+      } else {
+        generateJSON();
+      }
+    });
+
+    btnPrev.addEventListener('click', () => {
+      if (currentStep > 0) {
+        currentStep--;
+        updateUI();
+        window.scrollTo(0, 0);
+      }
+    });
+
+    function generateJSON() {
+      const formData = new FormData(form);
+      const data = {};
+      
+      // Обработка чекбоксов (группировка в массивы)
+      for (let [key, value] of formData.entries()) {
+        if (data[key]) {
+          if (!Array.isArray(data[key])) {
+            data[key] = [data[key]];
+          }
+          data[key].push(value);
+        } else {
+          // Если это чекбокс, который встретился первый раз, но их может быть несколько
+          const inputs = form.querySelectorAll(`input[name="${key}"]`);
+          if (inputs.length > 1 && inputs[0].type === 'checkbox') {
+             data[key] = [value];
+          } else {
+             data[key] = value;
+          }
+        }
+      }
+
+      // Структурируем для красоты
+      const structuredData = {
+        meta: {
+          generated_at: new Date().toISOString(),
+          purpose: "Professional Portfolio / CV Data Collection"
+        },
+        positioning: {
+          core_identity: data.core_identity || "",
+          roles: data.roles || [],
+          unfair_advantage: data.unfair_advantage || ""
+        },
+        expertise: {
+          domains: data.domains || [],
+          tech_stack_current: data.tech_stack_current || "",
+          hardest_tech_problem: data.hardest_tech_problem || ""
+        },
+        cases: [
+          {
+            type: "AI & Vision",
+            title: data.case1_title || "",
+            problem: data.case1_problem || "",
+            solution: data.case1_solution || "",
+            result: data.case1_result || ""
+          },
+          {
+            type: "Robotics",
+            title: data.case2_title || "",
+            problem: data.case2_problem || "",
+            solution: data.case2_solution || "",
+            result: data.case2_result || ""
+          }
+        ],
+        leadership: {
+          scale: data.leadership_scale || "",
+          decision_making: data.decision_making || "",
+          pride: data.leadership_pride || ""
+        },
+        recognition: {
+          judging: data.expert_judging || "",
+          public_activity: data.expert_public || "",
+          mentoring: data.expert_mentoring || ""
+        },
+        career_goals: {
+          target_audience: data.target_audience || [],
+          future_role: data.future_role || "",
+          expectations: data.job_expectations || ""
+        },
+        personal: {
+          principles: data.principles || "",
+          soft_skills: data.soft_skills || "",
+          passion: data.passion || ""
+        }
+      };
+
+      form.style.display = 'none';
+      document.querySelector('.progress-container').style.display = 'none';
+      document.querySelector('.progress-text').style.display = 'none';
+      
+      resultContainer.classList.add('active');
+      resultJson.value = JSON.stringify(structuredData, null, 2);
+      window.scrollTo(0, 0);
+    }
+
+    btnCopy.addEventListener('click', () => {
+      resultJson.select();
+      document.execCommand('copy');
+      
+      const originalText = btnCopy.innerHTML;
+      btnCopy.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Скопировано!';
+      btnCopy.style.background = 'var(--success)';
+      
+      setTimeout(() => {
+        btnCopy.innerHTML = originalText;
+        btnCopy.style.background = '';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

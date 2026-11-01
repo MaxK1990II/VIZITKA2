@@ -1,27 +1,89 @@
 import { PROFILE } from "@/lib/site-content";
 
-function escapeValue(value: string) {
-  return value
-    .replace(/\\/g, "\\\\")
-    .replace(/,/g, "\\,")
-    .replace(/;/g, "\\;")
-    .replace(/\n/g, "\\n");
+/**
+ * Encode a string as UTF-8 Quoted-Printable.
+ * Outlook / Windows Contacts often ignore CHARSET=UTF-8 on raw bytes and
+ * fall back to the system code page (Windows-1251) — QP keeps the file ASCII-safe.
+ */
+function toQuotedPrintable(value: string): string {
+  const bytes = new TextEncoder().encode(value);
+  let out = "";
+
+  for (const byte of bytes) {
+    // Printable ASCII except "=" stays literal; everything else as =XX.
+    if (byte >= 0x21 && byte <= 0x7e && byte !== 0x3d) {
+      out += String.fromCharCode(byte);
+    } else {
+      out += `=${byte.toString(16).toUpperCase().padStart(2, "0")}`;
+    }
+  }
+
+  return out;
+}
+
+/**
+ * Fold long QP values with soft line breaks ("=\r\n"), RFC 2045.
+ *
+ * Do NOT use vCard whitespace folding ("\r\n "). Outlook / Windows Contacts
+ * often ignore those continuations and only decode the first physical line,
+ * truncating Cyrillic to fragments like "Макси" / "Нача" / "Автом".
+ */
+function foldQuotedPrintable(prefix: string, qp: string): string {
+  const max = 75;
+  const lines: string[] = [];
+  let current = prefix;
+  let i = 0;
+
+  while (i < qp.length) {
+    const tokenLen = qp[i] === "=" ? 3 : 1;
+    if (i + tokenLen > qp.length) {
+      // Defensive: malformed trailing "=" — emit literally.
+      current += qp.slice(i);
+      break;
+    }
+    const token = qp.slice(i, i + tokenLen);
+
+    if (current.length + tokenLen > max) {
+      lines.push(`${current}=`);
+      current = "";
+    }
+
+    current += token;
+    i += tokenLen;
+  }
+
+  lines.push(current);
+  return lines.join("\r\n");
+}
+
+function textField(property: string, value: string): string {
+  const prefix = `${property};CHARSET=utf-8;ENCODING=QUOTED-PRINTABLE:`;
+  return foldQuotedPrintable(prefix, toQuotedPrintable(value));
 }
 
 export function createVCardString() {
+  const [firstName = "", ...rest] = PROFILE.name.split(" ");
+  const lastName = rest.join(" ") || "";
+
+  // VERSION:2.1 — Outlook handles CHARSET/ENCODING most reliably on 2.1.
   const lines = [
     "BEGIN:VCARD",
-    "VERSION:3.0",
-    `FN;CHARSET=UTF-8:${escapeValue(PROFILE.name)}`,
-    `N;CHARSET=UTF-8:Каночкин;Максим;;;`,
-    `TITLE;CHARSET=UTF-8:${escapeValue(PROFILE.title)}`,
-    `ORG;CHARSET=UTF-8:${escapeValue(PROFILE.company)}`,
-    `TEL;TYPE=CELL:${PROFILE.phone}`,
-    `EMAIL;TYPE=INTERNET:${PROFILE.email}`,
+    "VERSION:2.1",
+    textField("FN", PROFILE.name),
+    textField("N", `${lastName};${firstName};;;`),
+    textField("TITLE", PROFILE.title),
+    textField("ORG", PROFILE.company),
+    `TEL;CELL:${PROFILE.phone}`,
+    `EMAIL;PREF;INTERNET:${PROFILE.emailPersonal}`,
+    `EMAIL;INTERNET:${PROFILE.email}`,
     `URL:${PROFILE.website}`,
     `X-SOCIALPROFILE;TYPE=telegram:https://t.me/${PROFILE.telegram.replace("@", "")}`,
-    `ADR;CHARSET=UTF-8:;;;;${escapeValue(PROFILE.location)};;;`,
-    `NOTE;CHARSET=UTF-8:${escapeValue(PROFILE.title)}. ${PROFILE.website}`,
+    `X-SOCIALPROFILE;TYPE=github:${PROFILE.githubUrl}`,
+    `X-SOCIALPROFILE;TYPE=vk:${PROFILE.vkUrl}`,
+    `X-SOCIALPROFILE;TYPE=max:${PROFILE.maxUrl}`,
+    `X-SOCIALPROFILE;TYPE=wechat:${PROFILE.wechatId}`,
+    textField("ADR", `;;;${PROFILE.location};;;;`),
+    textField("NOTE", `${PROFILE.title}. ${PROFILE.website}`),
     "END:VCARD",
   ];
 
@@ -29,13 +91,9 @@ export function createVCardString() {
 }
 
 function createVCardBlob(): Blob {
-  const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+  // QP payload is ASCII — no BOM needed (BOM can confuse some Outlook builds).
   const content = new TextEncoder().encode(createVCardString());
-  const combined = new Uint8Array(bom.length + content.length);
-  combined.set(bom, 0);
-  combined.set(content, bom.length);
-
-  return new Blob([combined], { type: "text/vcard;charset=utf-8" });
+  return new Blob([content], { type: "text/vcard;charset=utf-8" });
 }
 
 function createVCardFile(): File {
@@ -85,7 +143,7 @@ function tryDataUri(): boolean {
   try {
     const vcardStr = createVCardString();
     const encoded = btoa(unescape(encodeURIComponent(vcardStr)));
-    const dataUri = `data:text/vcard;base64,${encoded}`;
+    const dataUri = `data:text/vcard;charset=utf-8;base64,${encoded}`;
 
     const link = document.createElement("a");
     link.href = dataUri;

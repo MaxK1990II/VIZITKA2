@@ -1,7 +1,13 @@
-"use client";
-
+import { CrawlableProfile } from "@/components/crawlable-profile";
+import { PersonJsonLd } from "@/components/person-json-ld";
 import { PortfolioShell } from "@/components/portfolio-shell";
 
 export default function Home() {
-  return <PortfolioShell />;
+  return (
+    <>
+      <PersonJsonLd />
+      <CrawlableProfile />
+      <PortfolioShell />
+    </>
+  );
 }

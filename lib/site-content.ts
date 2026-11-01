@@ -25,17 +25,65 @@ export type ProjectItem = {
   powerLevel: number;
 };
 
+export type DomainMetric = {
+  value: string;
+  label: string;
+};
+
+export type BentoDomainIcon = "brain" | "robot" | "cube" | "shield";
+
+export type BentoDomainCard = {
+  id: string;
+  title: string;
+  description: string;
+  icon: BentoDomainIcon;
+  metrics?: [DomainMetric, DomainMetric];
+  bullets?: readonly string[];
+  showSparkline?: boolean;
+  showWireframe?: boolean;
+};
+
+export type ImpactMetric = {
+  value: string;
+  label: string;
+};
+
 export const PROFILE = {
   name: "Максим Каночкин",
   title: "Начальник отдела развития, инноваций и аддитивных технологий",
   company: "Автомобильный завод ГАЗ",
   location: "Нижний Новгород",
-  website: "https://www.kanochkinmm.ru",
+  website: "https://kanochkinmm.ru",
   email: "kanochkinmm@gaz.ru",
+  emailPersonal: "maxi.k@mail.ru",
   phone: "+7 953 565 50 88",
-  telegram: "@kanochkin",
-  photoSrc: "/portrait-placeholder.svg",
+  telegram: "@MaxSames",
+  github: "MaxK1990II",
+  githubUrl: "https://github.com/MaxK1990II",
+  vkUrl: "https://vk.com/id18385380",
+  maxUrl:
+    "https://max.ru/u/f9LHodD0cOI9U_5US95o__gmjkzq3_4IJkK4hCHRr-2xfA-RMUTsLW011es",
+  wechatId: "Maxim_Ka",
+  /** Deep-link в приложение WeChat (на сайте часто блокируется ОС — есть fallback copy) */
+  wechatDeepLink: "weixin://contacts/profile/Maxim_Ka",
+  wechatQrSrc: "/icons/wechat-qr.png",
+  photoSrc: "/maxim-kanochkin-portrait.png",
+  bentoHeroSrc: "/maxim-kanochkin-hero-reference-clean.png",
   photoAlt: "Портрет Максима Каночкина",
+  availabilityLabel: "Доступен",
+  bentoDisplayName: "Максим Каночкин",
+  heroHeadline: "Драйвер промышленных инноваций",
+  heroTagline:
+    "Трансформирую сложные производственные вызовы в работающие решения на базе ИИ, робототехники\nи\u00A0аддитивных технологий.",
+  aboutShort:
+    "С 2013 года прошёл путь от слесаря-ремонтника окрасочных роботов до начальника отдела развития, инноваций и аддитивных технологий и руководителя ЦАТ на Горьковском автозаводе. Я не верю в «инновации ради инноваций». Мой подход — это глубокое понимание болей реального производства, грязных рук и жестких бюджетов. Я создаю технологии, которые работают на конвейере 24/7, заменяя бюрократию алгоритмами, а рутину — роботами.",
+  aboutMetaLocation: "Нижний Новгород",
+  aboutMetaAvailability: "Открыт к диалогу с работодателями и редакцией",
+  bentoAboutTitle: "Обо мне",
+  bentoImpactTitle: "Цифры, которые говорят за себя",
+  bentoConnectTitle: "Связаться",
+  bentoSaveContact: "Сохранить контакт",
+  bentoProjectsTitle: "Проекты",
   statusLine:
     "Now: Industrial AI & Robotics @ GAZ Group | Expert Judge @ International Engineering Contests",
 
@@ -106,7 +154,7 @@ export const PROFILE = {
       keySolution:
         "Разработка и оптимизация траекторий движения роботов для нанесения мастик и клеевых составов на сложные геометрические поверхности (кузова автомобилей). Интеграция систем компьютерного зрения для детекции дефектов.",
       result:
-        "Исключение человеческого фактора на критических участках конвейера и перенос опыта автоматизации на другие площадки (кейс УАЗ).",
+        "Исключение человеческого фактора на критических участках конвейера и перенос опыта автоматизации на другие площадки.",
     },
     {
       id: "additive",
@@ -118,7 +166,7 @@ export const PROFILE = {
       keySolution:
         "Оперативное изготовление оснастки, шаблонов и запасных частей для промышленного оборудования, сокращающее время простоя линий.",
       result:
-        "Перевод части номенклатуры вспомогательных деталей на собственное производство.",
+        "50+ серийных позиций; до 70% пластиковых ЗИП окрасочных роботов внутри завода; эффект более 5 млн ₽/год.",
     },
     {
       id: "expertise",
@@ -153,7 +201,7 @@ export const PROFILE = {
       summary:
         "Проектирование ячеек с коботами JAKA, настройка траекторий нанесения мастики на кузова.",
       result:
-        "Исключение человеческого фактора на критических участках конвейера (кейс УАЗ).",
+        "Исключение человеческого фактора на критических участках конвейера; опыт переносился на другие площадки.",
       technologies: ["JAKA", "RoboDK", "Python", "Computer Vision"],
       powerLevel: 8,
     },
@@ -164,7 +212,7 @@ export const PROFILE = {
       summary:
         "Полный цикл: от реверс-инжиниринга до 3D-печати функциональных деталей и промышленного дизайна.",
       result:
-        "Перевод части номенклатуры вспомогательных деталей на собственное производство.",
+        "50+ серийных позиций; до 70% пластиковых ЗИП окрасочных роботов внутри завода; эффект более 5 млн ₽/год.",
       technologies: ["Bambu Lab", "FDM/SLA", "CAD", "Industrial Design"],
       powerLevel: 7,
     },
@@ -182,13 +230,115 @@ export const PROFILE = {
   ] satisfies ProjectItem[],
 
   contacts: [
-    { id: "website", label: "Сайт", value: "kanochkinmm.ru", href: "https://www.kanochkinmm.ru" },
-    { id: "email", label: "Email", value: "kanochkinmm@gaz.ru", href: "mailto:kanochkinmm@gaz.ru" },
-    { id: "telegram", label: "Telegram", value: "@kanochkin", href: "https://t.me/kanochkin" },
+    { id: "website", label: "Сайт", value: "kanochkinmm.ru", href: "https://kanochkinmm.ru" },
+    {
+      id: "email-personal",
+      label: "Email (личн.)",
+      value: "maxi.k@mail.ru",
+      href: "mailto:maxi.k@mail.ru",
+    },
+    {
+      id: "email",
+      label: "Email (завод)",
+      value: "kanochkinmm@gaz.ru",
+      href: "mailto:kanochkinmm@gaz.ru",
+    },
+    {
+      id: "telegram",
+      label: "Telegram",
+      value: "@MaxSames",
+      href: "https://t.me/MaxSames",
+    },
+    {
+      id: "github",
+      label: "GitHub",
+      value: "MaxK1990II",
+      href: "https://github.com/MaxK1990II",
+    },
+    {
+      id: "vk",
+      label: "ВКонтакте",
+      value: "vk.com/id18385380",
+      href: "https://vk.com/id18385380",
+    },
+    {
+      id: "max",
+      label: "MAX",
+      value: "max.ru",
+      href: "https://max.ru/u/f9LHodD0cOI9U_5US95o__gmjkzq3_4IJkK4hCHRr-2xfA-RMUTsLW011es",
+    },
+    {
+      id: "wechat",
+      label: "WeChat",
+      value: "Maxim_Ka",
+    },
     { id: "phone", label: "Телефон", value: "+7 953 565 50 88", href: "tel:+79535655088" },
     { id: "company", label: "Компания", value: "Автомобильный завод ГАЗ" },
     { id: "location", label: "Город", value: "Нижний Новгород" },
   ] satisfies ContactItem[],
+
+  bentoDomains: [
+    {
+      id: "industrial-ai",
+      title: "Промышленный\nИИ",
+      description:
+        "ИИ-решения для предиктивного обслуживания, контроля качества и оптимизации процессов.",
+      icon: "brain",
+      showSparkline: true,
+      metrics: [
+        { value: "100%", label: "Безопасность данных" },
+        { value: "on-prem", label: "Решения в контуре предприятия" },
+      ],
+    },
+    {
+      id: "robotics",
+      title: "Робототехника",
+      description:
+        "Интеграция роботизированных систем и программирование траекторий для 100+ типов кузовов и кабин.",
+      icon: "robot",
+      showSparkline: true,
+      metrics: [
+        { value: "2–3×", label: "Ниже стоимость внедрения" },
+        { value: "полный цикл", label: "Разработка → ПНР → сопровождение" },
+      ],
+    },
+    {
+      id: "additive",
+      title: "Аддитивные\nтехнологии",
+      description:
+        "Аддитивные решения полного цикла — от прототипирования до серийного выпуска.",
+      icon: "cube",
+      showWireframe: true,
+      metrics: [
+        { value: ">5 млн ₽", label: "Экономический эффект в год" },
+        { value: "до 70%", label: "пластиковых вспомогательных деталей" },
+      ],
+    },
+    {
+      id: "expertise",
+      title: "Экспертиза",
+      description:
+        "Стратегия, технический аудит и наставничество — от цеха до международных конкурсов.",
+      icon: "shield",
+      bullets: [
+        "Промышленная стратегия",
+        "Технологический роадмап",
+        "Цифровая трансформация",
+        "Умное производство",
+        "Управление проектами",
+        "Интеграция систем",
+      ],
+    },
+  ] satisfies BentoDomainCard[],
+
+  impactMetrics: [
+    { value: "13", label: "Лет в индустриальном секторе" },
+    { value: "до 70%", label: "пластиковых запчастей роботов окраски" },
+    { value: "6+", label: "IT/R&D проектов в 2026 году" },
+    { value: "100%", label: "In-house разработка" },
+  ] satisfies ImpactMetric[],
+
+  connectBlurb: "Напишите на личную почту или в Telegram.",
 } as const;
 
 export type ScenePhase = "intro" | "implode" | "burst" | "nebula" | "reform";

@@ -33,6 +33,16 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# never ship secrets via public/ (deploy also checks this)
+/public/**/*.pem
+/public/**/*.key
+/public/**/*.p12
+/public/**/*.pfx
+/public/**/.env*
+/public/**/*secret*
+/public/**/*credential*
+/public/**/id_rsa*
+
 # vercel
 .vercel
 
