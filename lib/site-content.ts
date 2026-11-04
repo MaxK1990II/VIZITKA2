@@ -25,7 +25,6 @@ export type ProjectItem = {
   summary: string;
   result: string;
   technologies: string[];
-  powerLevel: number;
 };
 
 export type DomainMetric = {
@@ -42,7 +41,6 @@ export type BentoDomainCard = {
   icon: BentoDomainIcon;
   metrics?: [DomainMetric, DomainMetric];
   bullets?: readonly string[];
-  showSparkline?: boolean;
   showWireframe?: boolean;
 };
 
@@ -157,7 +155,7 @@ export const PROFILE = {
       keySolution:
         "Разработка и оптимизация траекторий движения роботов для нанесения мастик и клеевых составов на сложные геометрические поверхности (кузова автомобилей). Интеграция систем компьютерного зрения для детекции дефектов.",
       result:
-        "Исключение человеческого фактора на критических участках конвейера и перенос опыта автоматизации на другие площадки.",
+        "Собственная оснастка и программное обеспечение команды ЦАТ; опытная партия автомобилей прошла аудит качества.",
     },
     {
       id: "additive",
@@ -169,7 +167,7 @@ export const PROFILE = {
       keySolution:
         "Оперативное изготовление оснастки, шаблонов и запасных частей для промышленного оборудования, сокращающее время простоя линий.",
       result:
-        `${PROFILE_FACTS.serialPositions}+ серийных позиций; до ${PROFILE_FACTS.sparePartsCoveragePercent}% пластиковых ЗИП окрасочных роботов внутри завода; эффект более ${PROFILE_FACTS.annualSavingsMillionsRub} млн ₽/год.`,
+        `${PROFILE_FACTS.serialPositions}+ серийных позиций; до ${PROFILE_FACTS.sparePartsCoveragePercent}% номенклатуры пластиковых вспомогательных деталей роботов окраски; эффект более ${PROFILE_FACTS.annualSavingsMillionsRub} млн ₽/год.`,
     },
     {
       id: "expertise",
@@ -195,7 +193,7 @@ export const PROFILE = {
       result:
         "Бесконтактное управление и визуализация критических параметров в условиях промышленного шума.",
       technologies: ["Python", "React", "Qwen", "Vosk", "Porcupine", "YOLOv8"],
-      powerLevel: 9,
+
     },
     {
       id: "cobots",
@@ -204,9 +202,9 @@ export const PROFILE = {
       summary:
         "Проектирование ячеек с коботами JAKA, настройка траекторий нанесения мастики на кузова.",
       result:
-        "Исключение человеческого фактора на критических участках конвейера; опыт переносился на другие площадки.",
+        "Команда разработала оснастку и программное обеспечение; опытная партия автомобилей прошла аудит качества.",
       technologies: ["JAKA", "RoboDK", "Python", "Computer Vision"],
-      powerLevel: 8,
+
     },
     {
       id: "cat",
@@ -215,9 +213,9 @@ export const PROFILE = {
       summary:
         "Полный цикл: от реверс-инжиниринга до 3D-печати функциональных деталей и промышленного дизайна.",
       result:
-        `${PROFILE_FACTS.serialPositions}+ серийных позиций; до ${PROFILE_FACTS.sparePartsCoveragePercent}% пластиковых ЗИП окрасочных роботов внутри завода; эффект более ${PROFILE_FACTS.annualSavingsMillionsRub} млн ₽/год.`,
+        `${PROFILE_FACTS.serialPositions}+ серийных позиций; до ${PROFILE_FACTS.sparePartsCoveragePercent}% номенклатуры пластиковых вспомогательных деталей роботов окраски; эффект более ${PROFILE_FACTS.annualSavingsMillionsRub} млн ₽/год.`,
       technologies: ["Bambu Lab", "FDM/SLA", "CAD", "Industrial Design"],
-      powerLevel: 7,
+
     },
     {
       id: "judging",
@@ -228,7 +226,7 @@ export const PROFILE = {
       result:
         "Формирование кадрового резерва и оценка жизнеспособности инновационных разработок.",
       technologies: ["Technical Audit", "Mentoring", "Project Management"],
-      powerLevel: 6,
+
     },
   ] satisfies ProjectItem[],
 
@@ -287,9 +285,9 @@ export const PROFILE = {
       description:
         "ИИ-решения для предиктивного обслуживания, контроля качества и оптимизации процессов.",
       icon: "brain",
-      showSparkline: true,
+
       metrics: [
-        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Безопасность данных" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Данные внутри предприятия" },
         { value: "on-prem", label: "Решения в контуре предприятия" },
       ],
     },
@@ -299,9 +297,9 @@ export const PROFILE = {
       description:
         `Интеграция роботизированных систем и программирование траекторий для ${PROFILE_FACTS.robotBodyTypes}+ типов кузовов и кабин.`,
       icon: "robot",
-      showSparkline: true,
+
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Ниже стоимость внедрения" },
+        { value: "in-house", label: "Собственная интеграция" },
         { value: "полный цикл", label: "Разработка → ПНР → сопровождение" },
       ],
     },
@@ -314,7 +312,7 @@ export const PROFILE = {
       showWireframe: true,
       metrics: [
         { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} млн ₽`, label: "Экономический эффект в год" },
-        { value: `до ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "пластиковых вспомогательных деталей" },
+        { value: `до ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Охват номенклатуры пластиковых вспомогательных деталей роботов окраски" },
       ],
     },
     {
@@ -336,7 +334,7 @@ export const PROFILE = {
 
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Лет в индустриальном секторе" },
-    { value: `до ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "пластиковых запчастей роботов окраски" },
+    { value: `до ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Охват номенклатуры пластиковых вспомогательных деталей роботов окраски" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `IT/R&D проектов в ${PROFILE_FACTS.referenceYear} году` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "In-house разработка" },
   ] satisfies ImpactMetric[],

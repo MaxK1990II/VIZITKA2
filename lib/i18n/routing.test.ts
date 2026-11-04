@@ -46,7 +46,6 @@ describe("shared profile facts", () => {
       for (const project of copy.projects) {
         const canonical = PROFILE.projects.find((item) => item.id === project.id)!;
         expect(project.technologies).toBe(canonical.technologies);
-        expect(project.powerLevel).toBe(canonical.powerLevel);
       }
     }
   });

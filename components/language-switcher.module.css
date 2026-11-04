@@ -1,0 +1,11 @@
+.picker { position: relative; z-index: 12; font-family: var(--font-sans); }
+.picker summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1px solid #4d4640; border-radius: 8px; background: #111e; color: #eee4dc; font-size: 12px; cursor: pointer; list-style: none; }
+.picker summary::-webkit-details-marker { display: none; }
+.picker summary:focus-visible, .options a:focus-visible { outline: 2px solid #c9a48a; outline-offset: 2px; }
+.options { position: absolute; inset-inline-start: 0; top: calc(100% + 8px); display: grid; grid-template-columns: 1fr 1fr; width: 268px; max-width: calc(100vw - 80px); max-height: min(400px, 65dvh); overflow-y: auto; padding: 8px; background: #131313; border: 1px solid #4d4640; border-radius: 12px; box-shadow: 0 16px 48px #000a; }
+.options a { display: flex; align-items: center; min-height: 44px; padding: 8px 12px; border-radius: 6px; color: #e7e1dc; text-decoration: none; font-size: 13px; }
+.options a:hover, .options a[aria-current] { background: #33291f; color: #f1c8a8; }
+@media (max-width: 640px) {
+  .picker { position: static; }
+  .options { z-index: 12; inset-inline-start: 0; inset-inline-end: auto; width: 268px; }
+}

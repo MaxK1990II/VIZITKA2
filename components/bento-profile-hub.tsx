@@ -22,6 +22,12 @@ import { SharePageButton } from "@/components/share-page-button";
 import { DemoShowcase } from "@/components/demo-showcase";
 import { COBOT_DEMO } from "@/lib/cobot-demo";
 import { useLocale } from "@/lib/i18n/locale-provider";
+import { CatCaseStudy } from "@/components/cat-case-study";
+import { PressHighlights } from "@/components/press-highlights";
+import { ProjectEvidence } from "@/components/project-evidence";
+import { PortfolioNavigation } from "@/components/portfolio-navigation";
+import { PortfolioAnalytics } from "@/components/portfolio-analytics";
+import { profileAnchor } from "@/lib/portfolio-navigation";
 
 type BentoProfileHubProps = {
   isMobile: boolean;
@@ -47,56 +53,6 @@ const domainAreas: Record<string, string> = {
   additive: "bento-area-add",
   expertise: "bento-area-exp",
 };
-
-function SparklineGraphic({ id, variant = "ai" }: { id: string; variant?: "ai" | "rob" }) {
-  // Paths matched to reference sparklines (jagged upward trend + terminal hollow-ish dot)
-  const linePath =
-    variant === "rob"
-      ? "M1 34 L10 31 L18 32 L28 24 L38 26 L48 16 L58 18 L70 8 L79 4"
-      : "M1 32 L12 28 L20 30 L30 22 L40 24 L50 14 L60 17 L70 8 L79 5";
-  const areaPath =
-    variant === "rob"
-      ? "M1 34 L10 31 L18 32 L28 24 L38 26 L48 16 L58 18 L70 8 L79 4 L79 40 L1 40 Z"
-      : "M1 32 L12 28 L20 30 L30 22 L40 24 L50 14 L60 17 L70 8 L79 5 L79 40 L1 40 Z";
-  const endY = variant === "rob" ? 4 : 5;
-
-  return (
-    <svg
-      className="bento-sparkline-svg"
-      viewBox="0 0 80 40"
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id={`sparkArea-${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="rgba(201,164,138,0.28)" />
-          <stop offset="55%" stopColor="rgba(201,164,138,0.08)" />
-          <stop offset="100%" stopColor="rgba(201,164,138,0)" />
-        </linearGradient>
-        <linearGradient id={`sparkGrad-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="rgba(201,164,138,0.35)" />
-          <stop offset="100%" stopColor="#c9a48a" />
-        </linearGradient>
-      </defs>
-      <path d={areaPath} fill={`url(#sparkArea-${id})`} />
-      <path
-        d={linePath}
-        fill="none"
-        stroke={`url(#sparkGrad-${id})`}
-        strokeWidth="1.35"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle
-        cx="79"
-        cy={endY}
-        r="2.2"
-        fill="#080808"
-        stroke="#c9a48a"
-        strokeWidth="1.35"
-      />
-    </svg>
-  );
-}
 
 function WireframeGraphic() {
   return (
@@ -196,6 +152,7 @@ function BentoHeroTile({
         <button
           type="button"
           className="bento-cta"
+          data-analytics-event="contact_save"
           data-hover
           onClick={handleSave}
         >
@@ -261,12 +218,6 @@ function BentoDomainTile({
               </div>
             ))}
           </div>
-          {card.showSparkline ? (
-            <SparklineGraphic
-              id={card.id}
-              variant={card.id === "robotics" ? "rob" : "ai"}
-            />
-          ) : null}
           {card.showWireframe ? <WireframeGraphic /> : null}
         </div>
       ) : null}
@@ -280,6 +231,8 @@ function BentoAboutTile({ index }: { index: number }) {
   return (
     <motion.article
       className="bento-tile bento-tile-about"
+      id="about"
+      tabIndex={-1}
       custom={index}
       initial="hidden"
       animate="visible"
@@ -472,12 +425,6 @@ function BentoConnectTile({ index }: { index: number }) {
       href: () => PROFILE.vkUrl,
       external: true,
     },
-    {
-      id: "telegram" as const,
-      label: "Telegram",
-      href: () => `https://t.me/${PROFILE.telegram.replace("@", "")}`,
-      external: true,
-    },
   ] as const;
 
   const handleWeChat = async () => {
@@ -489,6 +436,8 @@ function BentoConnectTile({ index }: { index: number }) {
   return (
     <motion.article
       className="bento-tile bento-tile-connect"
+      id="contact"
+      tabIndex={-1}
       custom={index}
       initial="hidden"
       animate="visible"
@@ -500,7 +449,20 @@ function BentoConnectTile({ index }: { index: number }) {
       </header>
 
       <div className="bento-connect-body">
-        <ConnectQr />
+        <div className="bento-connect-primary">
+          <a className="bento-connect-link" href={`https://t.me/${PROFILE.telegram.replace("@", "")}`} target="_blank" rel="noreferrer" data-analytics-event="contact_click" data-analytics-channel="telegram">
+            <span className="bento-connect-link-icon"><ConnectChannelIcon id="telegram" /></span>
+            <span className="bento-connect-link-text"><span className="bento-connect-link-label">{copy.details.contact.telegram}</span><span className="bento-connect-link-value">{PROFILE.telegram}</span></span>
+          </a>
+          <a className="bento-connect-link" href={`mailto:${PROFILE.emailPersonal}`} data-analytics-event="contact_click" data-analytics-channel="email">
+            <span className="bento-connect-link-icon"><ConnectChannelIcon id="email" /></span>
+            <span className="bento-connect-link-text"><span className="bento-connect-link-label">{copy.details.contact.email}</span><span className="bento-connect-link-value">{PROFILE.emailPersonal}</span></span>
+          </a>
+        </div>
+        <div className="bento-profile-download">
+          <a href="/files/maxim-kanochkin-profile-ru.pdf" download data-analytics-event="profile_pdf"><Download size={16} aria-hidden="true" />{copy.details.contact.profilePdf}</a>
+          <p>{copy.details.contact.pdfNote}</p>
+        </div>
 
         <nav
           className="bento-connect-secondary"
@@ -511,6 +473,8 @@ function BentoConnectTile({ index }: { index: number }) {
               key={channel.id}
               href={channel.href()}
               className="bento-connect-chip"
+              data-analytics-event="contact_click"
+              data-analytics-channel={channel.id}
               aria-label={channel.label}
               title={channel.label}
               {...(channel.external
@@ -525,21 +489,17 @@ function BentoConnectTile({ index }: { index: number }) {
             type="button"
             className="bento-connect-chip"
             onClick={handleWeChat}
+            data-analytics-event="contact_click"
+            data-analytics-channel="wechat"
             aria-label={copy.wechatAria}
             title="WeChat"
           >
             <ConnectChannelIcon id="wechat" />
           </button>
 
-          <a
-            href={`mailto:${PROFILE.emailPersonal}`}
-            className="bento-connect-chip"
-            aria-label={copy.emailLabel}
-            title={copy.emailLabel}
-          >
-            <ConnectChannelIcon id="email" />
-          </a>
         </nav>
+
+        <details className="bento-qr-details"><summary>{copy.qrContactHint}</summary><ConnectQr /></details>
 
         <SharePageButton />
 
@@ -554,8 +514,21 @@ function BentoConnectTile({ index }: { index: number }) {
 }
 
 export function BentoProfileHub({ isMobile, onReturn }: BentoProfileHubProps) {
-  const { copy } = useLocale();
+  const { copy, locale } = useLocale();
   let tileIndex = 1;
+
+  useEffect(() => {
+    const focusSection = () => {
+      const id = profileAnchor(window.location.hash);
+      if (!id || id === "profile") return;
+      const section = document.getElementById(id);
+      section?.scrollIntoView({ block: "start" });
+      (id === "cobot-demo" ? section?.querySelector("button") : section)?.focus({ preventScroll: true });
+    };
+    focusSection();
+    window.addEventListener("hashchange", focusSection);
+    return () => window.removeEventListener("hashchange", focusSection);
+  }, []);
 
   return (
     <motion.main
@@ -582,8 +555,12 @@ export function BentoProfileHub({ isMobile, onReturn }: BentoProfileHubProps) {
 
       <DemoShowcase copy={copy.demo} source={COBOT_DEMO.source} poster={COBOT_DEMO.poster} />
 
+      <CatCaseStudy copy={copy.details.caseStudy} />
+
       <motion.section
         className="bento-tile bento-projects"
+        id="projects"
+        tabIndex={-1}
         custom={tileIndex}
         initial="hidden"
         animate="visible"
@@ -597,18 +574,7 @@ export function BentoProfileHub({ isMobile, onReturn }: BentoProfileHubProps) {
               <h3 className="project-title">{project.title}</h3>
               <p className="hub-text-sm">{project.summary}</p>
 
-              <div className="project-power">
-                <span className="project-power-label">{copy.powerLevelLabel}</span>
-                <div className="project-power-bar">
-                  <div
-                    className="project-power-fill"
-                    style={{ width: `${project.powerLevel * 10}%` }}
-                  />
-                </div>
-                <span className="project-power-value">
-                  {project.powerLevel}/10
-                </span>
-              </div>
+              <ProjectEvidence evidence={copy.details.projectEvidence[project.id as keyof typeof copy.details.projectEvidence]} labels={copy.details.projectLabels} />
 
               <p className="project-result">{project.result}</p>
               <TechStack technologies={[...project.technologies]} />
@@ -616,7 +582,10 @@ export function BentoProfileHub({ isMobile, onReturn }: BentoProfileHubProps) {
           ))}
         </div>
       </motion.section>
+      <PressHighlights copy={copy.details.press} />
       </div>
+      <PortfolioNavigation copy={copy.details.nav} />
+      <PortfolioAnalytics locale={locale} />
     </motion.main>
   );
 }

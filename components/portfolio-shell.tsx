@@ -12,6 +12,8 @@ import { LocaleProvider } from "@/lib/i18n/locale-provider";
 import type { ScenePhase } from "@/lib/site-content";
 import type { Locale } from "@/lib/i18n/locale";
 import type { SiteCopy } from "@/lib/i18n/content";
+import { profileAnchor } from "@/lib/portfolio-navigation";
+import { AnalyticsBootstrap } from "@/components/portfolio-analytics";
 
 const IMPLODE_MS = 800;
 const BURST_MS = 600;
@@ -26,7 +28,7 @@ function PortfolioShellInner() {
 
   useEffect(() => {
     // Profile and project links open the requested content directly.
-    if (["#profile", "#cobot-demo"].includes(window.location.hash)) setPhase("nebula");
+    if (profileAnchor(window.location.hash)) setPhase("nebula");
     const pendingTimers = timers.current;
     return () => pendingTimers.forEach(clearTimeout);
   }, []);
@@ -99,6 +101,7 @@ export function PortfolioShell({ locale, copy }: { locale: Locale; copy: SiteCop
   return (
     <LocaleProvider locale={locale} copy={copy}>
       <MotionConfig reducedMotion="user">
+        <AnalyticsBootstrap locale={locale} />
         <PortfolioShellInner />
       </MotionConfig>
     </LocaleProvider>

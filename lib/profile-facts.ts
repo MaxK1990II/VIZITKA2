@@ -5,9 +5,10 @@ export const PROFILE_FACTS = {
   yearsInIndustry: 13,
   robotBodyTypes: 100,
   serialPositions: 50,
+  /** Developed range reported on 30 July 2026; distinct from serial-production items. */
+  developedPartTypes: 320,
   sparePartsCoveragePercent: 70,
   annualSavingsMillionsRub: 5,
-  deploymentCostReduction: "2–3×",
   itProjects: "6+",
   localDataPercent: 100,
   inHousePercent: 100,

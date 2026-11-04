@@ -7,6 +7,7 @@ import type { DemoShowcaseCopy } from "@/lib/cobot-demo";
 import { COBOT_DEMO_COPY } from "@/lib/i18n/demo";
 import { PROFILE_FACTS } from "@/lib/profile-facts";
 import type { Locale } from "@/lib/i18n/locale";
+import { PORTFOLIO_DETAILS, type PortfolioDetailsCopy } from "@/lib/i18n/portfolio-details";
 
 export type LocalizedProject = {
   id: string;
@@ -15,11 +16,11 @@ export type LocalizedProject = {
   summary: string;
   result: string;
   technologies: readonly string[];
-  powerLevel: number;
 };
 
 export type SiteCopy = {
   demo: DemoShowcaseCopy;
+  details: PortfolioDetailsCopy;
   introLabel: string;
   introHint: string;
   introRoleLine: string;
@@ -51,7 +52,6 @@ export type SiteCopy = {
   shareFailedToast: string;
   qrContactHint: string;
   bentoProjectsTitle: string;
-  powerLevelLabel: string;
   languageSwitcherAria: string;
   bentoDomains: readonly BentoDomainCard[];
   projects: readonly LocalizedProject[];
@@ -64,17 +64,18 @@ export type SiteCopy = {
 };
 
 const sharedProjectMeta = Object.fromEntries(
-  PROFILE.projects.map(({ id, technologies, powerLevel }) => [
+  PROFILE.projects.map(({ id, technologies }) => [
     id,
-    { technologies, powerLevel },
+    { technologies },
   ]),
 ) as Record<
   (typeof PROFILE.projects)[number]["id"],
-  { technologies: readonly string[]; powerLevel: number }
+  { technologies: readonly string[] }
 >;
 
 const ru: SiteCopy = {
   demo: COBOT_DEMO_COPY.ru,
+  details: PORTFOLIO_DETAILS.ru,
   introLabel: "Инженерное портфолио",
   introHint: "Открыть портфолио",
   introRoleLine:
@@ -107,7 +108,6 @@ const ru: SiteCopy = {
   shareFailedToast: "Не удалось скопировать ссылку",
   qrContactHint: "Сканируйте — сохранить контакт",
   bentoProjectsTitle: PROFILE.bentoProjectsTitle,
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "Выбор языка",
   domainIconLabels: {
     brain: "Промышленный ИИ",
@@ -121,6 +121,7 @@ const ru: SiteCopy = {
 
 const en: SiteCopy = {
   demo: COBOT_DEMO_COPY.en,
+  details: PORTFOLIO_DETAILS.en,
   introLabel: "Engineering portfolio",
   introHint: "Explore portfolio",
   introRoleLine:
@@ -168,7 +169,7 @@ const en: SiteCopy = {
   bentoImpactTitle: "Numbers that speak for themselves",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Years in industrial engineering" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "paint-robot plastic spare parts" },
+    { value: `up to ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Coverage of plastic auxiliary part types for paint robots" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `IT/R&D projects in ${PROFILE_FACTS.referenceYear}` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "In-house development" },
   ],
@@ -186,7 +187,6 @@ const en: SiteCopy = {
   shareFailedToast: "Could not copy the link",
   qrContactHint: "Scan to save the contact",
   bentoProjectsTitle: "Projects",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "Language",
   domainIconLabels: {
     brain: "Industrial AI",
@@ -201,7 +201,6 @@ const en: SiteCopy = {
       description:
         "AI for predictive maintenance, quality inspection, and process optimization.",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Data stays on-site" },
         { value: "on-prem", label: "Plant-network solutions" },
@@ -213,9 +212,8 @@ const en: SiteCopy = {
       description:
         `Robot cell integration and path programming for ${PROFILE_FACTS.robotBodyTypes}+ body and cab types.`,
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Lower deployment cost" },
+        { value: "in-house", label: "In-house integration" },
         { value: "end-to-end", label: "Design → commissioning → support" },
       ],
     },
@@ -228,7 +226,7 @@ const en: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: `>₽${PROFILE_FACTS.annualSavingsMillionsRub}M`, label: "Annual economic impact" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "plastic auxiliary robot parts" },
+        { value: `up to ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Coverage of plastic auxiliary part types for paint robots" },
       ],
     },
     {
@@ -265,7 +263,7 @@ const en: SiteCopy = {
       summary:
         "JAKA cobot cell design and sealant path programming for vehicle bodies.",
       result:
-        "Took people out of critical conveyor stations; the approach was reused on other sites.",
+        "The team developed tooling and software; a pilot batch of vehicles passed the quality audit.",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -275,7 +273,7 @@ const en: SiteCopy = {
       summary:
         "Full cycle: reverse engineering, functional 3D-printed parts, and industrial design.",
       result:
-        `${PROFILE_FACTS.serialPositions}+ serial part numbers; up to ${PROFILE_FACTS.sparePartsCoveragePercent}% of paint-robot plastic spares in-house; over ₽${PROFILE_FACTS.annualSavingsMillionsRub}M annual impact.`,
+        `${PROFILE_FACTS.serialPositions}+ serial part numbers; up to ${PROFILE_FACTS.sparePartsCoveragePercent}% coverage of plastic auxiliary part types for paint robots; over ₽${PROFILE_FACTS.annualSavingsMillionsRub}M annual impact.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -293,6 +291,7 @@ const en: SiteCopy = {
 
 const zh: SiteCopy = {
   demo: COBOT_DEMO_COPY.zh,
+  details: PORTFOLIO_DETAILS.zh,
   introLabel: "工程作品集",
   introHint: "查看作品集",
   introRoleLine: "发展、创新与增材技术部门负责人 · 高尔基汽车厂（GAZ） · 下诺夫哥罗德",
@@ -339,7 +338,7 @@ const zh: SiteCopy = {
   bentoImpactTitle: "用数字说话",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "年工业工程经验" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "机器人进口备件国产化" },
+    { value: `最高 ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "喷涂机器人塑料辅助零件的品种覆盖率" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear} 年 IT/研发项目` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "自主研发" },
   ],
@@ -357,7 +356,6 @@ const zh: SiteCopy = {
   shareFailedToast: "无法复制链接",
   qrContactHint: "扫码保存联系人",
   bentoProjectsTitle: "项目",
-  powerLevelLabel: "能力指数",
   languageSwitcherAria: "选择语言",
   domainIconLabels: {
     brain: "工业人工智能",
@@ -371,7 +369,6 @@ const zh: SiteCopy = {
       title: "工业\n人工智能",
       description: "面向预测性维护、质量检测与工艺优化的人工智能方案。",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "数据不出厂" },
         { value: "本地部署", label: "企业内网方案" },
@@ -382,9 +379,8 @@ const zh: SiteCopy = {
       title: "机器人技术",
       description: "机器人系统集成，以及 100 多种车身与驾驶室的轨迹编程。",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "实施成本更低" },
+        { value: "in-house", label: "内部自主集成" },
         { value: "全流程", label: "设计 → 调试 → 运维" },
       ],
     },
@@ -396,7 +392,7 @@ const zh: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: `>${PROFILE_FACTS.annualSavingsMillionsRub}00万卢布`, label: "年经济效益" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "替代进口部件" },
+        { value: `最高 ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "喷涂机器人塑料辅助零件的品种覆盖率" },
       ],
     },
     {
@@ -430,7 +426,8 @@ const zh: SiteCopy = {
       title: "协作机器人自动化",
       category: "机器人技术",
       summary: "JAKA 协作机器人单元设计，以及车身涂胶轨迹编程与调试。",
-      result: "在关键工位消除人为因素；方法后来用到了其他产线。",
+      result:
+        "团队自主开发工装与软件；试制车辆通过了质量审核。",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -438,7 +435,8 @@ const zh: SiteCopy = {
       title: "增材技术中心",
       category: "增材技术",
       summary: "全流程：逆向工程、功能件 3D 打印与工业设计。",
-      result: `${PROFILE_FACTS.annualSavingsMillionsRub}0 多个系列件号；喷涂机器人塑料备件约 ${PROFILE_FACTS.sparePartsCoveragePercent}% 厂内自制；年效益超过 ${PROFILE_FACTS.annualSavingsMillionsRub}00 万卢布。`,
+      result:
+        `${PROFILE_FACTS.serialPositions}+ 个系列生产件号；覆盖喷涂机器人塑料辅助零件品种的最高 ${PROFILE_FACTS.sparePartsCoveragePercent}%；年效益超过 ${PROFILE_FACTS.annualSavingsMillionsRub}00 万卢布。`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -455,6 +453,7 @@ const zh: SiteCopy = {
 
 const ko: SiteCopy = {
   demo: COBOT_DEMO_COPY.ko,
+  details: PORTFOLIO_DETAILS.ko,
   introLabel: "엔지니어링 포트폴리오",
   introHint: "포트폴리오 보기",
   introRoleLine:
@@ -502,7 +501,7 @@ const ko: SiteCopy = {
   bentoImpactTitle: "숫자가 증명합니다",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "산업 엔지니어링 경력" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "로봇 부품 국산화" },
+    { value: `최대 ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "도장 로봇 플라스틱 보조 부품의 품목 범위" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear}년 IT/R&D 프로젝트` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "자체 개발" },
   ],
@@ -520,7 +519,6 @@ const ko: SiteCopy = {
   shareFailedToast: "링크를 복사하지 못했습니다",
   qrContactHint: "스캔하면 연락처가 저장됩니다",
   bentoProjectsTitle: "프로젝트",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "언어 선택",
   domainIconLabels: {
     brain: "산업 AI",
@@ -534,7 +532,6 @@ const ko: SiteCopy = {
       title: "산업\nAI",
       description: "예지보전, 품질검사, 공정 최적화를 위한 AI 솔루션.",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "데이터 사내 보관" },
         { value: "온프레미스", label: "사내망 솔루션" },
@@ -545,9 +542,8 @@ const ko: SiteCopy = {
       title: "로봇 자동화",
       description: "로봇 시스템 통합과 차체·캡 100여 종의 경로 프로그래밍.",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "도입 비용 절감" },
+        { value: "in-house", label: "사내 통합" },
         { value: "전 과정", label: "설계 → 시운전 → 지원" },
       ],
     },
@@ -559,7 +555,7 @@ const ko: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: ">500만 루블", label: "연간 경제적 효과" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "수입 부품 국산화" },
+        { value: `최대 ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "도장 로봇 플라스틱 보조 부품의 품목 범위" },
       ],
     },
     {
@@ -595,7 +591,7 @@ const ko: SiteCopy = {
       summary:
         "JAKA 협동로봇 셀 설계와 차체 실러 도포 경로 프로그래밍.",
       result:
-        "컨베이어 핵심 공정에서 인력 개입을 없앴습니다. 같은 접근을 다른 현장에도 적용했습니다.",
+        "팀이 치공구와 소프트웨어를 개발했으며 시범 생산 차량이 품질 감사를 통과했습니다.",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -603,7 +599,8 @@ const ko: SiteCopy = {
       title: "적층기술센터 (ATC)",
       category: "적층제조",
       summary: "전 주기: 역설계, 기능성 3D 프린팅 부품, 산업 디자인.",
-      result: `시리즈 품목 50개 이상; 도장 로봇 플라스틱 부품의 최대 ${PROFILE_FACTS.sparePartsCoveragePercent}%를 사내 생산; 연간 효과 500만 루블 이상.`,
+      result:
+        `양산 품목 ${PROFILE_FACTS.serialPositions}개 이상; 도장 로봇 플라스틱 보조 부품 품목의 최대 ${PROFILE_FACTS.sparePartsCoveragePercent}%를 포괄; 연간 경제 효과 ${PROFILE_FACTS.annualSavingsMillionsRub}00만 루블 이상.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -621,6 +618,7 @@ const ko: SiteCopy = {
 
 const de: SiteCopy = {
   demo: COBOT_DEMO_COPY.de,
+  details: PORTFOLIO_DETAILS.de,
   introLabel: "Engineering-Portfolio",
   introHint: "Portfolio öffnen",
   introRoleLine:
@@ -668,7 +666,7 @@ const de: SiteCopy = {
   bentoImpactTitle: "Zahlen, die für sich sprechen",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Jahre industrielle Technik" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Roboterersatzteile lokal gefertigt" },
+    { value: `bis zu ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Abdeckung des Spektrums an Kunststoff-Hilfsteilen für Lackierroboter" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `IT-/F&E-Projekte ${PROFILE_FACTS.referenceYear}` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Eigenentwicklung" },
   ],
@@ -686,7 +684,6 @@ const de: SiteCopy = {
   shareFailedToast: "Link konnte nicht kopiert werden",
   qrContactHint: "Scannen — Kontakt speichern",
   bentoProjectsTitle: "Projekte",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "Sprache",
   domainIconLabels: {
     brain: "Industrielle KI",
@@ -701,7 +698,6 @@ const de: SiteCopy = {
       description:
         "KI für vorausschauende Instandhaltung, Qualitätsprüfung und Prozessoptimierung.",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Daten bleiben im Werk" },
         { value: "On-Prem", label: "Lösungen im Werksnetz" },
@@ -713,9 +709,8 @@ const de: SiteCopy = {
       description:
         "Integration von Roboterzellen und Bahnprogrammierung für mehr als 100 Karosserie- und Kabinentypen.",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Geringere Einführungskosten" },
+        { value: "in-house", label: "Interne Integration" },
         { value: "Vollzyklus", label: "Auslegung → Inbetriebnahme → Support" },
       ],
     },
@@ -728,7 +723,7 @@ const de: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} Mio. ₽`, label: "Wirtschaftlicher Nutzen pro Jahr" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Importteile ersetzt" },
+        { value: `bis zu ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Abdeckung des Spektrums an Kunststoff-Hilfsteilen für Lackierroboter" },
       ],
     },
     {
@@ -765,7 +760,7 @@ const de: SiteCopy = {
       summary:
         "Auslegung von JAKA-Cobot-Zellen und Bahnprogrammierung für Dichtstoffauftrag auf Karosserien.",
       result:
-        "Personal an kritischen Bandstationen abgelöst; der Ansatz wurde auf andere Standorte übertragen.",
+        "Das Team entwickelte Vorrichtungen und Software; eine Pilotserie von Fahrzeugen bestand das Qualitätsaudit.",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -774,7 +769,8 @@ const de: SiteCopy = {
       category: "Additive Fertigung",
       summary:
         "Vollzyklus: Reverse Engineering, funktionsfähige 3D-gedruckte Bauteile und Industriedesign.",
-      result: `${PROFILE_FACTS.serialPositions}+ Serienpositionen; bis zu 70 % der Kunststoff-Ersatzteile für Lackierroboter intern; Nutzen über ${PROFILE_FACTS.annualSavingsMillionsRub} Mio. ₽/Jahr.`,
+      result:
+        `${PROFILE_FACTS.serialPositions}+ Serienpositionen; bis zu ${PROFILE_FACTS.sparePartsCoveragePercent}% des Spektrums an Kunststoff-Hilfsteilen für Lackierroboter; über ${PROFILE_FACTS.annualSavingsMillionsRub} Mio. ₽ Jahresnutzen.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -792,6 +788,7 @@ const de: SiteCopy = {
 
 const fr: SiteCopy = {
   demo: COBOT_DEMO_COPY.fr,
+  details: PORTFOLIO_DETAILS.fr,
   introLabel: "Portfolio d'ingénierie",
   introHint: "Voir le portfolio",
   introRoleLine:
@@ -839,7 +836,7 @@ const fr: SiteCopy = {
   bentoImpactTitle: "Des chiffres qui parlent d'eux-mêmes",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Ans d'ingénierie industrielle" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Pièces de rechange robots localisées" },
+    { value: `jusqu’à ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Couverture des références de pièces auxiliaires plastiques des robots de peinture" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `Projets IT/R&D en ${PROFILE_FACTS.referenceYear}` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Développement interne" },
   ],
@@ -857,7 +854,6 @@ const fr: SiteCopy = {
   shareFailedToast: "Impossible de copier le lien",
   qrContactHint: "Scannez pour enregistrer le contact",
   bentoProjectsTitle: "Projets",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "Langue",
   domainIconLabels: {
     brain: "IA industrielle",
@@ -872,7 +868,6 @@ const fr: SiteCopy = {
       description:
         "IA pour la maintenance prédictive, le contrôle qualité et l'optimisation des process.",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Données conservées sur site" },
         { value: "on-prem", label: "Solutions dans le réseau usine" },
@@ -884,9 +879,8 @@ const fr: SiteCopy = {
       description:
         "Intégration de cellules robotisées et programmation de trajectoires pour plus de 100 types de carrosseries et cabines.",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Coût de déploiement réduit" },
+        { value: "in-house", label: "Intégration en interne" },
         { value: "bout en bout", label: "Conception → mise en service → support" },
       ],
     },
@@ -899,7 +893,7 @@ const fr: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} M₽`, label: "Gain économique annuel" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Pièces importées remplacées" },
+        { value: `jusqu’à ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Couverture des références de pièces auxiliaires plastiques des robots de peinture" },
       ],
     },
     {
@@ -936,7 +930,7 @@ const fr: SiteCopy = {
       summary:
         "Conception de cellules cobots JAKA et programmation des trajectoires de dépôt de mastic sur carrosseries.",
       result:
-        "Personnel libéré des postes critiques du convoyeur ; l'approche a été reprise ailleurs.",
+        "L’équipe a développé les outillages et le logiciel ; une série pilote de véhicules a réussi l’audit qualité.",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -946,7 +940,7 @@ const fr: SiteCopy = {
       summary:
         "Cycle complet : rétroconception, pièces fonctionnelles imprimées en 3D et design industriel.",
       result:
-        `Plus de ${PROFILE_FACTS.annualSavingsMillionsRub}0 références de série ; jusqu'à 70 % des pièces plastiques de robots de peinture en interne ; plus de ${PROFILE_FACTS.annualSavingsMillionsRub} M₽/an.`,
+        `${PROFILE_FACTS.serialPositions}+ références de série ; jusqu’à ${PROFILE_FACTS.sparePartsCoveragePercent}% de la gamme de pièces auxiliaires plastiques des robots de peinture ; plus de ${PROFILE_FACTS.annualSavingsMillionsRub} M₽ par an.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -964,6 +958,7 @@ const fr: SiteCopy = {
 
 const hi: SiteCopy = {
   demo: COBOT_DEMO_COPY.hi,
+  details: PORTFOLIO_DETAILS.hi,
   introLabel: "इंजीनियरिंग पोर्टफोलियो",
   introHint: "पोर्टफोलियो देखें",
   introRoleLine:
@@ -1011,7 +1006,7 @@ const hi: SiteCopy = {
   bentoImpactTitle: "आँकड़े जो खुद बोलते हैं",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "औद्योगिक इंजीनियरिंग में वर्ष" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "रोबोट स्पेयर पार्ट्स का स्थानीयकरण" },
+    { value: `अधिकतम ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "पेंटिंग रोबोट के प्लास्टिक सहायक पार्ट्स के प्रकारों का कवरेज" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear} में IT/R&D प्रोजेक्ट` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "इन-हाउस डेवलपमेंट" },
   ],
@@ -1029,7 +1024,6 @@ const hi: SiteCopy = {
   shareFailedToast: "लिंक कॉपी नहीं हो सका",
   qrContactHint: "स्कैन करें — संपर्क सेव होगा",
   bentoProjectsTitle: "प्रोजेक्ट्स",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "भाषा चुनें",
   domainIconLabels: {
     brain: "औद्योगिक AI",
@@ -1044,7 +1038,6 @@ const hi: SiteCopy = {
       description:
         "प्रेडिक्टिव मेंटेनेंस, क्वालिटी इंस्पेक्शन और प्रोसेस ऑप्टिमाइज़ेशन के लिए AI।",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "डेटा प्लांट में ही रहता है" },
         { value: "on-prem", label: "प्लांट-नेटवर्क समाधान" },
@@ -1056,9 +1049,8 @@ const hi: SiteCopy = {
       description:
         `रोबोट सेल इंटीग्रेशन और ${PROFILE_FACTS.robotBodyTypes}+ बॉडी व कैब प्रकारों के लिए पथ प्रोग्रामिंग।`,
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "कम डिप्लॉयमेंट लागत" },
+        { value: "in-house", label: "आंतरिक एकीकरण" },
         { value: "end-to-end", label: "डिज़ाइन → कमीशनिंग → सपोर्ट" },
       ],
     },
@@ -1071,7 +1063,7 @@ const hi: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} मिलियन रूबल`, label: "वार्षिक आर्थिक प्रभाव" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "आयातित पार्ट्स का प्रतिस्थापन" },
+        { value: `अधिकतम ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "पेंटिंग रोबोट के प्लास्टिक सहायक पार्ट्स के प्रकारों का कवरेज" },
       ],
     },
     {
@@ -1108,7 +1100,7 @@ const hi: SiteCopy = {
       summary:
         "JAKA कोबोट सेल डिज़ाइन और वाहन बॉडी पर सीलेंट पथ प्रोग्रामिंग।",
       result:
-        "क्रिटिकल कन्वेयर स्टेशनों से मैन्युअल निर्भरता हटाई; यही तरीका अन्य साइटों पर भी अपनाया गया।",
+        "टीम ने टूलिंग और सॉफ्टवेयर विकसित किए; वाहनों के पायलट बैच ने गुणवत्ता ऑडिट पास किया।",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -1117,7 +1109,8 @@ const hi: SiteCopy = {
       category: "एडिटिव तकनीक",
       summary:
         "पूर्ण चक्र: रिवर्स इंजीनियरिंग, फ़ंक्शनल 3D-प्रिंटेड पार्ट्स और इंडस्ट्रियल डिज़ाइन।",
-      result: `${PROFILE_FACTS.serialPositions}+ सीरियल पार्ट नंबर; पेंट-रोबोट प्लास्टिक स्पेयर्स का ~${PROFILE_FACTS.sparePartsCoveragePercent}% इन-हाउस; सालाना प्रभाव 50 लाख रूबल से अधिक।`,
+      result:
+        `${PROFILE_FACTS.serialPositions}+ सीरियल उत्पादन पार्ट्स; पेंटिंग रोबोट के प्लास्टिक सहायक पार्ट्स के अधिकतम ${PROFILE_FACTS.sparePartsCoveragePercent}% प्रकारों का कवरेज; सालाना आर्थिक प्रभाव ${PROFILE_FACTS.annualSavingsMillionsRub} मिलियन रूबल से अधिक।`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1135,6 +1128,7 @@ const hi: SiteCopy = {
 
 const ja: SiteCopy = {
   demo: COBOT_DEMO_COPY.ja,
+  details: PORTFOLIO_DETAILS.ja,
   introLabel: "エンジニアリング・ポートフォリオ",
   introHint: "ポートフォリオを見る",
   introRoleLine:
@@ -1182,7 +1176,7 @@ const ja: SiteCopy = {
   bentoImpactTitle: "数字が証明します",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "産業エンジニアリング歴" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "ロボット部品の国産化" },
+    { value: `最大${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "塗装ロボット用樹脂補助部品の品目カバー率" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear}年のIT／R&Dプロジェクト` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "内製開発" },
   ],
@@ -1200,7 +1194,6 @@ const ja: SiteCopy = {
   shareFailedToast: "リンクをコピーできませんでした",
   qrContactHint: "スキャンで連絡先を保存",
   bentoProjectsTitle: "プロジェクト",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "言語",
   domainIconLabels: {
     brain: "産業AI",
@@ -1214,7 +1207,6 @@ const ja: SiteCopy = {
       title: "産業\nAI",
       description: "予知保全、品質検査、工程最適化向けのAIソリューション。",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "データは構内完結" },
         { value: "オンプレミス", label: "工場ネットワーク対応" },
@@ -1225,9 +1217,8 @@ const ja: SiteCopy = {
       title: "ロボティクス",
       description: "ロボットセルの統合と、車体・キャビン100種以上の軌道プログラミング。",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "導入コスト低減" },
+        { value: "in-house", label: "社内での統合" },
         { value: "一気通貫", label: "設計 → 立上げ → 保守" },
       ],
     },
@@ -1240,7 +1231,7 @@ const ja: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: `>${PROFILE_FACTS.annualSavingsMillionsRub}00万₽`, label: "年間経済効果" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "輸入部品の代替" },
+        { value: `最大${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "塗装ロボット用樹脂補助部品の品目カバー率" },
       ],
     },
     {
@@ -1277,7 +1268,7 @@ const ja: SiteCopy = {
       summary:
         "JAKA協働ロボットセルの設計と、車体へのシーラー塗布軌道のプログラミング。",
       result:
-        "コンベアの重要ステーションから作業者を外しました。同じ手法を他拠点にも展開しました。",
+        "チームが治具とソフトウェアを開発し、試験生産車が品質監査に合格しました。",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -1286,7 +1277,8 @@ const ja: SiteCopy = {
       category: "積層造形",
       summary:
         "フルサイクル：リバースエンジニアリング、機能部品の3D造形、インダストリアルデザイン。",
-      result: `シリーズ品目${PROFILE_FACTS.annualSavingsMillionsRub}0以上。塗装ロボット用プラスチック部品の最大${PROFILE_FACTS.sparePartsCoveragePercent}%を内製。年間効果は${PROFILE_FACTS.annualSavingsMillionsRub}00万ルーブル超。`,
+      result:
+        `量産品目${PROFILE_FACTS.serialPositions}以上。塗装ロボット用樹脂補助部品の最大${PROFILE_FACTS.sparePartsCoveragePercent}%の品目をカバー。年間経済効果は${PROFILE_FACTS.annualSavingsMillionsRub}00万ルーブル超。`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1304,6 +1296,7 @@ const ja: SiteCopy = {
 
 const es: SiteCopy = {
   demo: COBOT_DEMO_COPY.es,
+  details: PORTFOLIO_DETAILS.es,
   introLabel: "Portfolio de ingeniería",
   introHint: "Ver portafolio",
   introRoleLine:
@@ -1351,7 +1344,7 @@ const es: SiteCopy = {
   bentoImpactTitle: "Cifras que hablan por sí solas",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Años en ingeniería industrial" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Repuestos de robots localizados" },
+    { value: `hasta ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Cobertura de referencias de piezas auxiliares plásticas de robots de pintura" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `Proyectos IT/I+D en ${PROFILE_FACTS.referenceYear}` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Desarrollo interno" },
   ],
@@ -1369,7 +1362,6 @@ const es: SiteCopy = {
   shareFailedToast: "No se pudo copiar el enlace",
   qrContactHint: "Escanee para guardar el contacto",
   bentoProjectsTitle: "Proyectos",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "Idioma",
   domainIconLabels: {
     brain: "IA industrial",
@@ -1384,7 +1376,6 @@ const es: SiteCopy = {
       description:
         "IA para mantenimiento predictivo, control de calidad y optimización de procesos.",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Datos que permanecen en planta" },
         { value: "on-prem", label: "Soluciones en la red de planta" },
@@ -1396,9 +1387,8 @@ const es: SiteCopy = {
       description:
         "Integración de células robotizadas y programación de trayectorias para más de 100 tipos de carrocerías y cabinas.",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Menor costo de implantación" },
+        { value: "in-house", label: "Integración interna" },
         { value: "ciclo completo", label: "Diseño → puesta en marcha → soporte" },
       ],
     },
@@ -1411,7 +1401,7 @@ const es: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} M₽`, label: "Impacto económico anual" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Piezas importadas sustituidas" },
+        { value: `hasta ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Cobertura de referencias de piezas auxiliares plásticas de robots de pintura" },
       ],
     },
     {
@@ -1448,7 +1438,7 @@ const es: SiteCopy = {
       summary:
         "Diseño de células con cobots JAKA y programación de trayectorias de sellador sobre carrocerías.",
       result:
-        "Personal liberado de puestos críticos del transportador; el enfoque se reutilizó en otras plantas.",
+        "El equipo desarrolló los utillajes y el software; un lote piloto de vehículos superó la auditoría de calidad.",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -1458,7 +1448,7 @@ const es: SiteCopy = {
       summary:
         "Ciclo completo: ingeniería inversa, piezas funcionales impresas en 3D y diseño industrial.",
       result:
-        `Más de ${PROFILE_FACTS.annualSavingsMillionsRub}0 referencias de serie; hasta el ${PROFILE_FACTS.sparePartsCoveragePercent}% de recambios plásticos de robots de pintura en planta; más de ${PROFILE_FACTS.annualSavingsMillionsRub} M₽ al año.`,
+        `${PROFILE_FACTS.serialPositions}+ referencias de serie; cobertura de hasta el ${PROFILE_FACTS.sparePartsCoveragePercent}% de la gama de piezas auxiliares plásticas de robots de pintura; más de ${PROFILE_FACTS.annualSavingsMillionsRub} M₽ al año.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1476,6 +1466,7 @@ const es: SiteCopy = {
 
 const pt: SiteCopy = {
   demo: COBOT_DEMO_COPY.pt,
+  details: PORTFOLIO_DETAILS.pt,
   introLabel: "Portfólio de engenharia",
   introHint: "Ver portfólio",
   introRoleLine:
@@ -1523,7 +1514,7 @@ const pt: SiteCopy = {
   bentoImpactTitle: "Números que falam por si",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Anos em engenharia industrial" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Peças de reposição de robôs localizadas" },
+    { value: `até ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Cobertura da gama de peças auxiliares plásticas de robôs de pintura" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `Projetos de TI/P&D em ${PROFILE_FACTS.referenceYear}` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Desenvolvimento interno" },
   ],
@@ -1541,7 +1532,6 @@ const pt: SiteCopy = {
   shareFailedToast: "Não foi possível copiar o link",
   qrContactHint: "Escaneie para salvar o contato",
   bentoProjectsTitle: "Projetos",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "Idioma",
   domainIconLabels: {
     brain: "IA industrial",
@@ -1556,7 +1546,6 @@ const pt: SiteCopy = {
       description:
         "IA para manutenção preditiva, inspeção de qualidade e otimização de processos.",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Dados ficam na planta" },
         { value: "on-prem", label: "Soluções na rede da planta" },
@@ -1568,9 +1557,8 @@ const pt: SiteCopy = {
       description:
         "Integração de células robotizadas e programação de trajetórias para mais de 100 tipos de carrocerias e cabines.",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Menor custo de implantação" },
+        { value: "in-house", label: "Integração interna" },
         { value: "ciclo completo", label: "Projeto → comissionamento → suporte" },
       ],
     },
@@ -1583,7 +1571,7 @@ const pt: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: ">5 mi ₽", label: "Impacto econômico anual" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Peças importadas substituídas" },
+        { value: `até ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Cobertura da gama de peças auxiliares plásticas de robôs de pintura" },
       ],
     },
     {
@@ -1619,7 +1607,8 @@ const pt: SiteCopy = {
       category: "Robótica",
       summary:
         "Projeto de células com cobots JAKA e programação de trajetórias de selante em carrocerias.",
-      result: "Pessoas retiradas de postos críticos da linha; a abordagem foi reaplicada em outras plantas.",
+      result:
+        "A equipe desenvolveu os dispositivos e o software; um lote piloto de veículos passou pela auditoria de qualidade.",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -1628,7 +1617,8 @@ const pt: SiteCopy = {
       category: "Manufatura aditiva",
       summary:
         "Ciclo completo: engenharia reversa, peças funcionais impressas em 3D e design industrial.",
-      result: `Mais de 50 itens de série; até ${PROFILE_FACTS.sparePartsCoveragePercent}% das peças plásticas de robôs de pintura internamente; mais de 5 mi ₽/ano.`,
+      result:
+        `${PROFILE_FACTS.serialPositions}+ itens de série; cobertura de até ${PROFILE_FACTS.sparePartsCoveragePercent}% da gama de peças auxiliares plásticas de robôs de pintura; mais de ${PROFILE_FACTS.annualSavingsMillionsRub} milhões ₽ por ano.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1646,6 +1636,7 @@ const pt: SiteCopy = {
 
 const it: SiteCopy = {
   demo: COBOT_DEMO_COPY.it,
+  details: PORTFOLIO_DETAILS.it,
   introLabel: "Portfolio di ingegneria",
   introHint: "Apri il portfolio",
   introRoleLine:
@@ -1693,7 +1684,7 @@ const it: SiteCopy = {
   bentoImpactTitle: "Numeri che parlano da soli",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Anni di ingegneria industriale" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Ricambi robot localizzati" },
+    { value: `fino al ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Copertura della gamma di componenti ausiliari plastici dei robot di verniciatura" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `Progetti IT/R&S nel ${PROFILE_FACTS.referenceYear}` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Sviluppo interno" },
   ],
@@ -1711,7 +1702,6 @@ const it: SiteCopy = {
   shareFailedToast: "Impossibile copiare il link",
   qrContactHint: "Scansiona per salvare il contatto",
   bentoProjectsTitle: "Progetti",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "Lingua",
   domainIconLabels: {
     brain: "IA industriale",
@@ -1726,7 +1716,6 @@ const it: SiteCopy = {
       description:
         "IA per manutenzione predittiva, controllo qualità e ottimizzazione di processo.",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Dati che restano in stabilimento" },
         { value: "on-prem", label: "Soluzioni nella rete di fabbrica" },
@@ -1738,9 +1727,8 @@ const it: SiteCopy = {
       description:
         "Integrazione di celle robotizzate e programmazione delle traiettorie per oltre 100 tipi di scocche e cabine.",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Costo di implementazione inferiore" },
+        { value: "in-house", label: "Integrazione interna" },
         {
           value: "ciclo completo",
           label: "Progettazione → messa in servizio → supporto",
@@ -1756,7 +1744,7 @@ const it: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: ">5 mln ₽", label: "Impatto economico annuo" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Componenti importati sostituiti" },
+        { value: `fino al ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Copertura della gamma di componenti ausiliari plastici dei robot di verniciatura" },
       ],
     },
     {
@@ -1793,7 +1781,7 @@ const it: SiteCopy = {
       summary:
         "Progettazione di celle con cobot JAKA e programmazione delle traiettorie di stesura mastice su scocche.",
       result:
-        "Operatori sottratti alle postazioni critiche del trasportatore; l'approccio è stato ripreso su altri siti.",
+        "Il team ha sviluppato attrezzature e software; un lotto pilota di veicoli ha superato l’audit di qualità.",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -1803,7 +1791,7 @@ const it: SiteCopy = {
       summary:
         "Ciclo completo: reverse engineering, pezzi funzionali stampati in 3D e design industriale.",
       result:
-        `Oltre 50 posizioni di serie; fino al ${PROFILE_FACTS.sparePartsCoveragePercent}% dei ricambi plastici dei robot di verniciatura internamente; oltre 5 mln ₽/anno.`,
+        `${PROFILE_FACTS.serialPositions}+ voci di serie; copertura fino al ${PROFILE_FACTS.sparePartsCoveragePercent}% della gamma di componenti ausiliari plastici dei robot di verniciatura; oltre ${PROFILE_FACTS.annualSavingsMillionsRub} milioni ₽ annui.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1821,6 +1809,7 @@ const it: SiteCopy = {
 
 const tr: SiteCopy = {
   demo: COBOT_DEMO_COPY.tr,
+  details: PORTFOLIO_DETAILS.tr,
   introLabel: "Mühendislik portföyü",
   introHint: "Portföyü aç",
   introRoleLine:
@@ -1868,7 +1857,7 @@ const tr: SiteCopy = {
   bentoImpactTitle: "Kendi adına konuşan rakamlar",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Endüstriyel mühendislikte yıl" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Robot yedek parçası yerelleştirildi" },
+    { value: `en fazla %${PROFILE_FACTS.sparePartsCoveragePercent}`, label: "Boyama robotlarının plastik yardımcı parça çeşitlerinin kapsamı" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear}’da BT/Ar-Ge projesi` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Kurum içi geliştirme" },
   ],
@@ -1886,7 +1875,6 @@ const tr: SiteCopy = {
   shareFailedToast: "Bağlantı kopyalanamadı",
   qrContactHint: "Tarayın — kişi kaydedilir",
   bentoProjectsTitle: "Projeler",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "Dil",
   domainIconLabels: {
     brain: "Endüstriyel yapay zeka",
@@ -1901,7 +1889,6 @@ const tr: SiteCopy = {
       description:
         "Öngörücü bakım, kalite kontrolü ve proses optimizasyonu için yapay zeka.",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Veriler tesis içinde kalır" },
         { value: "on-prem", label: "Fabrika ağı çözümleri" },
@@ -1913,9 +1900,8 @@ const tr: SiteCopy = {
       description:
         "Robot hücre entegrasyonu ve 100’den fazla gövde ile kabin tipi için yörünge programlama.",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Daha düşük devreye alma maliyeti" },
+        { value: "in-house", label: "Şirket içi entegrasyon" },
         { value: "uçtan uca", label: "Tasarım → devreye alma → destek" },
       ],
     },
@@ -1927,7 +1913,7 @@ const tr: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} milyon ₽`, label: "Yıllık ekonomik etki" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "İthal parça ikamesi" },
+        { value: `en fazla %${PROFILE_FACTS.sparePartsCoveragePercent}`, label: "Boyama robotlarının plastik yardımcı parça çeşitlerinin kapsamı" },
       ],
     },
     {
@@ -1963,7 +1949,8 @@ const tr: SiteCopy = {
       category: "Robotik",
       summary:
         "JAKA cobot hücre tasarımı ve araç gövdelerine sızdırmazlık macunu yolu programlama.",
-      result: "Kritik konveyör istasyonlarından insanı çektik; yaklaşım başka sahalara da taşındı.",
+      result:
+        "Ekip mekanik donanımı ve yazılımı geliştirdi; pilot araç partisi kalite denetimini geçti.",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -1972,7 +1959,8 @@ const tr: SiteCopy = {
       category: "Eklemeli teknoloji",
       summary:
         "Tam döngü: tersine mühendislik, işlevsel 3D baskı parçalar ve endüstriyel tasarım.",
-      result: `${PROFILE_FACTS.annualSavingsMillionsRub}0’den fazla seri kalem; boyama robotu plastik yedeklerinin %70’ine kadar iç üretim; yılda ${PROFILE_FACTS.annualSavingsMillionsRub} milyon ₽ üzeri etki.`,
+      result:
+        `${PROFILE_FACTS.serialPositions}+ seri parça; boyama robotlarının plastik yardımcı parça çeşitlerinin en fazla %${PROFILE_FACTS.sparePartsCoveragePercent}’ini kapsar; yıllık ${PROFILE_FACTS.annualSavingsMillionsRub} milyon ₽ üzerinde etki.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1990,6 +1978,7 @@ const tr: SiteCopy = {
 
 const ar: SiteCopy = {
   demo: COBOT_DEMO_COPY.ar,
+  details: PORTFOLIO_DETAILS.ar,
   introLabel: "محفظة هندسية",
   introHint: "عرض ملف الأعمال",
   introRoleLine:
@@ -2037,7 +2026,7 @@ const ar: SiteCopy = {
   bentoImpactTitle: "أرقام تتحدث عن نفسها",
   impactMetrics: [
     { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "سنوات في الهندسة الصناعية" },
-    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "توطين قطع غيار الروبوتات" },
+    { value: `حتى ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "تغطية أصناف القطع البلاستيكية المساعدة لروبوتات الطلاء" },
     { value: `${PROFILE_FACTS.itProjects}`, label: `مشاريع IT/R&D في عام ${PROFILE_FACTS.referenceYear}` },
     { value: `${PROFILE_FACTS.inHousePercent}%`, label: "تطوير داخل المنشأة" },
   ],
@@ -2055,7 +2044,6 @@ const ar: SiteCopy = {
   shareFailedToast: "تعذّر نسخ الرابط",
   qrContactHint: "امسح لحفظ جهة الاتصال",
   bentoProjectsTitle: "المشاريع",
-  powerLevelLabel: "Power Level",
   languageSwitcherAria: "اختيار اللغة",
   domainIconLabels: {
     brain: "AI الصناعي",
@@ -2069,7 +2057,6 @@ const ar: SiteCopy = {
       title: "AI\nالصناعي",
       description: "حلول AI للصيانة التنبؤية وفحص الجودة وتحسين العمليات.",
       icon: "brain",
-      showSparkline: true,
       metrics: [
         { value: `${PROFILE_FACTS.localDataPercent}%`, label: "البيانات تبقى داخل المنشأة" },
         { value: "on-prem", label: "حلول على شبكة المصنع" },
@@ -2080,9 +2067,8 @@ const ar: SiteCopy = {
       title: "الروبوتات",
       description: "تكامل خلايا الروبوتات وبرمجة المسارات لأكثر من 100 نوع من الهياكل والكابينات.",
       icon: "robot",
-      showSparkline: true,
       metrics: [
-        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "تكلفة تنفيذ أقل" },
+        { value: "in-house", label: "تكامل داخلي" },
         { value: "دورة كاملة", label: "تصميم → تشغيل تجريبي → دعم" },
       ],
     },
@@ -2095,7 +2081,7 @@ const ar: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} ملايين روبل`, label: "الأثر الاقتصادي السنوي" },
-        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "استبدال القطع المستوردة" },
+        { value: `حتى ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "تغطية أصناف القطع البلاستيكية المساعدة لروبوتات الطلاء" },
       ],
     },
     {
@@ -2131,7 +2117,8 @@ const ar: SiteCopy = {
       category: "الروبوتات",
       summary:
         "تصميم خلايا روبوتات تعاونية JAKA وبرمجة مسارات وضع المادة المانعة على هياكل المركبات.",
-      result: "إخراج العنصر البشري من محطات الناقل الحرجة؛ نُقل النهج إلى مواقع أخرى.",
+      result:
+        "طور الفريق التجهيزات الميكانيكية والبرمجيات، واجتازت دفعة تجريبية من السيارات تدقيق الجودة.",
       ...sharedProjectMeta.cobots,
     },
     {
@@ -2140,7 +2127,8 @@ const ar: SiteCopy = {
       category: "التصنيع الإضافي",
       summary:
         "دورة كاملة: هندسة عكسية، قطع مطبوعة ثلاثية الأبعاد وظيفية، وتصميم صناعي.",
-      result: `أكثر من ${PROFILE_FACTS.annualSavingsMillionsRub}0 بندًا تسلسليًا؛ حتى ${PROFILE_FACTS.sparePartsCoveragePercent}% من القطع البلاستيكية لروبوتات الطلاء داخل المصنع؛ أثر سنوي يتجاوز ${PROFILE_FACTS.annualSavingsMillionsRub} ملايين روبل.`,
+      result:
+        `أكثر من ${PROFILE_FACTS.serialPositions} صنفًا للإنتاج المتسلسل؛ تغطية حتى ${PROFILE_FACTS.sparePartsCoveragePercent}% من أصناف القطع البلاستيكية المساعدة لروبوتات الطلاء؛ أثر سنوي يتجاوز ${PROFILE_FACTS.annualSavingsMillionsRub} ملايين روبل.`,
       ...sharedProjectMeta.cat,
     },
     {

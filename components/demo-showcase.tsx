@@ -65,7 +65,7 @@ export function DemoShowcase({ copy, source, poster }: Props) {
         <p className={styles.note}>{copy.modelNote}</p>
       </div>
 
-      <button ref={launchButton} type="button" className={styles.preview} onClick={launch} aria-label={copy.launch} aria-haspopup="dialog">
+      <button ref={launchButton} type="button" className={styles.preview} onClick={launch} aria-label={copy.launch} aria-haspopup="dialog" data-analytics-event="demo_launch">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={poster} width={1440} height={900} alt="" loading="lazy" decoding="async" />
         <span className={styles.launch}>
@@ -85,7 +85,7 @@ export function DemoShowcase({ copy, source, poster }: Props) {
         <header className={styles.toolbar}>
           <p>AL-FLOW <span>/ CS620</span></p>
           <div>
-            <a href={source} target="_blank" rel="noopener noreferrer">
+            <a href={source} target="_blank" rel="noopener noreferrer" data-analytics-event="demo_launch">
               <span>{copy.openSeparately}</span><ArrowUpRight size={17} aria-hidden="true" />
             </a>
             <button type="button" onClick={() => setOpen(false)} aria-label={copy.close} autoFocus>

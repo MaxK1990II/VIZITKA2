@@ -33,6 +33,13 @@ export function CrawlableProfile({ locale }: { locale: Locale }) {
       <p>{copy.demo.modelNote}</p>
       <a tabIndex={-1} href={COBOT_DEMO.source}>{copy.demo.launch}</a>
 
+      <h2>{copy.details.caseStudy.title}</h2>
+      <p>{copy.details.caseStudy.lead}</p>
+      {copy.details.caseStudy.chapters.map(chapter => <section key={chapter.title}><h3>{chapter.title}</h3><p>{chapter.body}</p></section>)}
+      <ul>{copy.details.caseStudy.metrics.map(metric => <li key={metric.label}>{metric.value} — {metric.label}</li>)}</ul>
+      <p>{copy.details.caseStudy.sourceNote}</p>
+      <a tabIndex={-1} href={copy.details.caseStudy.sourceUrl}>{copy.details.caseStudy.sourceLabel}</a>
+
       <h2>{copy.bentoProjectsTitle}</h2>
       <ul>
         {copy.projects.map((project) => (
@@ -62,6 +69,7 @@ export function CrawlableProfile({ locale }: { locale: Locale }) {
       </>}
 
       <h2>{copy.bentoConnectTitle}</h2>
+      <a tabIndex={-1} href="/files/maxim-kanochkin-profile-ru.pdf">{copy.details.contact.profilePdf}</a>
       <ul>
         <li>
           {copy.emailLabel}:{" "}

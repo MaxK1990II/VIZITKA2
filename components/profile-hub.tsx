@@ -152,19 +152,6 @@ export function ProfileHub({ isMobile, onReturn }: ProfileHubProps) {
               <h3 className="project-title">{project.title}</h3>
               <p className="hub-text-sm">{project.summary}</p>
 
-              <div className="project-power">
-                <span className="project-power-label">Power Level</span>
-                <div className="project-power-bar">
-                  <div
-                    className="project-power-fill"
-                    style={{ width: `${project.powerLevel * 10}%` }}
-                  />
-                </div>
-                <span className="project-power-value">
-                  {project.powerLevel}/10
-                </span>
-              </div>
-
               <p className="project-result">{project.result}</p>
               <TechStack technologies={project.technologies} />
             </article>
