@@ -2565,18 +2565,23 @@ html[dir="rtl"] .bento-stage [tabindex="-1"]:focus-visible { box-shadow: inset -
 .bento-profile-download a:focus-visible, .bento-qr-details summary:focus-visible { outline: 2px solid #e4bfa2; outline-offset: 3px; }
 .bento-qr-details summary { min-height: 44px; align-content: center; padding: 8px 0; color: #b8b2ac; font-size: 11px; line-height: 1.5; cursor: pointer; }
 .bento-qr-details .bento-qr { padding-block: 12px; }
-.bento-summary { grid-area: summary; display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: var(--bento-gap); align-items: start; }
-.bento-summary-main { display: grid; gap: var(--bento-gap); align-content: start; min-width: 0; }
+.bento-summary { grid-area: summary; display: grid; grid-template-columns: minmax(0, 1.14fr) minmax(0, 1.14fr) minmax(0, 0.86fr) minmax(0, 0.86fr); gap: var(--bento-gap); align-items: stretch; }
+.bento-summary-main { grid-column: 1 / 3; display: grid; grid-template-rows: auto minmax(min-content, 1fr); gap: var(--bento-gap); min-width: 0; }
 .bento-summary .bento-tile { grid-area: auto; height: auto; min-height: 0; }
+.bento-summary > .bento-tile-connect { grid-column: 3 / 5; }
 .bento-summary .bento-about-meta { margin-top: 18px; padding-top: 0; }
-.bento-summary .bento-impact-grid { margin: 14px 0 0; padding-top: 0; }
+.bento-summary .bento-impact-grid { flex: 1; align-content: center; margin: 14px 0 0; padding-top: 0; }
 .bento-summary .bento-tile-about .bento-tile-desc { font-size: 14px; line-height: 1.7; }
 .bento-summary .bento-connect-body { justify-content: flex-start; }
+.bento-summary .bento-share { margin-top: auto; }
 @media (min-width: 641px) and (max-width: 1024px) {
-  .bento-summary { grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr); }
+  .bento-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bento-summary-main { grid-column: 1; }
+  .bento-summary > .bento-tile-connect { grid-column: 2; }
 }
 @media (max-width: 640px) {
   .bento-summary { grid-template-columns: minmax(0, 1fr); }
+  .bento-summary-main, .bento-summary > .bento-tile-connect { grid-column: 1; }
   .bento-hub { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
   .bento-back-btn { min-height: 44px; padding-inline: 10px; }
   .bento-tile-domain { min-height: 280px; }
