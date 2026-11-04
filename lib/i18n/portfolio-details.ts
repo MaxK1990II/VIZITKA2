@@ -12,6 +12,9 @@ export type ProjectEvidence = {
 };
 
 export type CatCaseStudyCopy = {
+  detailsSummary: string;
+  imageAlt: string;
+  photoCredit: string;
   eyebrow: string;
   title: string;
   lead: string;
@@ -61,7 +64,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "Экспертная практика", role: "Техническая оценка инженерных проектов и наставничество" },
     },
     caseStudy: {
-      eyebrow: "Кейс · организация инженерной работы", title: "От задачи цеха — к Центру аддитивных технологий",
+      detailsSummary: "Подробности проекта", imageAlt: "Центр аддитивных технологий ГАЗ", photoCredit: "Фото: журнал «Время машин»",
+      eyebrow: "Создание центра · 2022–2025", title: "Центр аддитивных технологий ГАЗ",
       lead: "Инициировал создание ЦАТ на ГАЗе и вместе с командой превратил производственную потребность в собственную инженерную площадку.",
       chapters: [
         { title: "Производственная задача", body: "Износ небольших пластиковых деталей мог останавливать окрасочных роботов. Внешние поставки требовали времени, а производство — постоянного запаса деталей." },
@@ -86,7 +90,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "Expertentätigkeit", role: "Technische Bewertung von Ingenieurprojekten und Mentoring" },
     },
     caseStudy: {
-      eyebrow: "Fallstudie · Aufbau technischer Kompetenz", title: "Vom Problem in der Fertigung zum Zentrum für additive Technologien",
+      detailsSummary: "Projektdetails", imageAlt: "GAZ-Zentrum für additive Technologien", photoCredit: "Foto: Magazin „Время машин“",
+      eyebrow: "Aufbau des Zentrums · 2022–2025", title: "GAZ-Zentrum für additive Technologien",
       lead: "Ich initiierte das ATC bei GAZ und schuf mit dem Team aus einem Fertigungsbedarf eine eigene technische Einrichtung.",
       chapters: [
         { title: "Die Produktionsaufgabe", body: "Verschlissene kleine Kunststoffteile konnten Lackierroboter stillsetzen. Externe Beschaffung dauerte lange und erforderte ständige Ersatzteilbestände." },
@@ -110,7 +115,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "Activité d’expertise", role: "Évaluation technique de projets d’ingénierie et mentorat" },
     },
     caseStudy: {
-      eyebrow: "Étude de cas · création d’une capacité d’ingénierie", title: "D’un besoin d’atelier au centre de technologies additives",
+      detailsSummary: "Détails du projet", imageAlt: "Centre de technologies additives de GAZ", photoCredit: "Photo : magazine « Время машин »",
+      eyebrow: "Création du centre · 2022–2025", title: "Centre de technologies additives de GAZ",
       lead: "J’ai initié le centre chez GAZ et, avec l’équipe, transformé un besoin de production en une structure d’ingénierie interne.",
       chapters: [
         { title: "Le besoin industriel", body: "L’usure de petites pièces en plastique pouvait arrêter les robots de peinture. Les délais des fournisseurs imposaient de conserver un stock permanent de rechange." },
@@ -134,7 +140,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "Actividad como experto", role: "Evaluación técnica de proyectos de ingeniería y mentoría" },
     },
     caseStudy: {
-      eyebrow: "Caso · creación de capacidad de ingeniería", title: "De una necesidad del taller a un centro de fabricación aditiva",
+      detailsSummary: "Detalles del proyecto", imageAlt: "Centro de fabricación aditiva de GAZ", photoCredit: "Foto: revista «Время машин»",
+      eyebrow: "Creación del centro · 2022–2025", title: "Centro de fabricación aditiva de GAZ",
       lead: "Impulsé el centro en GAZ y trabajé con el equipo para convertir una necesidad de producción en capacidad técnica propia.",
       chapters: [
         { title: "El problema de producción", body: "El desgaste de pequeñas piezas plásticas podía detener los robots de pintura. Los plazos de suministro exigían mantener una reserva constante de repuestos." },
@@ -158,7 +165,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "Atuação como especialista", role: "Avaliação técnica de projetos de engenharia e mentoria" },
     },
     caseStudy: {
-      eyebrow: "Caso · criação de capacidade de engenharia", title: "Da necessidade no chão de fábrica ao centro de manufatura aditiva",
+      detailsSummary: "Detalhes do projeto", imageAlt: "Centro de manufatura aditiva da GAZ", photoCredit: "Foto: revista «Время машин»",
+      eyebrow: "Criação do centro · 2022–2025", title: "Centro de manufatura aditiva da GAZ",
       lead: "Idealizei o centro na GAZ e, com a equipe, transformei uma necessidade de produção em uma estrutura própria de engenharia.",
       chapters: [
         { title: "O problema de produção", body: "O desgaste de pequenas peças plásticas podia parar robôs de pintura. Prazos de fornecedores exigiam uma reserva permanente de reposição." },
@@ -182,7 +190,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "Attività di esperto", role: "Valutazione tecnica di progetti ingegneristici e mentoring" },
     },
     caseStudy: {
-      eyebrow: "Caso · costruire capacità ingegneristica", title: "Da un’esigenza di reparto al centro di tecnologie additive",
+      detailsSummary: "Dettagli del progetto", imageAlt: "Centro di tecnologie additive GAZ", photoCredit: "Foto: rivista «Время машин»",
+      eyebrow: "Creazione del centro · 2022–2025", title: "Centro di tecnologie additive GAZ",
       lead: "Ho promosso il centro in GAZ e lavorato con il team per trasformare un’esigenza produttiva in una struttura ingegneristica interna.",
       chapters: [
         { title: "Il problema produttivo", body: "L’usura di piccoli componenti plastici poteva fermare i robot di verniciatura. Le forniture esterne richiedevano tempo e scorte costanti di ricambi." },
@@ -206,7 +215,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "Uzmanlık çalışmaları", role: "Mühendislik projelerinin teknik değerlendirmesi ve mentorluk" },
     },
     caseStudy: {
-      eyebrow: "Vaka · mühendislik kapasitesi kurmak", title: "Üretim sahasındaki bir ihtiyaçtan eklemeli teknolojiler merkezine",
+      detailsSummary: "Proje ayrıntıları", imageAlt: "GAZ Eklemeli Teknolojiler Merkezi", photoCredit: "Fotoğraf: «Время машин» dergisi",
+      eyebrow: "Merkezin kuruluşu · 2022–2025", title: "GAZ Eklemeli Teknolojiler Merkezi",
       lead: "GAZ’da merkezin kurulmasını başlattım; ekiple birlikte üretim ihtiyacını kurum içi mühendislik kapasitesine dönüştürdük.",
       chapters: [
         { title: "Üretim sorunu", body: "Küçük plastik parçaların aşınması boyama robotlarını durdurabiliyordu. Dış tedarik zaman alıyor, üretim için sürekli yedek stok gerekiyordu." },
@@ -230,7 +240,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "专家评审实践", role: "工程项目技术评审与指导" },
     },
     caseStudy: {
-      eyebrow: "案例 · 工程团队与组织建设", title: "从车间需求到增材技术中心", lead: "我发起了 GAZ 增材技术中心项目，并与团队一起将生产需求转化为内部工程能力。",
+      detailsSummary: "项目详情", imageAlt: "GAZ 增材技术中心", photoCredit: "图片：《Время машин》杂志",
+      eyebrow: "中心建设 · 2022–2025", title: "GAZ 增材技术中心", lead: "我发起了 GAZ 增材技术中心项目，并与团队一起将生产需求转化为内部工程能力。",
       chapters: [
         { title: "生产中的问题", body: "小型塑料零件的磨损可能导致喷涂机器人停机。外部采购周期较长，而生产需要持续的备件供应。" },
         { title: "我的职责与团队", body: "我提出建立中心的方案，并在 2022 年企业内部技术大会上获奖。随后与同事一起改造车间场地、选择设备并组建团队。" },
@@ -253,7 +264,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "전문가 활동", role: "엔지니어링 프로젝트 기술 심사 및 멘토링" },
     },
     caseStudy: {
-      eyebrow: "사례 · 엔지니어링 조직 구축", title: "현장의 필요에서 적층 기술 센터로", lead: "GAZ의 적층 기술 센터 설립을 제안하고 팀과 함께 생산 현장의 필요를 사내 엔지니어링 기반으로 발전시켰습니다.",
+      detailsSummary: "프로젝트 세부 내용", imageAlt: "GAZ 적층 기술 센터", photoCredit: "사진: 「Время машин」 잡지",
+      eyebrow: "센터 설립 · 2022–2025", title: "GAZ 적층 기술 센터", lead: "GAZ의 적층 기술 센터 설립을 제안하고 팀과 함께 생산 현장의 필요를 사내 엔지니어링 기반으로 발전시켰습니다.",
       chapters: [
         { title: "생산 과제", body: "작은 플라스틱 부품의 마모가 도장 로봇을 멈출 수 있었습니다. 외부 조달에는 시간이 걸렸고, 생산에는 지속적인 예비 부품 공급이 필요했습니다." },
         { title: "역할과 팀", body: "센터 설립안을 제안하여 2022년 사내 기술 콘퍼런스에서 수상했습니다. 동료들과 작업장 공간을 정비하고 장비를 선정하며 팀을 구성했습니다." },
@@ -276,7 +288,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "विशेषज्ञ कार्य", role: "इंजीनियरिंग परियोजनाओं का तकनीकी मूल्यांकन और मार्गदर्शन" },
     },
     caseStudy: {
-      eyebrow: "केस · इंजीनियरिंग कार्य का संगठन", title: "शॉप फ्लोर की जरूरत से एडिटिव टेक्नोलॉजी सेंटर तक", lead: "मैंने GAZ में सेंटर की स्थापना की पहल की और टीम के साथ उत्पादन की जरूरत को अपनी इंजीनियरिंग सुविधा में बदला।",
+      detailsSummary: "परियोजना का विवरण", imageAlt: "GAZ एडिटिव टेक्नोलॉजी सेंटर", photoCredit: "फ़ोटो: «Время машин» पत्रिका",
+      eyebrow: "सेंटर की स्थापना · 2022–2025", title: "GAZ एडिटिव टेक्नोलॉजी सेंटर", lead: "मैंने GAZ में सेंटर की स्थापना की पहल की और टीम के साथ उत्पादन की जरूरत को अपनी इंजीनियरिंग सुविधा में बदला।",
       chapters: [
         { title: "उत्पादन की समस्या", body: "छोटे प्लास्टिक पार्ट्स का घिसना पेंटिंग रोबोट को रोक सकता था। बाहर से आपूर्ति में समय लगता था, जबकि उत्पादन के लिए पार्ट्स का नियमित भंडार आवश्यक था।" },
         { title: "मेरी भूमिका और टीम", body: "सेंटर का प्रस्ताव रखा और 2022 के कॉर्पोरेट सम्मेलन में पुरस्कार जीता। सहकर्मियों के साथ शॉप फ्लोर की जगह तैयार की, उपकरण चुने और टीम बनाई।" },
@@ -299,7 +312,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "専門家としての活動", role: "技術プロジェクトの審査と指導" },
     },
     caseStudy: {
-      eyebrow: "事例 · エンジニアリング組織の構築", title: "現場の課題から積層造形技術センターへ", lead: "GAZ でセンターの設立を提案し、チームとともに生産上の課題を社内のエンジニアリング基盤へとつなげました。",
+      detailsSummary: "プロジェクトの詳細", imageAlt: "GAZ 積層造形技術センター", photoCredit: "写真：雑誌「Время машин」",
+      eyebrow: "センターの設立 · 2022–2025", title: "GAZ 積層造形技術センター", lead: "GAZ でセンターの設立を提案し、チームとともに生産上の課題を社内のエンジニアリング基盤へとつなげました。",
       chapters: [
         { title: "生産現場の課題", body: "小さな樹脂部品の摩耗が塗装ロボットの停止につながる可能性がありました。外部調達には時間がかかり、生産には継続的な部品供給が必要でした。" },
         { title: "役割とチーム", body: "センター設立を提案し、2022年の社内技術大会で受賞しました。同僚と工場内のスペースを改装し、設備を選定してチームを組織しました。" },
@@ -322,7 +336,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "ممارسة مهنية", role: "التقييم التقني للمشاريع الهندسية والإرشاد" },
     },
     caseStudy: {
-      eyebrow: "دراسة حالة · تنظيم العمل الهندسي", title: "من حاجة الورشة إلى مركز التقنيات الإضافية", lead: "بادرت بإنشاء المركز في GAZ، وحوّلنا مع الفريق حاجة إنتاجية إلى قدرة هندسية داخلية.",
+      detailsSummary: "تفاصيل المشروع", imageAlt: "مركز التقنيات الإضافية في GAZ", photoCredit: "الصورة: مجلة «Время машин»",
+      eyebrow: "تأسيس المركز · 2022–2025", title: "مركز التقنيات الإضافية في GAZ", lead: "بادرت بإنشاء المركز في GAZ، وحوّلنا مع الفريق حاجة إنتاجية إلى قدرة هندسية داخلية.",
       chapters: [
         { title: "مشكلة الإنتاج", body: "كان تآكل قطع بلاستيكية صغيرة قد يؤدي إلى توقف روبوتات الطلاء. يستغرق التوريد الخارجي وقتًا، بينما يحتاج الإنتاج إلى مخزون مستمر من القطع." },
         { title: "دوري والفريق", body: "اقترحت مشروع المركز وفزت به في المؤتمر المؤسسي عام 2022. ومع الزملاء جهزنا مساحة في الورشة، واخترنا المعدات وشكّلنا الفريق." },
@@ -345,7 +360,8 @@ export const PORTFOLIO_DETAILS: Record<Locale, PortfolioDetailsCopy> = {
       judging: { status: "Expert practice", role: "Technical assessment of engineering projects and mentoring" },
     },
     caseStudy: {
-      eyebrow: "Case study · building engineering capability", title: "From a shop-floor problem to an Additive Technology Center",
+      detailsSummary: "Project details", imageAlt: "GAZ Additive Technology Center", photoCredit: "Photo: «Время машин» magazine",
+      eyebrow: "Building the center · 2022–2025", title: "GAZ Additive Technology Center",
       lead: "I initiated the ATC at GAZ and worked with the team to turn a production need into an in-house engineering facility.",
       chapters: [
         { title: "The production problem", body: "Wear in small plastic parts could stop paint robots. External supplies took time, while production needed a constant reserve of spares." },

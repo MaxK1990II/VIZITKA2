@@ -1269,6 +1269,7 @@ button {
 }
 
 .bento-hero-toolbar {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -1314,6 +1315,7 @@ html[dir="rtl"] .bento-hero-toolbar {
 }
 
 .bento-lang-btn {
+  text-decoration: none;
   margin: 0;
   padding: 0.12rem 0.18rem;
   border: none;
@@ -1349,11 +1351,11 @@ html[dir="rtl"] .bento-hero-toolbar {
     minmax(0, 1.14fr)
     minmax(0, 0.86fr)
     minmax(0, 0.86fr);
-  grid-template-rows: minmax(var(--bento-row-sm), auto) minmax(var(--bento-row-sm), auto) minmax(var(--bento-row-bottom), auto);
+  grid-template-rows: minmax(var(--bento-row-sm), auto) minmax(var(--bento-row-sm), auto) auto;
   grid-template-areas:
     "hero hero ai rob"
     "hero hero add exp"
-    "about impact impact connect";
+    "summary summary summary summary";
   gap: var(--bento-gap);
 }
 
@@ -1772,7 +1774,7 @@ html[dir="rtl"] .bento-hero-toolbar {
   padding: 0;
   flex: 1 1 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
   gap: 0;
   align-content: stretch;
   min-height: 0;
@@ -1963,9 +1965,9 @@ html[dir="rtl"] .bento-hero-toolbar {
 }
 
 .bento-about-meta span + span {
-  margin-left: 14px;
-  padding-left: 14px;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  margin-inline-start: 14px;
+  padding-inline-start: 14px;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .bento-about-meta svg {
@@ -1999,15 +2001,15 @@ html[dir="rtl"] .bento-hero-toolbar {
 }
 
 .bento-impact-item:first-child {
-  padding-left: 0;
+  padding-inline-start: 0;
 }
 
 .bento-impact-item:last-child {
-  padding-right: 0;
+  padding-inline-end: 0;
 }
 
 .bento-impact-item + .bento-impact-item {
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .bento-impact-value {
@@ -2395,9 +2397,7 @@ html[dir="rtl"] .bento-hero-toolbar {
       "hero hero"
       "ai rob"
       "add exp"
-      "about about"
-      "impact impact"
-      "connect connect";
+      "summary summary";
   }
 
   .bento-tile-hero {
@@ -2431,31 +2431,31 @@ html[dir="rtl"] .bento-hero-toolbar {
   }
 
   .bento-impact-item:nth-child(odd) {
-    padding-left: 0;
+    padding-inline-start: 0;
   }
 
   .bento-impact-item:nth-child(even) {
-    padding-right: 0;
+    padding-inline-end: 0;
   }
 
   .bento-impact-item:nth-child(n + 3) {
-    border-left: none;
+    border-inline-start: none;
     padding-top: 4px;
   }
 
   .bento-impact-item:nth-child(3) {
-    padding-left: 0;
+    padding-inline-start: 0;
   }
 
   .bento-about-meta {
     flex-wrap: wrap;
-    gap: 8px 0;
+    gap: 8px 14px;
   }
 
   .bento-about-meta span + span {
-    margin-left: 0;
-    padding-left: 0;
-    border-left: none;
+    margin-inline-start: 0;
+    padding-inline-start: 0;
+    border-inline-start: none;
   }
 }
 
@@ -2472,9 +2472,7 @@ html[dir="rtl"] .bento-hero-toolbar {
       "rob"
       "add"
       "exp"
-      "about"
-      "impact"
-      "connect";
+      "summary";
   }
 
   .bento-tile-hero {
@@ -2486,6 +2484,9 @@ html[dir="rtl"] .bento-hero-toolbar {
   }
 
   .bento-hero-content {
+    position: relative;
+    inset: auto;
+    min-height: inherit;
     max-width: 100%;
     width: 100%;
   }
@@ -2503,13 +2504,21 @@ html[dir="rtl"] .bento-hero-toolbar {
     flex-wrap: wrap;
     white-space: normal;
     padding-inline-start: 0.35rem;
+    row-gap: 2px;
   }
 
   .bento-lang-btn {
-  text-decoration: none;
-    font-size: 0.64rem;
-    padding: 0.12rem 0.16rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+    font-size: 0.6875rem;
+    padding: 2px 3px;
   }
+
+  .bento-lang-sep { display: none; }
+  .bento-cta { flex-shrink: 0; }
 
   .bento-impact-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2538,7 +2547,8 @@ html[dir="rtl"] .bento-hero-toolbar {
 
 /* Readable supporting content and direct contact actions. */
 .bento-stage [id] { scroll-margin-top: 24px; }
-.bento-stage [tabindex="-1"]:focus-visible { outline: 2px solid #c9a48a; outline-offset: 4px; }
+.bento-stage [tabindex="-1"]:focus-visible { outline: none; box-shadow: inset 2px 0 #c9a48a; }
+html[dir="rtl"] .bento-stage [tabindex="-1"]:focus-visible { box-shadow: inset -2px 0 #c9a48a; }
 .bento-tile-domain .bento-tile-desc, .bento-tile-about .bento-tile-desc { display: block; overflow: visible; -webkit-line-clamp: unset; font-size: 13px; line-height: 1.55; }
 .bento-tile-domain .bento-domain-body { padding-bottom: 16px; flex: 0 0 auto; }
 .bento-projects .hub-text-sm, .bento-projects .project-result { font-size: 14px; line-height: 1.65; }
@@ -2555,7 +2565,18 @@ html[dir="rtl"] .bento-hero-toolbar {
 .bento-profile-download a:focus-visible, .bento-qr-details summary:focus-visible { outline: 2px solid #e4bfa2; outline-offset: 3px; }
 .bento-qr-details summary { min-height: 44px; align-content: center; padding: 8px 0; color: #b8b2ac; font-size: 11px; line-height: 1.5; cursor: pointer; }
 .bento-qr-details .bento-qr { padding-block: 12px; }
+.bento-summary { grid-area: summary; display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: var(--bento-gap); align-items: start; }
+.bento-summary-main { display: grid; gap: var(--bento-gap); align-content: start; min-width: 0; }
+.bento-summary .bento-tile { grid-area: auto; height: auto; min-height: 0; }
+.bento-summary .bento-about-meta { margin-top: 18px; padding-top: 0; }
+.bento-summary .bento-impact-grid { margin: 14px 0 0; padding-top: 0; }
+.bento-summary .bento-tile-about .bento-tile-desc { font-size: 14px; line-height: 1.7; }
+.bento-summary .bento-connect-body { justify-content: flex-start; }
+@media (min-width: 641px) and (max-width: 1024px) {
+  .bento-summary { grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr); }
+}
 @media (max-width: 640px) {
+  .bento-summary { grid-template-columns: minmax(0, 1fr); }
   .bento-hub { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
   .bento-back-btn { min-height: 44px; padding-inline: 10px; }
   .bento-tile-domain { min-height: 280px; }

@@ -1,44 +1,43 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { ChevronDown, Languages } from "lucide-react";
 import { LOCALES, LOCALE_META, localePath } from "@/lib/i18n/locale";
 import { useLocale } from "@/lib/i18n/locale-provider";
-import styles from "./language-switcher.module.css";
 
 export function LanguageSwitcher() {
   const { locale, copy } = useLocale();
-  const picker = useRef<HTMLDetailsElement>(null);
-
-  useEffect(() => {
-    const closeOutside = (event: PointerEvent) => {
-      if (!picker.current?.contains(event.target as Node)) picker.current?.removeAttribute("open");
-    };
-    document.addEventListener("pointerdown", closeOutside);
-    return () => document.removeEventListener("pointerdown", closeOutside);
-  }, []);
 
   return (
-    <details ref={picker} className={styles.picker} onKeyDown={(event) => {
-      if (event.key === "Escape") {
-        picker.current?.removeAttribute("open");
-        picker.current?.querySelector("summary")?.focus();
-      }
-    }}>
-      <summary aria-label={`${copy.languageSwitcherAria}: ${LOCALE_META[locale].nativeName}`}>
-        <Languages size={16} aria-hidden="true" />
-        <span>{LOCALE_META[locale].nativeName}</span>
-        <ChevronDown size={14} aria-hidden="true" />
-      </summary>
-      <nav className={styles.options} aria-label={copy.languageSwitcherAria}>
-        {LOCALES.map((code) => (
-          <a key={code} href={`${localePath(code)}#profile`} hrefLang={LOCALE_META[code].htmlLang}
-            lang={LOCALE_META[code].htmlLang} aria-current={code === locale ? "page" : undefined}
-            onClick={(event) => { if (code === locale) { event.preventDefault(); picker.current?.removeAttribute("open"); } }}>
-            {LOCALE_META[code].nativeName}
-          </a>
-        ))}
-      </nav>
-    </details>
+    <nav
+      className="bento-lang-switch"
+      aria-label={copy.languageSwitcherAria}
+    >
+      {LOCALES.map((code, index) => {
+        const active = locale === code;
+        return (
+          <span key={code} className="bento-lang-item">
+            {index > 0 ? (
+              <span className="bento-lang-sep" aria-hidden="true">
+                ·
+              </span>
+            ) : null}
+            <a
+              href={`${localePath(code)}#profile`}
+              hrefLang={LOCALE_META[code].htmlLang}
+              lang={LOCALE_META[code].htmlLang}
+              className={`bento-lang-btn${active ? " is-active" : ""}`}
+              data-hover
+              aria-current={active ? "page" : undefined}
+              aria-label={LOCALE_META[code].nativeName}
+              onClick={(event) => {
+                event.stopPropagation();
+                if (active) event.preventDefault();
+              }}
+            >
+              {LOCALE_META[code].label}
+            </a>
+          </span>
+        );
+      })}
+    </nav>
   );
 }

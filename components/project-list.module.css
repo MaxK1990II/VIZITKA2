@@ -1,0 +1,28 @@
+.projects { margin-top: 40px; padding: 28px 22px 0; border-top: 1px solid #302b27; scroll-margin-top: 24px; }
+.heading { margin: 0 0 24px; color: #d0b4a0; font-size: 12px; line-height: 1.5; letter-spacing: .1em; text-transform: uppercase; font-weight: 650; }
+.project { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr); gap: 32px; padding: 26px 0; }
+.project:first-child { padding-top: 0; }
+.project + .project { border-top: 1px solid #24211e; }
+.project header, .description, .facts { min-width: 0; }
+.category { margin: 0 0 10px; color: #b29c8b; font-size: 10px; line-height: 1.4; letter-spacing: .09em; }
+.project h3 { margin: 0; color: #f1ede9; font-size: 20px; line-height: 1.4; font-weight: 550; }
+.technologies { display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 15px 0 0; gap: 5px 12px; color: #9b958f; font-size: 11px; line-height: 1.55; }
+.description p { margin: 0; color: #bcb6b0; font-size: 14px; line-height: 1.7; }
+.description .result { margin-top: 12px; color: #d7b69e; }
+.description a { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; color: #c9a48a; font-size: 12px; text-underline-offset: 4px; }
+.description a:hover { color: #ffe0c9; }
+.description a:focus-visible { outline: 2px solid #c9a48a; outline-offset: 4px; }
+.facts { display: grid; align-content: start; gap: 12px; margin: 0; }
+.facts > div { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 12px; }
+.facts dt { color: #a99a8d; font-size: 11px; line-height: 1.7; }
+.facts dd { margin: 0; color: #d8d2cc; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+@media (max-width: 1000px) {
+  .project { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 20px 28px; }
+  .project header { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .projects { padding-inline: 20px; }
+  .project { grid-template-columns: minmax(0, 1fr); gap: 20px; padding-block: 24px; }
+  .project header, .facts { grid-column: auto; grid-row: auto; }
+  .project h3 { font-size: 21px; }
+}

@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { PROFILE, type BentoDomainCard } from "@/lib/site-content";
 import { downloadVCard, saveContact } from "@/lib/vcard";
-import { TechStack } from "@/components/tech-stack";
 import { DomainIcon } from "@/components/domain-card-icons";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ConnectQr } from "@/components/connect-qr";
@@ -24,7 +23,7 @@ import { COBOT_DEMO } from "@/lib/cobot-demo";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { CatCaseStudy } from "@/components/cat-case-study";
 import { PressHighlights } from "@/components/press-highlights";
-import { ProjectEvidence } from "@/components/project-evidence";
+import { ProjectList } from "@/components/project-list";
 import { PortfolioNavigation } from "@/components/portfolio-navigation";
 import { PortfolioAnalytics } from "@/components/portfolio-analytics";
 import { profileAnchor } from "@/lib/portfolio-navigation";
@@ -548,40 +547,20 @@ export function BentoProfileHub({ isMobile, onReturn }: BentoProfileHubProps) {
         {copy.bentoDomains.map((card) => (
           <BentoDomainTile key={card.id} card={card} index={tileIndex++} />
         ))}
-        <BentoAboutTile index={tileIndex++} />
-        <BentoImpactTile index={tileIndex++} />
-        <BentoConnectTile index={tileIndex++} />
+        <div className="bento-summary">
+          <div className="bento-summary-main">
+            <BentoAboutTile index={tileIndex++} />
+            <BentoImpactTile index={tileIndex++} />
+          </div>
+          <BentoConnectTile index={tileIndex++} />
+        </div>
       </div>
 
       <DemoShowcase copy={copy.demo} source={COBOT_DEMO.source} poster={COBOT_DEMO.poster} />
 
       <CatCaseStudy copy={copy.details.caseStudy} />
 
-      <motion.section
-        className="bento-tile bento-projects"
-        id="projects"
-        tabIndex={-1}
-        custom={tileIndex}
-        initial="hidden"
-        animate="visible"
-        variants={tileVariants}
-      >
-        <p className="bento-section-kicker">{copy.bentoProjectsTitle}</p>
-        <div className={`bento-projects-grid ${isMobile ? "is-mobile" : ""}`}>
-          {copy.projects.map((project) => (
-            <article key={project.id} className="project-card">
-              <p className="project-category">{project.category}</p>
-              <h3 className="project-title">{project.title}</h3>
-              <p className="hub-text-sm">{project.summary}</p>
-
-              <ProjectEvidence evidence={copy.details.projectEvidence[project.id as keyof typeof copy.details.projectEvidence]} labels={copy.details.projectLabels} />
-
-              <p className="project-result">{project.result}</p>
-              <TechStack technologies={[...project.technologies]} />
-            </article>
-          ))}
-        </div>
-      </motion.section>
+      <ProjectList copy={copy} />
       <PressHighlights copy={copy.details.press} />
       </div>
       <PortfolioNavigation copy={copy.details.nav} />
