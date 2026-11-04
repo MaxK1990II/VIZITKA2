@@ -443,37 +443,36 @@ function BentoConnectTile({ index }: { index: number }) {
       animate="visible"
       variants={tileVariants}
     >
-      <header className="bento-connect-head">
-        <h2 className="bento-tile-title">{copy.bentoConnectTitle}</h2>
-        <p className="bento-tile-desc">{copy.connectBlurb}</p>
-      </header>
-
-      <div className={`bento-connect-body ${contactStyles.body}`}>
-        <div className={contactStyles.overview}>
-        <div className="bento-connect-primary">
+      <div className={contactStyles.body}>
+        <div className={contactStyles.main}>
+          <header className="bento-connect-head">
+            <h2 className="bento-tile-title">{copy.bentoConnectTitle}</h2>
+            <p className="bento-tile-desc">{copy.connectBlurb}</p>
+          </header>
           <a className="bento-connect-link" href={`https://t.me/${PROFILE.telegram.replace("@", "")}`} target="_blank" rel="noreferrer" data-analytics-event="contact_click" data-analytics-channel="telegram">
             <span className="bento-connect-link-icon"><ConnectChannelIcon id="telegram" /></span>
-            <span className="bento-connect-link-text"><span className="bento-connect-link-label">{copy.details.contact.telegram}</span><bdi dir="ltr" className="bento-connect-link-value">{PROFILE.telegram}</bdi></span>
+            <span className="bento-connect-link-text"><span className="bento-connect-link-label">Telegram</span><bdi dir="ltr" className="bento-connect-link-value">{PROFILE.telegram}</bdi></span>
           </a>
           <a className="bento-connect-link" href={`mailto:${PROFILE.emailPersonal}`} data-analytics-event="contact_click" data-analytics-channel="email">
             <span className="bento-connect-link-icon"><ConnectChannelIcon id="email" /></span>
-            <span className="bento-connect-link-text"><span className="bento-connect-link-label">{copy.details.contact.email}</span><bdi dir="ltr" className="bento-connect-link-value">{PROFILE.emailPersonal}</bdi></span>
+            <span className="bento-connect-link-text"><span className="bento-connect-link-label">{copy.emailLabel}</span><bdi dir="ltr" className="bento-connect-link-value">{PROFILE.emailPersonal}</bdi></span>
           </a>
+          <a className={contactStyles.document} href="/files/maxim-kanochkin-profile-ru.pdf" download data-analytics-event="profile_pdf">
+            <Download size={24} strokeWidth={1.5} aria-hidden="true" />
+            <span className={contactStyles.documentText}>
+              <span className={contactStyles.documentTitle}>{copy.details.contact.profilePdf}</span>
+              <span className={contactStyles.note}>{copy.details.contact.pdfNote}</span>
+            </span>
+          </a>
+          <SharePageButton />
         </div>
         <figure className={contactStyles.qr}>
+          <figcaption>{copy.bentoSaveContact}</figcaption>
           <ConnectQr />
-          <figcaption>{copy.qrContactHint}</figcaption>
         </figure>
-        </div>
-        <a className={contactStyles.document} href="/files/maxim-kanochkin-profile-ru.pdf" download data-analytics-event="profile_pdf">
-          <span className={contactStyles.documentText}>
-            <span className={contactStyles.documentTitle}>{copy.details.contact.profilePdf}</span>
-            <span className={contactStyles.note}>{copy.details.contact.pdfNote}</span>
-          </span>
-          <Download size={20} strokeWidth={1.5} aria-hidden="true" />
-        </a>
+      </div>
 
-        <div className={contactStyles.footer}>
+      <footer className={contactStyles.footer}>
         <nav
           className={`bento-connect-secondary ${contactStyles.channels}`}
           aria-label={copy.contactsSecondaryAria}
@@ -510,15 +509,12 @@ function BentoConnectTile({ index }: { index: number }) {
           </button>
 
         </nav>
-        <SharePageButton />
-        </div>
-
         {wechatHint ? (
           <p className="bento-connect-toast" role="status">
             {copy.wechatToast}
           </p>
         ) : null}
-      </div>
+      </footer>
     </motion.article>
   );
 }
