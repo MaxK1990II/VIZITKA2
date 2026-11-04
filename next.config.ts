@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   generateEtags: false,
   poweredByHeader: false,
   experimental: {
+    // Locale-specific root documents need a standalone static 404 page.
+    globalNotFound: true,
     devtoolSegmentExplorer: false,
   },
 };

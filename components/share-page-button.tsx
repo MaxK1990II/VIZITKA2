@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { Share2 } from "lucide-react";
-import { PROFILE } from "@/lib/site-content";
+import { localePath } from "@/lib/i18n/locale";
+import { buildApexAbsoluteUrl } from "@/lib/site-url";
 import { sharePage } from "@/lib/share-page";
 import { useLocale } from "@/lib/i18n/locale-provider";
 
 const TOAST_MS = 2600;
 
 export function SharePageButton() {
-  const { copy } = useLocale();
+  const { copy, locale } = useLocale();
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState<"copied" | "failed" | null>(null);
 
@@ -22,7 +23,7 @@ export function SharePageButton() {
     const result = await sharePage({
       title: copy.name,
       text: pitch,
-      url: PROFILE.website,
+      url: buildApexAbsoluteUrl(localePath(locale)),
     });
 
     setBusy(false);

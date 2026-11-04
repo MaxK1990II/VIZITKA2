@@ -1,3 +1,6 @@
+import { PROFILE_FACTS } from "@/lib/profile-facts";
+import heroImage from "@/lib/hero-image.json";
+
 export type ContactItem = {
   id: string;
   label: string;
@@ -68,7 +71,7 @@ export const PROFILE = {
   wechatDeepLink: "weixin://contacts/profile/Maxim_Ka",
   wechatQrSrc: "/icons/wechat-qr.png",
   photoSrc: "/maxim-kanochkin-portrait.png",
-  bentoHeroSrc: "/maxim-kanochkin-hero-reference-clean.png",
+  bentoHeroSrc: heroImage.src,
   photoAlt: "Портрет Максима Каночкина",
   availabilityLabel: "Доступен",
   bentoDisplayName: "Максим Каночкин",
@@ -76,7 +79,7 @@ export const PROFILE = {
   heroTagline:
     "Трансформирую сложные производственные вызовы в работающие решения на базе ИИ, робототехники\nи\u00A0аддитивных технологий.",
   aboutShort:
-    "С 2013 года прошёл путь от слесаря-ремонтника окрасочных роботов до начальника отдела развития, инноваций и аддитивных технологий и руководителя ЦАТ на Горьковском автозаводе. Я не верю в «инновации ради инноваций». Мой подход — это глубокое понимание болей реального производства, грязных рук и жестких бюджетов. Я создаю технологии, которые работают на конвейере 24/7, заменяя бюрократию алгоритмами, а рутину — роботами.",
+    `С ${PROFILE_FACTS.careerStartYear} года прошёл путь от слесаря-ремонтника окрасочных роботов до начальника отдела развития, инноваций и аддитивных технологий и руководителя ЦАТ на Горьковском автозаводе. Я не верю в «инновации ради инноваций». Мой подход — это глубокое понимание болей реального производства, грязных рук и жестких бюджетов. Я создаю технологии, которые работают на конвейере 24/7, заменяя бюрократию алгоритмами, а рутину — роботами.`,
   aboutMetaLocation: "Нижний Новгород",
   aboutMetaAvailability: "Открыт к диалогу с работодателями и редакцией",
   bentoAboutTitle: "Обо мне",
@@ -166,7 +169,7 @@ export const PROFILE = {
       keySolution:
         "Оперативное изготовление оснастки, шаблонов и запасных частей для промышленного оборудования, сокращающее время простоя линий.",
       result:
-        "50+ серийных позиций; до 70% пластиковых ЗИП окрасочных роботов внутри завода; эффект более 5 млн ₽/год.",
+        `${PROFILE_FACTS.serialPositions}+ серийных позиций; до ${PROFILE_FACTS.sparePartsCoveragePercent}% пластиковых ЗИП окрасочных роботов внутри завода; эффект более ${PROFILE_FACTS.annualSavingsMillionsRub} млн ₽/год.`,
     },
     {
       id: "expertise",
@@ -212,7 +215,7 @@ export const PROFILE = {
       summary:
         "Полный цикл: от реверс-инжиниринга до 3D-печати функциональных деталей и промышленного дизайна.",
       result:
-        "50+ серийных позиций; до 70% пластиковых ЗИП окрасочных роботов внутри завода; эффект более 5 млн ₽/год.",
+        `${PROFILE_FACTS.serialPositions}+ серийных позиций; до ${PROFILE_FACTS.sparePartsCoveragePercent}% пластиковых ЗИП окрасочных роботов внутри завода; эффект более ${PROFILE_FACTS.annualSavingsMillionsRub} млн ₽/год.`,
       technologies: ["Bambu Lab", "FDM/SLA", "CAD", "Industrial Design"],
       powerLevel: 7,
     },
@@ -286,7 +289,7 @@ export const PROFILE = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "Безопасность данных" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Безопасность данных" },
         { value: "on-prem", label: "Решения в контуре предприятия" },
       ],
     },
@@ -294,11 +297,11 @@ export const PROFILE = {
       id: "robotics",
       title: "Робототехника",
       description:
-        "Интеграция роботизированных систем и программирование траекторий для 100+ типов кузовов и кабин.",
+        `Интеграция роботизированных систем и программирование траекторий для ${PROFILE_FACTS.robotBodyTypes}+ типов кузовов и кабин.`,
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "Ниже стоимость внедрения" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Ниже стоимость внедрения" },
         { value: "полный цикл", label: "Разработка → ПНР → сопровождение" },
       ],
     },
@@ -310,8 +313,8 @@ export const PROFILE = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">5 млн ₽", label: "Экономический эффект в год" },
-        { value: "до 70%", label: "пластиковых вспомогательных деталей" },
+        { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} млн ₽`, label: "Экономический эффект в год" },
+        { value: `до ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "пластиковых вспомогательных деталей" },
       ],
     },
     {
@@ -332,10 +335,10 @@ export const PROFILE = {
   ] satisfies BentoDomainCard[],
 
   impactMetrics: [
-    { value: "13", label: "Лет в индустриальном секторе" },
-    { value: "до 70%", label: "пластиковых запчастей роботов окраски" },
-    { value: "6+", label: "IT/R&D проектов в 2026 году" },
-    { value: "100%", label: "In-house разработка" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Лет в индустриальном секторе" },
+    { value: `до ${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "пластиковых запчастей роботов окраски" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `IT/R&D проектов в ${PROFILE_FACTS.referenceYear} году` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "In-house разработка" },
   ] satisfies ImpactMetric[],
 
   connectBlurb: "Напишите на личную почту или в Telegram.",

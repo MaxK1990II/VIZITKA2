@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import {
   Inter,
   JetBrains_Mono,
@@ -9,9 +9,8 @@ import {
   Noto_Sans_SC,
   Onest,
 } from "next/font/google";
-import { SITE_DESCRIPTION, SITE_TITLE } from "@/lib/seo";
-import { SITE_CANONICAL, SITE_ORIGIN } from "@/lib/site-url";
-import "./globals.css";
+import { LOCALE_META, type Locale } from "@/lib/i18n/locale";
+import "@/app/globals.css";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -31,6 +30,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const notoSansSc = Noto_Sans_SC({
+  preload: false,
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-cjk",
@@ -38,6 +38,7 @@ const notoSansSc = Noto_Sans_SC({
 });
 
 const notoSansKr = Noto_Sans_KR({
+  preload: false,
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-kr",
@@ -45,6 +46,7 @@ const notoSansKr = Noto_Sans_KR({
 });
 
 const notoSansDeva = Noto_Sans_Devanagari({
+  preload: false,
   subsets: ["devanagari", "latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-deva",
@@ -52,6 +54,7 @@ const notoSansDeva = Noto_Sans_Devanagari({
 });
 
 const notoSansJp = Noto_Sans_JP({
+  preload: false,
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-jp",
@@ -59,59 +62,33 @@ const notoSansJp = Noto_Sans_JP({
 });
 
 const notoSansAr = Noto_Sans_Arabic({
+  preload: false,
   subsets: ["arabic", "latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-ar",
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: SITE_TITLE,
-  description: SITE_DESCRIPTION,
-  metadataBase: new URL(SITE_ORIGIN),
-  alternates: {
-    canonical: SITE_CANONICAL,
-  },
-  openGraph: {
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    url: SITE_CANONICAL,
-    siteName: "Максим Каночкин",
-    locale: "ru_RU",
-    type: "profile",
-    firstName: "Максим",
-    lastName: "Каночкин",
-    images: [
-      {
-        url: "/opengraph-image.png",
-        width: 1200,
-        height: 630,
-        alt: SITE_TITLE,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    images: ["/opengraph-image.png"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  verification: {
-    yandex: "eece29ed47f81791",
-  },
+const languageFonts: Partial<Record<Locale, string>> = {
+  zh: notoSansSc.variable,
+  ko: notoSansKr.variable,
+  hi: notoSansDeva.variable,
+  ja: notoSansJp.variable,
+  ar: notoSansAr.variable,
 };
 
-export default function RootLayout({
+export function SiteDocument({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  locale = "ru",
+}: Readonly<{ children: ReactNode; locale?: Locale }>) {
   return (
-    <html lang="ru">
+    <html
+      lang={LOCALE_META[locale].htmlLang}
+      dir={locale === "ar" ? "rtl" : "ltr"}
+      data-locale={locale}
+    >
       <body
-        className={`${inter.variable} ${onest.variable} ${jetbrainsMono.variable} ${notoSansSc.variable} ${notoSansKr.variable} ${notoSansDeva.variable} ${notoSansJp.variable} ${notoSansAr.variable}`}
+        className={`${inter.variable} ${onest.variable} ${jetbrainsMono.variable} ${languageFonts[locale] ?? ""}`}
       >
         {children}
       </body>

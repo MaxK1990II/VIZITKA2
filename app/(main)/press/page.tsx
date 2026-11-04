@@ -9,13 +9,13 @@ export const metadata: Metadata = {
   description:
     "Публикации про Максима Каночкина, Центр аддитивных технологий ГАЗ, промышленный ИИ и роботизацию в цехе. Нижний Новгород.",
   alternates: {
-    canonical: `${SITE_ORIGIN}/press`,
+    canonical: `${SITE_ORIGIN}/press/`,
   },
   openGraph: {
     title: "Пресса — Максим Каночкин, ЦАТ ГАЗ",
     description:
       "Публикации про ЦАТ ГАЗ, аддитивные технологии и промышленный ИИ.",
-    url: `${SITE_ORIGIN}/press`,
+    url: `${SITE_ORIGIN}/press/`,
     locale: "ru_RU",
     type: "website",
   },

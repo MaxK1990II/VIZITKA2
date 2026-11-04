@@ -48,7 +48,7 @@ describe("seo", () => {
   it("buildPressCollectionJsonLd_pointsToPressUrl", () => {
     const jsonLd = buildPressCollectionJsonLd();
     expect(jsonLd["@type"]).toBe("CollectionPage");
-    expect(jsonLd.url).toBe(`${SITE_ORIGIN}/press`);
+    expect(jsonLd.url).toBe(`${SITE_ORIGIN}/press/`);
     expect(jsonLd.mainEntity.itemListElement.length).toBeGreaterThanOrEqual(3);
   });
 

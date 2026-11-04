@@ -1,7 +1,11 @@
-import type {
-  BentoDomainCard,
-  ImpactMetric,
+import {
+  PROFILE,
+  type BentoDomainCard,
+  type ImpactMetric,
 } from "@/lib/site-content";
+import type { DemoShowcaseCopy } from "@/lib/cobot-demo";
+import { COBOT_DEMO_COPY } from "@/lib/i18n/demo";
+import { PROFILE_FACTS } from "@/lib/profile-facts";
 import type { Locale } from "@/lib/i18n/locale";
 
 export type LocalizedProject = {
@@ -15,6 +19,7 @@ export type LocalizedProject = {
 };
 
 export type SiteCopy = {
+  demo: DemoShowcaseCopy;
   introLabel: string;
   introHint: string;
   introRoleLine: string;
@@ -58,79 +63,38 @@ export type SiteCopy = {
   };
 };
 
-const sharedProjectMeta = {
-  dashboard: {
-    technologies: ["Python", "React", "Qwen", "Vosk", "Porcupine", "YOLOv8"],
-    powerLevel: 9,
-  },
-  cobots: {
-    technologies: ["JAKA", "RoboDK", "Python", "Computer Vision"],
-    powerLevel: 8,
-  },
-  cat: {
-    technologies: ["Bambu Lab", "FDM/SLA", "CAD", "Industrial Design"],
-    powerLevel: 7,
-  },
-  judging: {
-    technologies: ["Technical Audit", "Mentoring", "Project Management"],
-    powerLevel: 6,
-  },
-} as const;
+const sharedProjectMeta = Object.fromEntries(
+  PROFILE.projects.map(({ id, technologies, powerLevel }) => [
+    id,
+    { technologies, powerLevel },
+  ]),
+) as Record<
+  (typeof PROFILE.projects)[number]["id"],
+  { technologies: readonly string[]; powerLevel: number }
+>;
 
 const ru: SiteCopy = {
+  demo: COBOT_DEMO_COPY.ru,
   introLabel: "Инженерное портфолио",
-  introHint: "нажмите или проведите пальцем",
+  introHint: "Открыть портфолио",
   introRoleLine:
-    "Начальник отдела развития, инноваций и аддитивных технологий · автомобильный завод ГАЗ · Нижний Новгород",
-  name: "Максим Каночкин",
-  roles: [
-    "Робототехник",
-    "Автоматизатор",
-    "Интегратор систем",
-    "Мехатроник",
-    "ИИ-специалист",
-    "CV-инженер",
-    "Data Engineer",
-    "ML-архитектор",
-    "Программист",
-    "Разработчик",
-    "Fullstack Dev",
-    "Архитектор ПО",
-    "3D-дизайнер",
-    "Конструктор",
-    "Промдизайнер",
-    "Аддитивщик",
-    "Инженер",
-    "Проектировщик",
-    "Руководитель R&D",
-    "Технолог",
-    "Исследователь",
-    "Новатор",
-    "Визуализатор",
-    "Эксперт-судья",
-    "Наставник",
-  ],
-  photoAlt: "Портрет Максима Каночкина",
-  bentoDisplayName: "Максим Каночкин",
-  heroHeadline: "Драйвер промышленных инноваций",
-  heroTagline:
-    "Трансформирую сложные производственные вызовы в работающие решения на базе ИИ, робототехники\nи\u00A0аддитивных технологий.",
-  bentoSaveContact: "Сохранить контакт",
+    `${PROFILE.title} · ${PROFILE.company} · ${PROFILE.location}`,
+  name: PROFILE.name,
+  roles: PROFILE.roles,
+  photoAlt: PROFILE.photoAlt,
+  bentoDisplayName: PROFILE.bentoDisplayName,
+  heroHeadline: PROFILE.heroHeadline,
+  heroTagline: PROFILE.heroTagline,
+  bentoSaveContact: PROFILE.bentoSaveContact,
   backLabel: "Назад",
-  bentoAboutTitle: "Обо мне",
-  aboutShort:
-    "С 2013 года прошёл путь от слесаря-ремонтника окрасочных роботов до начальника отдела развития, инноваций и аддитивных технологий и руководителя ЦАТ на Горьковском автозаводе. Я не верю в «инновации ради инноваций». Мой подход — это глубокое понимание болей реального производства, грязных рук и жестких бюджетов. Я создаю технологии, которые работают на конвейере 24/7, заменяя бюрократию алгоритмами, а рутину — роботами.",
-  aboutMetaLocation: "Нижний Новгород",
-  aboutMetaAvailability: "Открыт к диалогу с работодателями и редакцией",
-  bentoImpactTitle: "Цифры, которые говорят за себя",
-  impactMetrics: [
-    { value: "13", label: "Лет в индустриальном секторе" },
-    { value: "до 70%", label: "пластиковых запчастей роботов окраски" },
-    { value: "6+", label: "IT/R&D проектов в 2026 году" },
-    { value: "100%", label: "In-house разработка" },
-  ],
-  bentoConnectTitle: "Связаться",
-  connectBlurb: "Напишите на личную почту или в Telegram.",
+  bentoAboutTitle: PROFILE.bentoAboutTitle,
+  aboutShort: PROFILE.aboutShort,
+  aboutMetaLocation: PROFILE.aboutMetaLocation,
+  aboutMetaAvailability: PROFILE.aboutMetaAvailability,
+  bentoImpactTitle: PROFILE.bentoImpactTitle,
+  impactMetrics: PROFILE.impactMetrics,
+  bentoConnectTitle: PROFILE.bentoConnectTitle,
+  connectBlurb: PROFILE.connectBlurb,
   emailLabel: "Почта",
   vkLabel: "ВКонтакте",
   contactsPrimaryAria: "Основные контакты",
@@ -142,7 +106,7 @@ const ru: SiteCopy = {
   shareCopiedToast: "Ссылка скопирована",
   shareFailedToast: "Не удалось скопировать ссылку",
   qrContactHint: "Сканируйте — сохранить контакт",
-  bentoProjectsTitle: "Проекты",
+  bentoProjectsTitle: PROFILE.bentoProjectsTitle,
   powerLevelLabel: "Power Level",
   languageSwitcherAria: "Выбор языка",
   domainIconLabels: {
@@ -151,106 +115,14 @@ const ru: SiteCopy = {
     cube: "Аддитивные технологии",
     shield: "Экспертиза",
   },
-  bentoDomains: [
-    {
-      id: "industrial-ai",
-      title: "Промышленный\nИИ",
-      description:
-        "ИИ-решения для предиктивного обслуживания, контроля качества и оптимизации процессов.",
-      icon: "brain",
-      showSparkline: true,
-      metrics: [
-        { value: "100%", label: "Безопасность данных" },
-        { value: "on-prem", label: "Решения в контуре предприятия" },
-      ],
-    },
-    {
-      id: "robotics",
-      title: "Робототехника",
-      description:
-        "Интеграция роботизированных систем и программирование траекторий для 100+ типов кузовов и кабин.",
-      icon: "robot",
-      showSparkline: true,
-      metrics: [
-        { value: "2–3×", label: "Ниже стоимость внедрения" },
-        { value: "полный цикл", label: "Разработка → ПНР → сопровождение" },
-      ],
-    },
-    {
-      id: "additive",
-      title: "Аддитивные\nтехнологии",
-      description:
-        "Аддитивные решения полного цикла — от прототипирования до серийного выпуска.",
-      icon: "cube",
-      showWireframe: true,
-      metrics: [
-        { value: ">5 млн ₽", label: "Экономический эффект в год" },
-        { value: "до 70%", label: "пластиковых вспомогательных деталей" },
-      ],
-    },
-    {
-      id: "expertise",
-      title: "Экспертиза",
-      description:
-        "Стратегия, технический аудит и наставничество — от цеха до международных конкурсов.",
-      icon: "shield",
-      bullets: [
-        "Промышленная стратегия",
-        "Технологический роадмап",
-        "Цифровая трансформация",
-        "Умное производство",
-        "Управление проектами",
-        "Интеграция систем",
-      ],
-    },
-  ],
-  projects: [
-    {
-      id: "dashboard",
-      title: "Интеллектуальная система мониторинга и управления",
-      category: "Industrial AI",
-      summary:
-        "Dashboard реального времени для цеха окраски с голосовым Edge-AI-ассистентом в закрытом контуре.",
-      result:
-        "Бесконтактное управление и визуализация критических параметров в условиях промышленного шума.",
-      ...sharedProjectMeta.dashboard,
-    },
-    {
-      id: "cobots",
-      title: "Автоматизация с коллаборативными роботами",
-      category: "Robotics",
-      summary:
-        "Проектирование ячеек с коботами JAKA, настройка траекторий нанесения мастики на кузова.",
-      result:
-        "Исключение человеческого фактора на критических участках конвейера; опыт переносился на другие площадки.",
-      ...sharedProjectMeta.cobots,
-    },
-    {
-      id: "cat",
-      title: "Центр аддитивных технологий (ЦАТ)",
-      category: "Additive Tech",
-      summary:
-        "Полный цикл: от реверс-инжиниринга до 3D-печати функциональных деталей и промышленного дизайна.",
-      result:
-        "50+ серийных позиций; до 70% пластиковых ЗИП окрасочных роботов внутри завода; эффект более 5 млн ₽/год.",
-      ...sharedProjectMeta.cat,
-    },
-    {
-      id: "judging",
-      title: "Экспертная деятельность и наставничество",
-      category: "Expertise",
-      summary:
-        "Судейство международных инженерных конкурсов, технический аудит проектов в области робототехники, ИИ и промдизайна.",
-      result:
-        "Формирование кадрового резерва и оценка жизнеспособности инновационных разработок.",
-      ...sharedProjectMeta.judging,
-    },
-  ],
+  bentoDomains: PROFILE.bentoDomains,
+  projects: PROFILE.projects,
 };
 
 const en: SiteCopy = {
+  demo: COBOT_DEMO_COPY.en,
   introLabel: "Engineering portfolio",
-  introHint: "tap, click, or swipe to explore",
+  introHint: "Explore portfolio",
   introRoleLine:
     "Head of development, innovation and additive technology · GAZ automotive plant · Nizhny Novgorod",
   name: "Maxim Kanochkin",
@@ -290,15 +162,15 @@ const en: SiteCopy = {
   backLabel: "Back",
   bentoAboutTitle: "About",
   aboutShort:
-    "Since 2013 I have gone from paint-robot maintenance mechanic to head of development, innovation and additive technology — and of the Additive Technology Center — at the GAZ plant. I don’t buy “innovation for innovation’s sake.” My work begins with real production pain — dirty hands, hard constraints, and tight budgets. I build systems that run on the line 24/7: algorithms instead of paperwork, robots instead of rote labor.",
+    `Since ${PROFILE_FACTS.careerStartYear} I have gone from paint-robot maintenance mechanic to head of development, innovation and additive technology — and of the Additive Technology Center — at the GAZ plant. I don’t buy “innovation for innovation’s sake.” My work begins with real production pain — dirty hands, hard constraints, and tight budgets. I build systems that run on the line 24/7: algorithms instead of paperwork, robots instead of rote labor.`,
   aboutMetaLocation: "Nizhny Novgorod",
   aboutMetaAvailability: "Open to employers and editors",
   bentoImpactTitle: "Numbers that speak for themselves",
   impactMetrics: [
-    { value: "13", label: "Years in industrial engineering" },
-    { value: "~70%", label: "paint-robot plastic spare parts" },
-    { value: "6+", label: "IT/R&D projects in 2026" },
-    { value: "100%", label: "In-house development" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Years in industrial engineering" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "paint-robot plastic spare parts" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `IT/R&D projects in ${PROFILE_FACTS.referenceYear}` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "In-house development" },
   ],
   bentoConnectTitle: "Get in touch",
   connectBlurb: "Write to the personal email or Telegram.",
@@ -331,7 +203,7 @@ const en: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "Data stays on-site" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Data stays on-site" },
         { value: "on-prem", label: "Plant-network solutions" },
       ],
     },
@@ -339,11 +211,11 @@ const en: SiteCopy = {
       id: "robotics",
       title: "Robotics",
       description:
-        "Robot cell integration and path programming for 100+ body and cab types.",
+        `Robot cell integration and path programming for ${PROFILE_FACTS.robotBodyTypes}+ body and cab types.`,
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "Lower deployment cost" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Lower deployment cost" },
         { value: "end-to-end", label: "Design → commissioning → support" },
       ],
     },
@@ -355,8 +227,8 @@ const en: SiteCopy = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">₽5M", label: "Annual economic impact" },
-        { value: "~70%", label: "plastic auxiliary robot parts" },
+        { value: `>₽${PROFILE_FACTS.annualSavingsMillionsRub}M`, label: "Annual economic impact" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "plastic auxiliary robot parts" },
       ],
     },
     {
@@ -403,7 +275,7 @@ const en: SiteCopy = {
       summary:
         "Full cycle: reverse engineering, functional 3D-printed parts, and industrial design.",
       result:
-        "50+ serial part numbers; up to 70% of paint-robot plastic spares in-house; over ₽5M annual impact.",
+        `${PROFILE_FACTS.serialPositions}+ serial part numbers; up to ${PROFILE_FACTS.sparePartsCoveragePercent}% of paint-robot plastic spares in-house; over ₽${PROFILE_FACTS.annualSavingsMillionsRub}M annual impact.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -420,8 +292,9 @@ const en: SiteCopy = {
 };
 
 const zh: SiteCopy = {
+  demo: COBOT_DEMO_COPY.zh,
   introLabel: "工程作品集",
-  introHint: "点击或滑动继续",
+  introHint: "查看作品集",
   introRoleLine: "发展、创新与增材技术部门负责人 · 高尔基汽车厂（GAZ） · 下诺夫哥罗德",
   name: "马克西姆·卡诺奇金",
   roles: [
@@ -460,15 +333,15 @@ const zh: SiteCopy = {
   backLabel: "返回",
   bentoAboutTitle: "关于我",
   aboutShort:
-    "自 2013 年起，我从喷涂机器人维修钳工做起，如今在高尔基汽车厂担任发展、创新与增材技术部门负责人及增材技术中心负责人。我不相信“为了创新而创新”。真正的起点，是产线痛点、脏活累活和硬预算。我打造的是能在流水线上 24/7 稳定运行的技术：用算法替代繁琐流程，用机器人替代重复劳动。",
+    `自 ${PROFILE_FACTS.careerStartYear} 年起，我从喷涂机器人维修钳工做起，如今在高尔基汽车厂担任发展、创新与增材技术部门负责人及增材技术中心负责人。我不相信“为了创新而创新”。真正的起点，是产线痛点、脏活累活和硬预算。我打造的是能在流水线上 24/7 稳定运行的技术：用算法替代繁琐流程，用机器人替代重复劳动。`,
   aboutMetaLocation: "下诺夫哥罗德",
   aboutMetaAvailability: "欢迎雇主与媒体来信",
   bentoImpactTitle: "用数字说话",
   impactMetrics: [
-    { value: "13", label: "年工业工程经验" },
-    { value: "~70%", label: "机器人进口备件国产化" },
-    { value: "6+", label: "2026 年 IT/研发项目" },
-    { value: "100%", label: "自主研发" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "年工业工程经验" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "机器人进口备件国产化" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear} 年 IT/研发项目` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "自主研发" },
   ],
   bentoConnectTitle: "联系方式",
   connectBlurb: "请通过个人邮箱或 Telegram 联系。",
@@ -500,7 +373,7 @@ const zh: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "数据不出厂" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "数据不出厂" },
         { value: "本地部署", label: "企业内网方案" },
       ],
     },
@@ -511,7 +384,7 @@ const zh: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "实施成本更低" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "实施成本更低" },
         { value: "全流程", label: "设计 → 调试 → 运维" },
       ],
     },
@@ -522,8 +395,8 @@ const zh: SiteCopy = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">500万卢布", label: "年经济效益" },
-        { value: "~70%", label: "替代进口部件" },
+        { value: `>${PROFILE_FACTS.annualSavingsMillionsRub}00万卢布`, label: "年经济效益" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "替代进口部件" },
       ],
     },
     {
@@ -565,7 +438,7 @@ const zh: SiteCopy = {
       title: "增材技术中心",
       category: "增材技术",
       summary: "全流程：逆向工程、功能件 3D 打印与工业设计。",
-      result: "50 多个系列件号；喷涂机器人塑料备件约 70% 厂内自制；年效益超过 500 万卢布。",
+      result: `${PROFILE_FACTS.annualSavingsMillionsRub}0 多个系列件号；喷涂机器人塑料备件约 ${PROFILE_FACTS.sparePartsCoveragePercent}% 厂内自制；年效益超过 ${PROFILE_FACTS.annualSavingsMillionsRub}00 万卢布。`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -581,8 +454,9 @@ const zh: SiteCopy = {
 };
 
 const ko: SiteCopy = {
+  demo: COBOT_DEMO_COPY.ko,
   introLabel: "엔지니어링 포트폴리오",
-  introHint: "탭하거나 스와이프해 보세요",
+  introHint: "포트폴리오 보기",
   introRoleLine:
     "개발·혁신·적층기술 부서장 · GAZ 자동차 공장 · 니즈니노브고로드",
   name: "막심 카노츠킨",
@@ -622,15 +496,15 @@ const ko: SiteCopy = {
   backLabel: "뒤로",
   bentoAboutTitle: "소개",
   aboutShort:
-    "2013년부터 도장 로봇 정비공으로 시작해, 현재는 GAZ 공장의 적층기술센터와 개발·혁신·적층기술 부서를 이끕니다. ‘혁신을 위한 혁신’은 믿지 않습니다. 진짜 출발점은 현장의 고충입니다—더러운 손, 빡빡한 제약, 빠듯한 예산. 라인에서 24/7 돌아가는 시스템을 만듭니다. 서류 대신 알고리즘, 단순 반복 대신 로봇입니다.",
+    `${PROFILE_FACTS.careerStartYear}년부터 도장 로봇 정비공으로 시작해, 현재는 GAZ 공장의 적층기술센터와 개발·혁신·적층기술 부서를 이끕니다. ‘혁신을 위한 혁신’은 믿지 않습니다. 진짜 출발점은 현장의 고충입니다—더러운 손, 빡빡한 제약, 빠듯한 예산. 라인에서 24/7 돌아가는 시스템을 만듭니다. 서류 대신 알고리즘, 단순 반복 대신 로봇입니다.`,
   aboutMetaLocation: "니즈니노브고로드",
   aboutMetaAvailability: "채용 담당자와 편집자를 환영합니다",
   bentoImpactTitle: "숫자가 증명합니다",
   impactMetrics: [
-    { value: "13", label: "산업 엔지니어링 경력" },
-    { value: "~70%", label: "로봇 부품 국산화" },
-    { value: "6+", label: "2026년 IT/R&D 프로젝트" },
-    { value: "100%", label: "자체 개발" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "산업 엔지니어링 경력" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "로봇 부품 국산화" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear}년 IT/R&D 프로젝트` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "자체 개발" },
   ],
   bentoConnectTitle: "연락하기",
   connectBlurb: "개인 이메일 또는 Telegram으로 연락해 주세요.",
@@ -662,7 +536,7 @@ const ko: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "데이터 사내 보관" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "데이터 사내 보관" },
         { value: "온프레미스", label: "사내망 솔루션" },
       ],
     },
@@ -673,7 +547,7 @@ const ko: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "도입 비용 절감" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "도입 비용 절감" },
         { value: "전 과정", label: "설계 → 시운전 → 지원" },
       ],
     },
@@ -685,7 +559,7 @@ const ko: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: ">500만 루블", label: "연간 경제적 효과" },
-        { value: "~70%", label: "수입 부품 국산화" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "수입 부품 국산화" },
       ],
     },
     {
@@ -729,7 +603,7 @@ const ko: SiteCopy = {
       title: "적층기술센터 (ATC)",
       category: "적층제조",
       summary: "전 주기: 역설계, 기능성 3D 프린팅 부품, 산업 디자인.",
-      result: "시리즈 품목 50개 이상; 도장 로봇 플라스틱 부품의 최대 70%를 사내 생산; 연간 효과 500만 루블 이상.",
+      result: `시리즈 품목 50개 이상; 도장 로봇 플라스틱 부품의 최대 ${PROFILE_FACTS.sparePartsCoveragePercent}%를 사내 생산; 연간 효과 500만 루블 이상.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -746,8 +620,9 @@ const ko: SiteCopy = {
 };
 
 const de: SiteCopy = {
+  demo: COBOT_DEMO_COPY.de,
   introLabel: "Engineering-Portfolio",
-  introHint: "Tippen, klicken oder wischen",
+  introHint: "Portfolio öffnen",
   introRoleLine:
     "Leiter Entwicklung, Innovation und Additive Fertigung · Automobilwerk GAZ · Nischni Nowgorod",
   name: "Maxim Kanochkin",
@@ -787,15 +662,15 @@ const de: SiteCopy = {
   backLabel: "Zurück",
   bentoAboutTitle: "Über mich",
   aboutShort:
-    "Seit 2013 bin ich vom Instandhaltungsmechaniker für Lackierroboter zum Leiter des Zentrums für Additive Fertigung und der Abteilung Entwicklung am GAZ-Werk geworden. An „Innovation um der Innovation willen“ glaube ich nicht. Meine Arbeit beginnt bei echten Produktionsproblemen — schmutzige Hände, harte Randbedingungen und knappe Budgets. Ich baue Systeme, die rund um die Uhr auf der Linie laufen: Algorithmen statt Papierkram, Roboter statt stumpfer Routine.",
+    `Seit ${PROFILE_FACTS.careerStartYear} bin ich vom Instandhaltungsmechaniker für Lackierroboter zum Leiter des Zentrums für Additive Fertigung und der Abteilung Entwicklung am GAZ-Werk geworden. An „Innovation um der Innovation willen“ glaube ich nicht. Meine Arbeit beginnt bei echten Produktionsproblemen — schmutzige Hände, harte Randbedingungen und knappe Budgets. Ich baue Systeme, die rund um die Uhr auf der Linie laufen: Algorithmen statt Papierkram, Roboter statt stumpfer Routine.`,
   aboutMetaLocation: "Nischni Nowgorod",
   aboutMetaAvailability: "Offen für Arbeitgeber und Redaktionen",
   bentoImpactTitle: "Zahlen, die für sich sprechen",
   impactMetrics: [
-    { value: "13", label: "Jahre industrielle Technik" },
-    { value: "~70%", label: "Roboterersatzteile lokal gefertigt" },
-    { value: "6+", label: "IT-/F&E-Projekte 2026" },
-    { value: "100%", label: "Eigenentwicklung" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Jahre industrielle Technik" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Roboterersatzteile lokal gefertigt" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `IT-/F&E-Projekte ${PROFILE_FACTS.referenceYear}` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Eigenentwicklung" },
   ],
   bentoConnectTitle: "Kontakt",
   connectBlurb: "Schreiben Sie an die private E-Mail oder Telegram.",
@@ -828,7 +703,7 @@ const de: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "Daten bleiben im Werk" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Daten bleiben im Werk" },
         { value: "On-Prem", label: "Lösungen im Werksnetz" },
       ],
     },
@@ -840,7 +715,7 @@ const de: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "Geringere Einführungskosten" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Geringere Einführungskosten" },
         { value: "Vollzyklus", label: "Auslegung → Inbetriebnahme → Support" },
       ],
     },
@@ -852,8 +727,8 @@ const de: SiteCopy = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">5 Mio. ₽", label: "Wirtschaftlicher Nutzen pro Jahr" },
-        { value: "~70%", label: "Importteile ersetzt" },
+        { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} Mio. ₽`, label: "Wirtschaftlicher Nutzen pro Jahr" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Importteile ersetzt" },
       ],
     },
     {
@@ -899,7 +774,7 @@ const de: SiteCopy = {
       category: "Additive Fertigung",
       summary:
         "Vollzyklus: Reverse Engineering, funktionsfähige 3D-gedruckte Bauteile und Industriedesign.",
-      result: "50+ Serienpositionen; bis zu 70 % der Kunststoff-Ersatzteile für Lackierroboter intern; Nutzen über 5 Mio. ₽/Jahr.",
+      result: `${PROFILE_FACTS.serialPositions}+ Serienpositionen; bis zu 70 % der Kunststoff-Ersatzteile für Lackierroboter intern; Nutzen über ${PROFILE_FACTS.annualSavingsMillionsRub} Mio. ₽/Jahr.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -916,8 +791,9 @@ const de: SiteCopy = {
 };
 
 const fr: SiteCopy = {
+  demo: COBOT_DEMO_COPY.fr,
   introLabel: "Portfolio d'ingénierie",
-  introHint: "touchez, cliquez ou glissez",
+  introHint: "Voir le portfolio",
   introRoleLine:
     "Chef du développement, de l'innovation et des technologies additives · usine automobile GAZ · Nijni Novgorod",
   name: "Maxim Kanochkin",
@@ -957,15 +833,15 @@ const fr: SiteCopy = {
   backLabel: "Retour",
   bentoAboutTitle: "À propos",
   aboutShort:
-    "Depuis 2013, je suis passé de mécanicien de maintenance sur robots de peinture à responsable du Centre de technologies additives et du service développement de l'usine GAZ. Je ne crois pas à « l'innovation pour l'innovation ». Mon travail part des vraies difficultés de production — mains sales, contraintes dures, budgets serrés. Je construis des systèmes qui tournent sur la ligne 24 h/24 : des algorithmes à la place de la paperasse, des robots à la place des gestes répétitifs.",
+    `Depuis ${PROFILE_FACTS.careerStartYear}, je suis passé de mécanicien de maintenance sur robots de peinture à responsable du Centre de technologies additives et du service développement de l'usine GAZ. Je ne crois pas à « l'innovation pour l'innovation ». Mon travail part des vraies difficultés de production — mains sales, contraintes dures, budgets serrés. Je construis des systèmes qui tournent sur la ligne 24 h/24 : des algorithmes à la place de la paperasse, des robots à la place des gestes répétitifs.`,
   aboutMetaLocation: "Nijni Novgorod",
   aboutMetaAvailability: "Ouvert aux employeurs et aux rédactions",
   bentoImpactTitle: "Des chiffres qui parlent d'eux-mêmes",
   impactMetrics: [
-    { value: "13", label: "Ans d'ingénierie industrielle" },
-    { value: "~70%", label: "Pièces de rechange robots localisées" },
-    { value: "6+", label: "Projets IT/R&D en 2026" },
-    { value: "100%", label: "Développement interne" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Ans d'ingénierie industrielle" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Pièces de rechange robots localisées" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `Projets IT/R&D en ${PROFILE_FACTS.referenceYear}` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Développement interne" },
   ],
   bentoConnectTitle: "Me contacter",
   connectBlurb: "Écrivez à l'e-mail personnel ou sur Telegram.",
@@ -998,7 +874,7 @@ const fr: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "Données conservées sur site" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Données conservées sur site" },
         { value: "on-prem", label: "Solutions dans le réseau usine" },
       ],
     },
@@ -1010,7 +886,7 @@ const fr: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "Coût de déploiement réduit" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Coût de déploiement réduit" },
         { value: "bout en bout", label: "Conception → mise en service → support" },
       ],
     },
@@ -1022,8 +898,8 @@ const fr: SiteCopy = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">5 M₽", label: "Gain économique annuel" },
-        { value: "~70%", label: "Pièces importées remplacées" },
+        { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} M₽`, label: "Gain économique annuel" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Pièces importées remplacées" },
       ],
     },
     {
@@ -1070,7 +946,7 @@ const fr: SiteCopy = {
       summary:
         "Cycle complet : rétroconception, pièces fonctionnelles imprimées en 3D et design industriel.",
       result:
-        "Plus de 50 références de série ; jusqu'à 70 % des pièces plastiques de robots de peinture en interne ; plus de 5 M₽/an.",
+        `Plus de ${PROFILE_FACTS.annualSavingsMillionsRub}0 références de série ; jusqu'à 70 % des pièces plastiques de robots de peinture en interne ; plus de ${PROFILE_FACTS.annualSavingsMillionsRub} M₽/an.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1087,8 +963,9 @@ const fr: SiteCopy = {
 };
 
 const hi: SiteCopy = {
+  demo: COBOT_DEMO_COPY.hi,
   introLabel: "इंजीनियरिंग पोर्टफोलियो",
-  introHint: "टैप, क्लिक या स्वाइप करें",
+  introHint: "पोर्टफोलियो देखें",
   introRoleLine:
     "विकास, नवाचार और एडिटिव टेक्नोलॉजी प्रमुख · GAZ ऑटो प्लांट · निज़नी नोवगोरोड",
   name: "Maxim Kanochkin",
@@ -1128,15 +1005,15 @@ const hi: SiteCopy = {
   backLabel: "वापस",
   bentoAboutTitle: "परिचय",
   aboutShort:
-    "2013 से पेंट-रोबोट मेंटेनेंस मैकेनिक से शुरू किया, और आज GAZ प्लांट में Additive Technology Center तथा विकास विभाग का नेतृत्व करता हूँ। \"इनोवेशन सिर्फ़ इनोवेशन के लिए\" — इसमें यकीन नहीं। काम असली उत्पादन की तकलीफ़ से शुरू होता है: गंदे हाथ, सख़्त सीमाएँ, तंग बजट। मैं वे सिस्टम बनाता हूँ जो लाइन पर 24/7 चलते हैं — कागज़बाज़ी की जगह एल्गोरिद्म, दोहराव वाले श्रम की जगह रोबोट।",
+    `${PROFILE_FACTS.careerStartYear} से पेंट-रोबोट मेंटेनेंस मैकेनिक से शुरू किया, और आज GAZ प्लांट में Additive Technology Center तथा विकास विभाग का नेतृत्व करता हूँ। \"इनोवेशन सिर्फ़ इनोवेशन के लिए\" — इसमें यकीन नहीं। काम असली उत्पादन की तकलीफ़ से शुरू होता है: गंदे हाथ, सख़्त सीमाएँ, तंग बजट। मैं वे सिस्टम बनाता हूँ जो लाइन पर 24/7 चलते हैं — कागज़बाज़ी की जगह एल्गोरिद्म, दोहराव वाले श्रम की जगह रोबोट।`,
   aboutMetaLocation: "निज़नी नोवगोरोड",
   aboutMetaAvailability: "नियोक्ताओं और संपादकों के लिए उपलब्ध",
   bentoImpactTitle: "आँकड़े जो खुद बोलते हैं",
   impactMetrics: [
-    { value: "13", label: "औद्योगिक इंजीनियरिंग में वर्ष" },
-    { value: "~70%", label: "रोबोट स्पेयर पार्ट्स का स्थानीयकरण" },
-    { value: "6+", label: "2026 में IT/R&D प्रोजेक्ट" },
-    { value: "100%", label: "इन-हाउस डेवलपमेंट" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "औद्योगिक इंजीनियरिंग में वर्ष" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "रोबोट स्पेयर पार्ट्स का स्थानीयकरण" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear} में IT/R&D प्रोजेक्ट` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "इन-हाउस डेवलपमेंट" },
   ],
   bentoConnectTitle: "संपर्क करें",
   connectBlurb: "व्यक्तिगत ईमेल या Telegram पर लिखें।",
@@ -1169,7 +1046,7 @@ const hi: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "डेटा प्लांट में ही रहता है" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "डेटा प्लांट में ही रहता है" },
         { value: "on-prem", label: "प्लांट-नेटवर्क समाधान" },
       ],
     },
@@ -1177,11 +1054,11 @@ const hi: SiteCopy = {
       id: "robotics",
       title: "रोबोटिक्स",
       description:
-        "रोबोट सेल इंटीग्रेशन और 100+ बॉडी व कैब प्रकारों के लिए पथ प्रोग्रामिंग।",
+        `रोबोट सेल इंटीग्रेशन और ${PROFILE_FACTS.robotBodyTypes}+ बॉडी व कैब प्रकारों के लिए पथ प्रोग्रामिंग।`,
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "कम डिप्लॉयमेंट लागत" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "कम डिप्लॉयमेंट लागत" },
         { value: "end-to-end", label: "डिज़ाइन → कमीशनिंग → सपोर्ट" },
       ],
     },
@@ -1193,8 +1070,8 @@ const hi: SiteCopy = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">5 मिलियन रूबल", label: "वार्षिक आर्थिक प्रभाव" },
-        { value: "~70%", label: "आयातित पार्ट्स का प्रतिस्थापन" },
+        { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} मिलियन रूबल`, label: "वार्षिक आर्थिक प्रभाव" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "आयातित पार्ट्स का प्रतिस्थापन" },
       ],
     },
     {
@@ -1240,7 +1117,7 @@ const hi: SiteCopy = {
       category: "एडिटिव तकनीक",
       summary:
         "पूर्ण चक्र: रिवर्स इंजीनियरिंग, फ़ंक्शनल 3D-प्रिंटेड पार्ट्स और इंडस्ट्रियल डिज़ाइन।",
-      result: "50+ सीरियल पार्ट नंबर; पेंट-रोबोट प्लास्टिक स्पेयर्स का ~70% इन-हाउस; सालाना प्रभाव 50 लाख रूबल से अधिक।",
+      result: `${PROFILE_FACTS.serialPositions}+ सीरियल पार्ट नंबर; पेंट-रोबोट प्लास्टिक स्पेयर्स का ~${PROFILE_FACTS.sparePartsCoveragePercent}% इन-हाउस; सालाना प्रभाव 50 लाख रूबल से अधिक।`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1257,8 +1134,9 @@ const hi: SiteCopy = {
 };
 
 const ja: SiteCopy = {
+  demo: COBOT_DEMO_COPY.ja,
   introLabel: "エンジニアリング・ポートフォリオ",
-  introHint: "タップ・クリック・スワイプで探索",
+  introHint: "ポートフォリオを見る",
   introRoleLine:
     "開発・イノベーション・積層造形部門長 · GAZ自動車工場 · ニジニ・ノヴゴロド",
   name: "マキシム・カノツキン",
@@ -1298,15 +1176,15 @@ const ja: SiteCopy = {
   backLabel: "戻る",
   bentoAboutTitle: "私について",
   aboutShort:
-    "2013年から塗装ロボットの整備工としてキャリアを始め、現在はGAZ工場で積層造形技術センターと開発部門を率いています。「イノベーションのためのイノベーション」は信じません。出発点は現場の課題——汚れた手、厳しい制約、限られた予算です。ラインで24時間365日回り続ける仕組みをつくります。書類の代わりにアルゴリズムを、単純作業の代わりにロボットを。",
+    `${PROFILE_FACTS.careerStartYear}年から塗装ロボットの整備工としてキャリアを始め、現在はGAZ工場で積層造形技術センターと開発部門を率いています。「イノベーションのためのイノベーション」は信じません。出発点は現場の課題——汚れた手、厳しい制約、限られた予算です。ラインで24時間365日回り続ける仕組みをつくります。書類の代わりにアルゴリズムを、単純作業の代わりにロボットを。`,
   aboutMetaLocation: "ニジニ・ノヴゴロド",
   aboutMetaAvailability: "採用担当・編集者からの連絡を歓迎",
   bentoImpactTitle: "数字が証明します",
   impactMetrics: [
-    { value: "13", label: "産業エンジニアリング歴" },
-    { value: "~70%", label: "ロボット部品の国産化" },
-    { value: "6+", label: "2026年のIT／R&Dプロジェクト" },
-    { value: "100%", label: "内製開発" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "産業エンジニアリング歴" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "ロボット部品の国産化" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear}年のIT／R&Dプロジェクト` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "内製開発" },
   ],
   bentoConnectTitle: "連絡先",
   connectBlurb: "個人メールまたは Telegram へご連絡ください。",
@@ -1338,7 +1216,7 @@ const ja: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "データは構内完結" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "データは構内完結" },
         { value: "オンプレミス", label: "工場ネットワーク対応" },
       ],
     },
@@ -1349,7 +1227,7 @@ const ja: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "導入コスト低減" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "導入コスト低減" },
         { value: "一気通貫", label: "設計 → 立上げ → 保守" },
       ],
     },
@@ -1361,8 +1239,8 @@ const ja: SiteCopy = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">500万₽", label: "年間経済効果" },
-        { value: "~70%", label: "輸入部品の代替" },
+        { value: `>${PROFILE_FACTS.annualSavingsMillionsRub}00万₽`, label: "年間経済効果" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "輸入部品の代替" },
       ],
     },
     {
@@ -1408,7 +1286,7 @@ const ja: SiteCopy = {
       category: "積層造形",
       summary:
         "フルサイクル：リバースエンジニアリング、機能部品の3D造形、インダストリアルデザイン。",
-      result: "シリーズ品目50以上。塗装ロボット用プラスチック部品の最大70%を内製。年間効果は500万ルーブル超。",
+      result: `シリーズ品目${PROFILE_FACTS.annualSavingsMillionsRub}0以上。塗装ロボット用プラスチック部品の最大${PROFILE_FACTS.sparePartsCoveragePercent}%を内製。年間効果は${PROFILE_FACTS.annualSavingsMillionsRub}00万ルーブル超。`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1425,8 +1303,9 @@ const ja: SiteCopy = {
 };
 
 const es: SiteCopy = {
+  demo: COBOT_DEMO_COPY.es,
   introLabel: "Portfolio de ingeniería",
-  introHint: "toque, haga clic o deslice",
+  introHint: "Ver portafolio",
   introRoleLine:
     "Jefe de desarrollo, innovación y tecnologías aditivas · planta automotriz GAZ · Nizhni Nóvgorod",
   name: "Maxim Kanochkin",
@@ -1466,15 +1345,15 @@ const es: SiteCopy = {
   backLabel: "Volver",
   bentoAboutTitle: "Sobre mí",
   aboutShort:
-    "Desde 2013 pasé de mecánico de mantenimiento de robots de pintura a responsable del Centro de Tecnologías Aditivas y del departamento de desarrollo en la planta GAZ. No creo en la «innovación por la innovación». Mi trabajo parte de las dificultades reales de la producción: manos sucias, restricciones duras y presupuestos ajustados. Construyo sistemas que operan en línea 24/7: algoritmos en lugar de papeleo, robots en lugar de trabajo rutinario.",
+    `Desde ${PROFILE_FACTS.careerStartYear} pasé de mecánico de mantenimiento de robots de pintura a responsable del Centro de Tecnologías Aditivas y del departamento de desarrollo en la planta GAZ. No creo en la «innovación por la innovación». Mi trabajo parte de las dificultades reales de la producción: manos sucias, restricciones duras y presupuestos ajustados. Construyo sistemas que operan en línea 24/7: algoritmos en lugar de papeleo, robots en lugar de trabajo rutinario.`,
   aboutMetaLocation: "Nizhni Nóvgorod",
   aboutMetaAvailability: "Abierto a empleadores y redacciones",
   bentoImpactTitle: "Cifras que hablan por sí solas",
   impactMetrics: [
-    { value: "13", label: "Años en ingeniería industrial" },
-    { value: "~70%", label: "Repuestos de robots localizados" },
-    { value: "6+", label: "Proyectos IT/I+D en 2026" },
-    { value: "100%", label: "Desarrollo interno" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Años en ingeniería industrial" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Repuestos de robots localizados" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `Proyectos IT/I+D en ${PROFILE_FACTS.referenceYear}` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Desarrollo interno" },
   ],
   bentoConnectTitle: "Contacto",
   connectBlurb: "Escriba al correo personal o a Telegram.",
@@ -1507,7 +1386,7 @@ const es: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "Datos que permanecen en planta" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Datos que permanecen en planta" },
         { value: "on-prem", label: "Soluciones en la red de planta" },
       ],
     },
@@ -1519,7 +1398,7 @@ const es: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "Menor costo de implantación" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Menor costo de implantación" },
         { value: "ciclo completo", label: "Diseño → puesta en marcha → soporte" },
       ],
     },
@@ -1531,8 +1410,8 @@ const es: SiteCopy = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">5 M₽", label: "Impacto económico anual" },
-        { value: "~70%", label: "Piezas importadas sustituidas" },
+        { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} M₽`, label: "Impacto económico anual" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Piezas importadas sustituidas" },
       ],
     },
     {
@@ -1579,7 +1458,7 @@ const es: SiteCopy = {
       summary:
         "Ciclo completo: ingeniería inversa, piezas funcionales impresas en 3D y diseño industrial.",
       result:
-        "Más de 50 referencias de serie; hasta el 70% de recambios plásticos de robots de pintura en planta; más de 5 M₽ al año.",
+        `Más de ${PROFILE_FACTS.annualSavingsMillionsRub}0 referencias de serie; hasta el ${PROFILE_FACTS.sparePartsCoveragePercent}% de recambios plásticos de robots de pintura en planta; más de ${PROFILE_FACTS.annualSavingsMillionsRub} M₽ al año.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1596,8 +1475,9 @@ const es: SiteCopy = {
 };
 
 const pt: SiteCopy = {
+  demo: COBOT_DEMO_COPY.pt,
   introLabel: "Portfólio de engenharia",
-  introHint: "toque, clique ou deslize",
+  introHint: "Ver portfólio",
   introRoleLine:
     "Chefe de desenvolvimento, inovação e manufatura aditiva · fábrica automotiva GAZ · Níjni Novgorod",
   name: "Maxim Kanochkin",
@@ -1637,15 +1517,15 @@ const pt: SiteCopy = {
   backLabel: "Voltar",
   bentoAboutTitle: "Sobre mim",
   aboutShort:
-    "Desde 2013, saí de mecânico de manutenção de robôs de pintura para líder do Centro de Tecnologias Aditivas e do departamento de desenvolvimento na fábrica GAZ. Não acredito em «inovação pela inovação». Meu trabalho parte das dificuldades reais da produção: mãos sujas, restrições duras e orçamentos apertados. Construo sistemas que rodam na linha 24/7: algoritmos no lugar da burocracia, robôs no lugar do trabalho rotineiro.",
+    `Desde ${PROFILE_FACTS.careerStartYear}, saí de mecânico de manutenção de robôs de pintura para líder do Centro de Tecnologias Aditivas e do departamento de desenvolvimento na fábrica GAZ. Não acredito em «inovação pela inovação». Meu trabalho parte das dificuldades reais da produção: mãos sujas, restrições duras e orçamentos apertados. Construo sistemas que rodam na linha 24/7: algoritmos no lugar da burocracia, robôs no lugar do trabalho rotineiro.`,
   aboutMetaLocation: "Níjni Novgorod",
   aboutMetaAvailability: "Aberto a empregadores e redações",
   bentoImpactTitle: "Números que falam por si",
   impactMetrics: [
-    { value: "13", label: "Anos em engenharia industrial" },
-    { value: "~70%", label: "Peças de reposição de robôs localizadas" },
-    { value: "6+", label: "Projetos de TI/P&D em 2026" },
-    { value: "100%", label: "Desenvolvimento interno" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Anos em engenharia industrial" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Peças de reposição de robôs localizadas" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `Projetos de TI/P&D em ${PROFILE_FACTS.referenceYear}` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Desenvolvimento interno" },
   ],
   bentoConnectTitle: "Contato",
   connectBlurb: "Escreva no e-mail pessoal ou no Telegram.",
@@ -1678,7 +1558,7 @@ const pt: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "Dados ficam na planta" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Dados ficam na planta" },
         { value: "on-prem", label: "Soluções na rede da planta" },
       ],
     },
@@ -1690,7 +1570,7 @@ const pt: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "Menor custo de implantação" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Menor custo de implantação" },
         { value: "ciclo completo", label: "Projeto → comissionamento → suporte" },
       ],
     },
@@ -1703,7 +1583,7 @@ const pt: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: ">5 mi ₽", label: "Impacto econômico anual" },
-        { value: "~70%", label: "Peças importadas substituídas" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Peças importadas substituídas" },
       ],
     },
     {
@@ -1748,7 +1628,7 @@ const pt: SiteCopy = {
       category: "Manufatura aditiva",
       summary:
         "Ciclo completo: engenharia reversa, peças funcionais impressas em 3D e design industrial.",
-      result: "Mais de 50 itens de série; até 70% das peças plásticas de robôs de pintura internamente; mais de 5 mi ₽/ano.",
+      result: `Mais de 50 itens de série; até ${PROFILE_FACTS.sparePartsCoveragePercent}% das peças plásticas de robôs de pintura internamente; mais de 5 mi ₽/ano.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1765,8 +1645,9 @@ const pt: SiteCopy = {
 };
 
 const it: SiteCopy = {
+  demo: COBOT_DEMO_COPY.it,
   introLabel: "Portfolio di ingegneria",
-  introHint: "tocchi, clicchi o scorra",
+  introHint: "Apri il portfolio",
   introRoleLine:
     "Responsabile sviluppo, innovazione e tecnologie additive · stabilimento GAZ · Nižnij Novgorod",
   name: "Maxim Kanochkin",
@@ -1806,15 +1687,15 @@ const it: SiteCopy = {
   backLabel: "Indietro",
   bentoAboutTitle: "Su di me",
   aboutShort:
-    "Dal 2013 sono passato da meccanico di manutenzione dei robot di verniciatura a responsabile del Centro di tecnologie additive e del reparto sviluppo dello stabilimento GAZ. Non credo nell'«innovazione per l'innovazione». Il mio lavoro parte dalle difficoltà reali della produzione: mani sporche, vincoli duri e budget stretti. Costruisco sistemi che lavorano in linea 24/7: algoritmi al posto della burocrazia, robot al posto del lavoro ripetitivo.",
+    `Dal ${PROFILE_FACTS.careerStartYear} sono passato da meccanico di manutenzione dei robot di verniciatura a responsabile del Centro di tecnologie additive e del reparto sviluppo dello stabilimento GAZ. Non credo nell'«innovazione per l'innovazione». Il mio lavoro parte dalle difficoltà reali della produzione: mani sporche, vincoli duri e budget stretti. Costruisco sistemi che lavorano in linea 24/7: algoritmi al posto della burocrazia, robot al posto del lavoro ripetitivo.`,
   aboutMetaLocation: "Nižnij Novgorod",
   aboutMetaAvailability: "Disponibile per datori di lavoro e redazioni",
   bentoImpactTitle: "Numeri che parlano da soli",
   impactMetrics: [
-    { value: "13", label: "Anni di ingegneria industriale" },
-    { value: "~70%", label: "Ricambi robot localizzati" },
-    { value: "6+", label: "Progetti IT/R&S nel 2026" },
-    { value: "100%", label: "Sviluppo interno" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Anni di ingegneria industriale" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Ricambi robot localizzati" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `Progetti IT/R&S nel ${PROFILE_FACTS.referenceYear}` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Sviluppo interno" },
   ],
   bentoConnectTitle: "Contatti",
   connectBlurb: "Scriva all'e-mail personale o su Telegram.",
@@ -1847,7 +1728,7 @@ const it: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "Dati che restano in stabilimento" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Dati che restano in stabilimento" },
         { value: "on-prem", label: "Soluzioni nella rete di fabbrica" },
       ],
     },
@@ -1859,7 +1740,7 @@ const it: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "Costo di implementazione inferiore" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Costo di implementazione inferiore" },
         {
           value: "ciclo completo",
           label: "Progettazione → messa in servizio → supporto",
@@ -1875,7 +1756,7 @@ const it: SiteCopy = {
       showWireframe: true,
       metrics: [
         { value: ">5 mln ₽", label: "Impatto economico annuo" },
-        { value: "~70%", label: "Componenti importati sostituiti" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Componenti importati sostituiti" },
       ],
     },
     {
@@ -1922,7 +1803,7 @@ const it: SiteCopy = {
       summary:
         "Ciclo completo: reverse engineering, pezzi funzionali stampati in 3D e design industriale.",
       result:
-        "Oltre 50 posizioni di serie; fino al 70% dei ricambi plastici dei robot di verniciatura internamente; oltre 5 mln ₽/anno.",
+        `Oltre 50 posizioni di serie; fino al ${PROFILE_FACTS.sparePartsCoveragePercent}% dei ricambi plastici dei robot di verniciatura internamente; oltre 5 mln ₽/anno.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -1939,8 +1820,9 @@ const it: SiteCopy = {
 };
 
 const tr: SiteCopy = {
+  demo: COBOT_DEMO_COPY.tr,
   introLabel: "Mühendislik portföyü",
-  introHint: "dokunun, tıklayın veya kaydırın",
+  introHint: "Portföyü aç",
   introRoleLine:
     "Geliştirme, inovasyon ve eklemeli imalat müdürü · GAZ otomobil fabrikası · Nijni Novgorod",
   name: "Maxim Kanochkin",
@@ -1980,15 +1862,15 @@ const tr: SiteCopy = {
   backLabel: "Geri",
   bentoAboutTitle: "Hakkımda",
   aboutShort:
-    "2013’ten beri boyama robotları bakım mekanikerliğinden, GAZ fabrikasında Eklemeli Teknolojiler Merkezi ve geliştirme birimi yöneticiliğine geldim. «İnovasyon için inovasyon»a inanmam. Çalışmam gerçek üretim sorunlarından başlar — kirli eller, sert kısıtlar ve sıkı bütçeler. Hat üzerinde 7/24 çalışan sistemler kuruyorum: evrak yerine algoritmalar, rutin iş yerine robotlar.",
+    `${PROFILE_FACTS.careerStartYear}’ten beri boyama robotları bakım mekanikerliğinden, GAZ fabrikasında Eklemeli Teknolojiler Merkezi ve geliştirme birimi yöneticiliğine geldim. «İnovasyon için inovasyon»a inanmam. Çalışmam gerçek üretim sorunlarından başlar — kirli eller, sert kısıtlar ve sıkı bütçeler. Hat üzerinde 7/24 çalışan sistemler kuruyorum: evrak yerine algoritmalar, rutin iş yerine robotlar.`,
   aboutMetaLocation: "Nijni Novgorod",
   aboutMetaAvailability: "İşverenlere ve editörlere açığım",
   bentoImpactTitle: "Kendi adına konuşan rakamlar",
   impactMetrics: [
-    { value: "13", label: "Endüstriyel mühendislikte yıl" },
-    { value: "~70%", label: "Robot yedek parçası yerelleştirildi" },
-    { value: "6+", label: "2026’da BT/Ar-Ge projesi" },
-    { value: "100%", label: "Kurum içi geliştirme" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "Endüstriyel mühendislikte yıl" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "Robot yedek parçası yerelleştirildi" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `${PROFILE_FACTS.referenceYear}’da BT/Ar-Ge projesi` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "Kurum içi geliştirme" },
   ],
   bentoConnectTitle: "İletişim",
   connectBlurb: "Kişisel e-posta veya Telegram’dan yazın.",
@@ -2021,7 +1903,7 @@ const tr: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "Veriler tesis içinde kalır" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "Veriler tesis içinde kalır" },
         { value: "on-prem", label: "Fabrika ağı çözümleri" },
       ],
     },
@@ -2033,7 +1915,7 @@ const tr: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "Daha düşük devreye alma maliyeti" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "Daha düşük devreye alma maliyeti" },
         { value: "uçtan uca", label: "Tasarım → devreye alma → destek" },
       ],
     },
@@ -2044,8 +1926,8 @@ const tr: SiteCopy = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">5 milyon ₽", label: "Yıllık ekonomik etki" },
-        { value: "~70%", label: "İthal parça ikamesi" },
+        { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} milyon ₽`, label: "Yıllık ekonomik etki" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "İthal parça ikamesi" },
       ],
     },
     {
@@ -2090,7 +1972,7 @@ const tr: SiteCopy = {
       category: "Eklemeli teknoloji",
       summary:
         "Tam döngü: tersine mühendislik, işlevsel 3D baskı parçalar ve endüstriyel tasarım.",
-      result: "50’den fazla seri kalem; boyama robotu plastik yedeklerinin %70’ine kadar iç üretim; yılda 5 milyon ₽ üzeri etki.",
+      result: `${PROFILE_FACTS.annualSavingsMillionsRub}0’den fazla seri kalem; boyama robotu plastik yedeklerinin %70’ine kadar iç üretim; yılda ${PROFILE_FACTS.annualSavingsMillionsRub} milyon ₽ üzeri etki.`,
       ...sharedProjectMeta.cat,
     },
     {
@@ -2107,8 +1989,9 @@ const tr: SiteCopy = {
 };
 
 const ar: SiteCopy = {
+  demo: COBOT_DEMO_COPY.ar,
   introLabel: "محفظة هندسية",
-  introHint: "انقر أو اسحب للاستكشاف",
+  introHint: "عرض ملف الأعمال",
   introRoleLine:
     "رئيس قسم التطوير والابتكار وتقنيات التصنيع الإضافي · مصنع غاز للسيارات · نيجني نوفغورود",
   name: "Maxim Kanochkin",
@@ -2148,15 +2031,15 @@ const ar: SiteCopy = {
   backLabel: "رجوع",
   bentoAboutTitle: "نبذة عني",
   aboutShort:
-    "منذ عام 2013 انتقلت من فني صيانة لروبوتات الطلاء إلى رئيس مركز تقنيات التصنيع الإضافي وقسم التطوير في مصنع غاز. لا أؤمن بـ«الابتكار من أجل الابتكار». ينطلق عملي من صعوبات الإنتاج الحقيقية — الأيدي المتسخة، والقيود الصارمة، والميزانيات المحدودة. أبني أنظمة تعمل على خط الإنتاج على مدار الساعة: خوارزميات بدلًا من البيروقراطية، وروبوتات بدلًا من الأعمال الروتينية.",
+    `منذ عام ${PROFILE_FACTS.careerStartYear} انتقلت من فني صيانة لروبوتات الطلاء إلى رئيس مركز تقنيات التصنيع الإضافي وقسم التطوير في مصنع غاز. لا أؤمن بـ«الابتكار من أجل الابتكار». ينطلق عملي من صعوبات الإنتاج الحقيقية — الأيدي المتسخة، والقيود الصارمة، والميزانيات المحدودة. أبني أنظمة تعمل على خط الإنتاج على مدار الساعة: خوارزميات بدلًا من البيروقراطية، وروبوتات بدلًا من الأعمال الروتينية.`,
   aboutMetaLocation: "نيجني نوفغورود",
   aboutMetaAvailability: "متاح لأصحاب العمل وهيئات التحرير",
   bentoImpactTitle: "أرقام تتحدث عن نفسها",
   impactMetrics: [
-    { value: "13", label: "سنوات في الهندسة الصناعية" },
-    { value: "~70%", label: "توطين قطع غيار الروبوتات" },
-    { value: "6+", label: "مشاريع IT/R&D في عام 2026" },
-    { value: "100%", label: "تطوير داخل المنشأة" },
+    { value: `${PROFILE_FACTS.yearsInIndustry}`, label: "سنوات في الهندسة الصناعية" },
+    { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "توطين قطع غيار الروبوتات" },
+    { value: `${PROFILE_FACTS.itProjects}`, label: `مشاريع IT/R&D في عام ${PROFILE_FACTS.referenceYear}` },
+    { value: `${PROFILE_FACTS.inHousePercent}%`, label: "تطوير داخل المنشأة" },
   ],
   bentoConnectTitle: "تواصل",
   connectBlurb: "راسل البريد الشخصي أو Telegram.",
@@ -2188,7 +2071,7 @@ const ar: SiteCopy = {
       icon: "brain",
       showSparkline: true,
       metrics: [
-        { value: "100%", label: "البيانات تبقى داخل المنشأة" },
+        { value: `${PROFILE_FACTS.localDataPercent}%`, label: "البيانات تبقى داخل المنشأة" },
         { value: "on-prem", label: "حلول على شبكة المصنع" },
       ],
     },
@@ -2199,7 +2082,7 @@ const ar: SiteCopy = {
       icon: "robot",
       showSparkline: true,
       metrics: [
-        { value: "2–3×", label: "تكلفة تنفيذ أقل" },
+        { value: `${PROFILE_FACTS.deploymentCostReduction}`, label: "تكلفة تنفيذ أقل" },
         { value: "دورة كاملة", label: "تصميم → تشغيل تجريبي → دعم" },
       ],
     },
@@ -2211,8 +2094,8 @@ const ar: SiteCopy = {
       icon: "cube",
       showWireframe: true,
       metrics: [
-        { value: ">5 ملايين روبل", label: "الأثر الاقتصادي السنوي" },
-        { value: "~70%", label: "استبدال القطع المستوردة" },
+        { value: `>${PROFILE_FACTS.annualSavingsMillionsRub} ملايين روبل`, label: "الأثر الاقتصادي السنوي" },
+        { value: `~${PROFILE_FACTS.sparePartsCoveragePercent}%`, label: "استبدال القطع المستوردة" },
       ],
     },
     {
@@ -2257,7 +2140,7 @@ const ar: SiteCopy = {
       category: "التصنيع الإضافي",
       summary:
         "دورة كاملة: هندسة عكسية، قطع مطبوعة ثلاثية الأبعاد وظيفية، وتصميم صناعي.",
-      result: "أكثر من 50 بندًا تسلسليًا؛ حتى 70% من القطع البلاستيكية لروبوتات الطلاء داخل المصنع؛ أثر سنوي يتجاوز 5 ملايين روبل.",
+      result: `أكثر من ${PROFILE_FACTS.annualSavingsMillionsRub}0 بندًا تسلسليًا؛ حتى ${PROFILE_FACTS.sparePartsCoveragePercent}% من القطع البلاستيكية لروبوتات الطلاء داخل المصنع؛ أثر سنوي يتجاوز ${PROFILE_FACTS.annualSavingsMillionsRub} ملايين روبل.`,
       ...sharedProjectMeta.cat,
     },
     {

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
+import heroImage from "@/lib/hero-image.json";
 import {
   ArrowLeft,
   BarChart3,
@@ -19,6 +19,8 @@ import { DomainIcon } from "@/components/domain-card-icons";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ConnectQr } from "@/components/connect-qr";
 import { SharePageButton } from "@/components/share-page-button";
+import { DemoShowcase } from "@/components/demo-showcase";
+import { COBOT_DEMO } from "@/lib/cobot-demo";
 import { useLocale } from "@/lib/i18n/locale-provider";
 
 type BentoProfileHubProps = {
@@ -135,6 +137,11 @@ function BentoHeroTile({
   onReturn: () => void;
 }) {
   const { copy } = useLocale();
+  const backButton = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    backButton.current?.focus({ preventScroll: true });
+  }, []);
 
   const handleSave = async () => {
     try {
@@ -152,19 +159,25 @@ function BentoHeroTile({
       animate="visible"
       variants={tileVariants}
     >
-      <Image
+      {/* Static hosting uses prebuilt responsive assets rather than /_next/image. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src={PROFILE.bentoHeroSrc}
+        srcSet={heroImage.variants.map(({ src, width }) => `${src} ${width}w`).join(", ")}
         alt={copy.photoAlt}
-        fill
-        sizes={isMobile ? "100vw" : "900px"}
-        quality={100}
+        width={heroImage.width}
+        height={heroImage.height}
+        sizes="(max-width: 1024px) calc(100vw - 32px), 780px"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
         className="bento-hero-image"
-        priority
       />
       <div className="bento-hero-overlay" aria-hidden="true" />
       <div className="bento-hero-content">
         <div className="bento-hero-toolbar">
           <button
+            ref={backButton}
             type="button"
             className="bento-back-btn"
             data-hover
@@ -546,6 +559,7 @@ export function BentoProfileHub({ isMobile, onReturn }: BentoProfileHubProps) {
 
   return (
     <motion.main
+      id="profile"
       className="bento-stage"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.45, delay: 0.08 } }}
@@ -565,6 +579,8 @@ export function BentoProfileHub({ isMobile, onReturn }: BentoProfileHubProps) {
         <BentoImpactTile index={tileIndex++} />
         <BentoConnectTile index={tileIndex++} />
       </div>
+
+      <DemoShowcase copy={copy.demo} source={COBOT_DEMO.source} poster={COBOT_DEMO.poster} />
 
       <motion.section
         className="bento-tile bento-projects"

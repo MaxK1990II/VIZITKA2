@@ -101,7 +101,7 @@ export function buildPressCollectionJsonLd(): PressCollectionJsonLd {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: "Пресса — Максим Каночкин",
-    url: `${SITE_ORIGIN}/press`,
+    url: `${SITE_ORIGIN}/press/`,
     about: {
       "@type": "Person",
       name: PROFILE.name,

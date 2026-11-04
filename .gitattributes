@@ -1,0 +1,2 @@
+# Preserve the supplied self-contained demo byte for byte on every platform.
+public/demos/al-flow-cs620-r13.html -text

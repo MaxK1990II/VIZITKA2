@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SiteDocument } from "@/components/site-document";
 
 export const metadata: Metadata = {
   title: "Страница не найдена",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
+    <SiteDocument>
     <div className="not-found">
       <div className="not-found-inner">
         <p className="not-found-code">404</p>
@@ -17,5 +19,6 @@ export default function NotFound() {
         </Link>
       </div>
     </div>
+    </SiteDocument>
   );
 }

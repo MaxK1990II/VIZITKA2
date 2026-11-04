@@ -18,8 +18,6 @@ export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = "ru";
 
-export const LOCALE_STORAGE_KEY = "kanochkinmm-locale";
-
 export const LOCALE_META: Record<
   Locale,
   { label: string; htmlLang: string; nativeName: string }
@@ -41,4 +39,9 @@ export const LOCALE_META: Record<
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === "string" && LOCALES.includes(value as Locale);
+}
+
+/** Russian keeps the existing canonical home URL. */
+export function localePath(locale: Locale): string {
+  return locale === DEFAULT_LOCALE ? "/" : `/${locale}/`;
 }

@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Портфолио Максима Каночкина
 
-## Getting Started
+Next.js, React, TypeScript и Three.js. Производственная сборка — статический сайт в `out/` для https://kanochkinmm.ru.
 
-First, run the development server:
+## Запуск и проверка
 
-```bash
+```powershell
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Для проверки готовой версии:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```powershell
+npm test
+npm run lint
+npm run build
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Предпросмотр доступен по адресу http://127.0.0.1:3100. Другой порт: `npm start -- 3200`. Сервер предназначен для локальной проверки `out/`; в production файлы обслуживает веб-сервер хостинга. Сборке нужен доступ к Google Fonts, используемым через `next/font`.
 
-## Learn More
+PostCSS закреплён через `overrides` на исправленной версии, поскольку Next.js 15 напрямую закрепляет старую зависимость. Для обновления пакетов при ошибке `edgesOut` в npm 10 можно использовать `npm exec --yes --package=npm@11 -- npm update` без изменения системного npm.
 
-To learn more about Next.js, take a look at the following resources:
+## Содержимое и языки
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `lib/profile-facts.ts` — общие числовые факты, используемые в переводах.
+- `lib/site-content.ts` — русские тексты, проекты и контакты.
+- `lib/i18n/content.ts` — переводы; русская версия использует данные из `site-content.ts`.
+- `lib/i18n/locale.ts` — перечень языков и их адреса.
+- `lib/page-metadata.ts` — локализованные метаданные, canonical и hreflang.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Русская версия находится на `/`, остальные — на `/en/`, `/zh/`, `/ko/`, `/de/`, `/fr/`, `/hi/`, `/ja/`, `/es/`, `/pt/`, `/it/`, `/tr/`, `/ar/`. Все страницы экспортируются в HTML. Язык определяется адресом; ссылка с `#profile` открывает сразу профиль. В `app/(main)/` находятся русские страницы, в `app/[locale]/` — остальные языки.
 
-## Deploy on Vercel
+## Изображения и анимация
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Исходник портрета: `public/maxim-kanochkin-hero-reference-clean.png`. Команда `npm run images:optimize` создаёт три WebP-версии и `lib/hero-image.json`; она автоматически выполняется перед сборкой. После замены исходника следует включить обновлённые файлы из `public/images/` и манифест в изменения проекта.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Фоновая Three.js-анимация останавливается за открытым профилем и в скрытой вкладке. Настройка уменьшения движения включает неподвижный фон. Вход и возврат доступны с клавиатуры.
+
+## Демонстрация AL-FLOW / CS620
+
+Блок перед списком проектов показывает интерактивную перекладку алюминиевых чушек коботом. Ссылка `/#cobot-demo` сразу открывает этот блок; она работает и на языковых страницах.
+
+- `public/demos/al-flow-cs620-r13.html` — предоставленный автором R13 без изменений, с автономными Three.js, физикой, моделями и авторскими отметками. SHA-256 исходника записан в `lib/cobot-demo.ts`.
+- `public/images/al-flow-cs620-r13.webp` — кадр из самой модели, используемый как лёгкое превью.
+- `components/demo-showcase.tsx` — просмотр в модальном окне и ссылка на отдельную вкладку. HTML модели загружается только после запуска; закрытие удаляет iframe и прекращает работу симуляции.
+- `lib/i18n/demo.ts` — описание и управление просмотром на 13 языках. Интерфейс исходной инженерной модели остаётся русским.
+
+Модель обозначена как концепция роботизированного участка; её поведение не представляется результатами испытаний реального оборудования.
+
+## Публикация
+
+На статический хостинг загружается содержимое `out/`. Нужны выдача `index.html` для каталогов, ответ 404 с `404.html` и тип `text/vcard` для `/vcard`. Языковые адреса должны открываться напрямую, без перенаправления на русскую главную.
+
+Старый `deploy/deploy.ps1` рассчитан на `output: standalone` и не подходит для текущего статического экспорта. Перед его использованием требуется адаптация под актуальный хостинг.

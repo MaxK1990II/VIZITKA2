@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
 type PortfolioRolesProps = {
   roles: readonly string[];
@@ -22,6 +23,7 @@ export function PortfolioRoles({
   visibleCount,
   compact = false,
 }: PortfolioRolesProps) {
+  const reducedMotion = useReducedMotion();
   const [items, setItems] = useState<RoleState[]>(() =>
     roles.slice(0, 3).map((role) => ({
       current: role,
@@ -31,6 +33,7 @@ export function PortfolioRoles({
   );
 
   useEffect(() => {
+    if (reducedMotion) return;
     const ranges = [
       { min: 3200, max: 5200 },
       { min: 3900, max: 6600 },
@@ -104,7 +107,7 @@ export function PortfolioRoles({
     return () => {
       timers.forEach((timer) => window.clearTimeout(timer));
     };
-  }, [roles]);
+  }, [roles, reducedMotion]);
 
   const visibleItems = useMemo(
     () => items.slice(0, visibleCount),
@@ -124,6 +127,7 @@ export function PortfolioRoles({
               {item.current}
             </span>
             <span
+              aria-hidden="true"
               className={`roles-word roles-word-upcoming ${
                 item.phase === "in" ? "is-in" : ""
               }`}

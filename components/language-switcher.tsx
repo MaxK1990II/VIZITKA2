@@ -1,15 +1,14 @@
 "use client";
 
-import { LOCALES, LOCALE_META } from "@/lib/i18n/locale";
+import { LOCALES, LOCALE_META, localePath } from "@/lib/i18n/locale";
 import { useLocale } from "@/lib/i18n/locale-provider";
 
 export function LanguageSwitcher() {
-  const { locale, setLocale, copy } = useLocale();
+  const { locale, copy } = useLocale();
 
   return (
-    <div
+    <nav
       className="bento-lang-switch"
-      role="group"
       aria-label={copy.languageSwitcherAria}
     >
       {LOCALES.map((code, index) => {
@@ -21,22 +20,24 @@ export function LanguageSwitcher() {
                 ·
               </span>
             ) : null}
-            <button
-              type="button"
+            <a
+              href={`${localePath(code)}#profile`}
+              hrefLang={LOCALE_META[code].htmlLang}
+              lang={LOCALE_META[code].htmlLang}
               className={`bento-lang-btn${active ? " is-active" : ""}`}
               data-hover
-              aria-pressed={active}
+              aria-current={active ? "page" : undefined}
               aria-label={LOCALE_META[code].nativeName}
               onClick={(event) => {
                 event.stopPropagation();
-                setLocale(code);
+                if (active) event.preventDefault();
               }}
             >
               {LOCALE_META[code].label}
-            </button>
+            </a>
           </span>
         );
       })}
-    </div>
+    </nav>
   );
 }

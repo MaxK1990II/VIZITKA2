@@ -48,7 +48,12 @@ export function IntroHero({ onExplore, isReforming = false }: IntroHeroProps) {
   const nameParts = splitDisplayName(copy.name);
   const joiner = locale === "zh" || locale === "ja" ? "·" : "\u00A0";
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const exploreButton = useRef<HTMLButtonElement | null>(null);
   const armed = !isReforming;
+
+  useEffect(() => {
+    if (armed) exploreButton.current?.focus({ preventScroll: true });
+  }, [armed]);
 
   const triggerExplore = useCallback(() => {
     if (!armed) return;
@@ -117,7 +122,7 @@ export function IntroHero({ onExplore, isReforming = false }: IntroHeroProps) {
         {copy.introLabel}
       </motion.p>
 
-      <motion.h1 className="intro-name" variants={itemVariants}>
+      <motion.h1 className="intro-name" variants={itemVariants} aria-label={copy.name}>
         {nameParts.map((word, wi) => (
           <span key={`${locale}-${wi}`} className="intro-word">
             {Array.from(word).map((letter, li) => (
@@ -138,8 +143,19 @@ export function IntroHero({ onExplore, isReforming = false }: IntroHeroProps) {
       </motion.div>
 
       <motion.div className="intro-bottom" variants={itemVariants}>
-        <ChevronDown className="intro-chevron" size={24} />
-        <p className="intro-hint">{copy.introHint}</p>
+        <button
+          ref={exploreButton}
+          type="button"
+          className="intro-explore"
+          disabled={!armed}
+          onClick={(event) => {
+            event.stopPropagation();
+            triggerExplore();
+          }}
+        >
+          <ChevronDown className="intro-chevron" size={24} aria-hidden="true" />
+          <span className="intro-hint">{copy.introHint}</span>
+        </button>
       </motion.div>
     </motion.main>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { createAnimationLoop } from "@/lib/animation-loop";
 import type { ScenePhase } from "@/lib/site-content";
 
 type UniverseBackgroundThreeProps = {
@@ -27,30 +28,38 @@ export function UniverseBackgroundThree({
   phase,
 }: UniverseBackgroundThreeProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
-  const rafRef = useRef<number | null>(null);
+  const syncPlaybackRef = useRef<(() => void) | null>(null);
   const phaseRef = useRef<ScenePhase>(phase);
 
   useEffect(() => {
     phaseRef.current = phase;
+    syncPlaybackRef.current?.();
   }, [phase]);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    const prefersReducedMotion = window.matchMedia(
+    const motionMedia = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
-    ).matches;
+    );
+    let prefersReducedMotion = motionMedia.matches;
     const isMobile = mode === "mobile";
     const particleCount = prefersReducedMotion
       ? isMobile ? 140 : 1200
       : isMobile ? 260 : 4500;
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: !isMobile,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: !isMobile,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+    } catch {
+      // The portfolio remains usable on devices without WebGL.
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.2 : 1.8));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -236,17 +245,7 @@ export function UniverseBackgroundThree({
       pointer = { x: touch.clientX, y: touch.clientY };
       tapBoost = 1;
     };
-    const handleVisibilityChange = () => {
-      if (!document.hidden && rafRef.current === null) {
-        previousTime = 0;
-        rafRef.current = requestAnimationFrame(animate);
-      }
-    };
-
     const animate = (timestamp: number) => {
-      rafRef.current = null;
-      if (document.hidden) return;
-
       const time = timestamp * 0.001;
       const dt = previousTime === 0 ? 0.016 : Math.min(0.05, time - previousTime);
       previousTime = time;
@@ -563,23 +562,46 @@ export function UniverseBackgroundThree({
       }
 
       renderer.render(scene, camera);
-      rafRef.current = requestAnimationFrame(animate);
     };
 
+    const loop = createAnimationLoop(animate);
+    const syncPlayback = () => {
+      loop.stop();
+      previousTime = 0;
+      if (document.hidden || phaseRef.current === "nebula") return;
+      if (prefersReducedMotion) {
+        animate(0);
+      } else {
+        loop.start();
+      }
+    };
+    const handleMotionChange = () => {
+      prefersReducedMotion = motionMedia.matches;
+      syncPlayback();
+    };
+    const handleResize = () => {
+      resize();
+      if (prefersReducedMotion) syncPlayback();
+    };
+
+    syncPlaybackRef.current = syncPlayback;
     resize();
-    window.addEventListener("resize", resize);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("resize", handleResize);
+    document.addEventListener("visibilitychange", syncPlayback);
+    motionMedia.addEventListener("change", handleMotionChange);
     if (isMobile) {
       window.addEventListener("touchstart", handleTouchStart, { passive: true });
     } else {
       window.addEventListener("mousemove", handlePointerMove);
     }
-    rafRef.current = requestAnimationFrame(animate);
+    syncPlayback();
 
     return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("resize", resize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      loop.stop();
+      syncPlaybackRef.current = null;
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", syncPlayback);
+      motionMedia.removeEventListener("change", handleMotionChange);
       if (isMobile) {
         window.removeEventListener("touchstart", handleTouchStart);
       } else {
