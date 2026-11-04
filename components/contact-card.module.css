@@ -1,34 +1,79 @@
-.card { container: contact / inline-size; }
-.card .body { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(min-content, 1fr) auto auto; gap: 18px; margin-top: 0; }
+.card { container: contact / inline-size; gap: 24px; }
+.card .body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(min-content, 1fr) auto auto;
+  gap: 24px;
+  margin-top: 0;
+}
+
 .overview { display: grid; grid-template-columns: minmax(0, 1fr) 148px; align-items: center; gap: 24px; }
-.overview :global(.bento-connect-primary) { gap: 18px; }
-.overview :global(.bento-connect-link-value) { white-space: normal; overflow: visible; overflow-wrap: anywhere; font-size: 15px; line-height: 1.5; }
+.overview :global(.bento-connect-primary) { gap: 20px; }
+.overview :global(.bento-connect-link) { grid-template-columns: 24px minmax(0, 1fr); min-height: 64px; gap: 12px; padding: 0; }
+.overview :global(.bento-connect-link-icon) { width: 24px; height: 24px; border: 0; border-radius: 0; background: transparent; }
+.overview :global(.bento-connect-link-icon svg) { width: 22px; height: 22px; }
+.overview :global(.bento-connect-link-text) { gap: 6px; }
+.overview :global(.bento-connect-link-label) { font-size: 10px; line-height: 1.4; letter-spacing: .04em; }
+.overview :global(.bento-connect-link-value) { text-align: match-parent; white-space: normal; overflow: visible; overflow-wrap: anywhere; font-size: 23px; font-weight: 500; line-height: 1.3; letter-spacing: -.02em; color: #f0ebe7; }
+.overview :global(.bento-connect-link:hover) { opacity: 1; }
+.overview :global(.bento-connect-link:hover .bento-connect-link-value) { color: #e6bfa1; }
+:global(html[dir="rtl"]) .overview :global(.bento-connect-link-value) { text-align: right; }
+
 .qr { margin: 0; min-width: 0; }
-.qr :global(.bento-qr-frame) { padding: 0; border-radius: 8px; overflow: hidden; }
+.qr :global(.bento-qr-frame) { padding: 0; border-radius: 6px; overflow: hidden; }
 .qr :global(.bento-qr-frame svg) { width: 148px; height: 148px; }
-.qr figcaption { margin-top: 10px; color: #b7a697; font-size: 11px; line-height: 1.5; text-align: center; }
-.actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; align-items: stretch; }
-.actions > :global(.bento-profile-download) { display: flex; }
-.body .actions :global(.bento-share) { margin: 0; min-width: 0; }
-.actions :global(.bento-profile-download a), .actions :global(.bento-share-btn) { flex: 1; min-height: 48px; gap: 8px; padding: 10px; font-size: 12px; line-height: 1.5; font-weight: 500; }
-.actions svg { flex-shrink: 0; }
-.note { grid-column: 1 / -1; margin: 0; color: #a9a29b; font-size: 11px; line-height: 1.5; }
-.body .channels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding-top: 16px; }
-.channels :global(.bento-connect-chip) { width: 100%; height: auto; min-height: 44px; padding: 8px 4px; gap: 6px; border-radius: 8px; }
-.channels svg { flex-shrink: 0; }
-.channelLabel { font-size: 11px; line-height: 1.4; overflow-wrap: anywhere; }
-@container contact (max-width: 420px) {
-  .overview { grid-template-columns: minmax(0, 1fr) 120px; gap: 16px; }
-  .overview :global(.bento-connect-link) { grid-template-columns: 32px minmax(0, 1fr); gap: 8px; padding-inline: 0; }
-  .overview :global(.bento-connect-link-icon) { width: 32px; height: 32px; border-radius: 8px; }
-  .overview :global(.bento-connect-link-value) { font-size: 13px; }
+.qr figcaption { margin-top: 8px; color: #a9a29b; font-size: 11px; line-height: 1.5; text-align: center; }
+
+.document { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 76px; padding: 16px 18px; border: 1px solid rgba(200, 185, 176, .12); border-radius: 8px; background: rgba(200, 185, 176, .06); color: #d7b69e; text-decoration: none; transition: background 160ms ease, border-color 160ms ease; }
+.documentText { display: grid; gap: 5px; min-width: 0; }
+.documentTitle { font-size: 13px; font-weight: 500; line-height: 1.5; }
+.note { margin: 0; color: #a9a29b; font-size: 11px; line-height: 1.5; }
+.document svg { flex-shrink: 0; }
+.document:hover { background: rgba(200, 185, 176, .1); border-color: rgba(200, 185, 176, .3); }
+.document:focus-visible { outline: 2px solid #e4bfa2; outline-offset: 3px; }
+
+.footer { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 16px; padding-top: 12px; border-top: 1px solid var(--connect-line); }
+.body .channels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 0; border: 0; }
+.channels :global(.bento-connect-chip) { width: 100%; height: auto; min-height: 44px; padding: 6px 0; gap: 6px; border: 0; border-radius: 4px; color: #b8b2ac; }
+.channels :global(.bento-connect-chip:hover) { color: #f0ebe7; background: rgba(200, 185, 176, .06); transform: none; }
+.channels svg { flex-shrink: 0; width: 16px; height: 16px; }
+.channelLabel { font-size: 11px; line-height: 1.4; }
+.body .footer :global(.bento-share) { margin: 0; min-width: 0; max-width: 150px; }
+.footer :global(.bento-share-btn) { width: auto; min-height: 44px; padding-block: 6px; padding-inline: 12px 0; gap: 7px; border: 0; border-radius: 4px; font-size: 12px; font-weight: 400; line-height: 1.5; color: #d0b4a0; }
+.footer :global(.bento-share-btn:hover:not(:disabled)) { color: #f0ebe7; background: transparent; }
+.footer :global(.bento-share-btn svg) { flex-shrink: 0; }
+
+@container contact (max-width: 460px) {
+  .overview { grid-template-columns: minmax(0, 1fr) 120px; gap: 20px; }
+  .overview :global(.bento-connect-link-value) { font-size: 19px; }
   .qr :global(.bento-qr-frame svg) { width: 120px; height: 120px; }
   .channelLabel { display: none; }
 }
+@container contact (max-width: 340px) {
+  .card .body { gap: 20px; }
+  .overview { gap: 16px; }
+  .overview :global(.bento-connect-link) { grid-template-columns: 18px minmax(0, 1fr); gap: 8px; }
+  .overview :global(.bento-connect-link-icon), .overview :global(.bento-connect-link-icon svg) { width: 18px; height: 18px; }
+  .overview :global(.bento-connect-link-value) { font-size: 16px; }
+  .overview :global(.bento-connect-link-label) { font-size: 9px; letter-spacing: 0; }
+  .document { padding: 14px; gap: 12px; }
+  .footer { gap: 8px; }
+  .footer :global(.bento-share-btn) { padding-inline: 4px 0; font-size: 11px; }
+}
 @container contact (max-width: 280px) {
   .overview { grid-template-columns: minmax(0, 1fr) 100px; gap: 12px; }
-  .overview :global(.bento-connect-link) { grid-template-columns: 28px minmax(0, 1fr); gap: 8px; }
-  .overview :global(.bento-connect-link-icon) { width: 28px; height: 28px; }
+  .overview :global(.bento-connect-link-value) { font-size: 14px; }
   .qr :global(.bento-qr-frame svg) { width: 100px; height: 100px; }
-  .actions { gap: 8px; }
+}
+
+/* The middle grid is taller beside the long biography on tablet. */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .overview { grid-template-columns: minmax(0, 1fr); align-content: space-evenly; gap: 24px; }
+  .overview :global(.bento-connect-primary) { gap: 16px; }
+  .overview :global(.bento-connect-link) { grid-template-columns: 24px minmax(0, 1fr); gap: 12px; }
+  .overview :global(.bento-connect-link-value) { font-size: 22px; }
+  .overview :global(.bento-connect-link-label) { font-size: 10px; }
+  .qr { display: grid; justify-items: center; }
+  .qr :global(.bento-qr-frame svg) { width: 148px; height: 148px; }
+  .qr figcaption { max-width: 240px; }
 }

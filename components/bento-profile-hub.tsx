@@ -465,14 +465,15 @@ function BentoConnectTile({ index }: { index: number }) {
           <figcaption>{copy.qrContactHint}</figcaption>
         </figure>
         </div>
-        <div className={contactStyles.actions}>
-        <div className="bento-profile-download">
-          <a href="/files/maxim-kanochkin-profile-ru.pdf" download data-analytics-event="profile_pdf"><Download size={16} aria-hidden="true" />{copy.details.contact.profilePdf}</a>
-        </div>
-        <SharePageButton />
-        <p className={contactStyles.note}>{copy.details.contact.pdfNote}</p>
-        </div>
+        <a className={contactStyles.document} href="/files/maxim-kanochkin-profile-ru.pdf" download data-analytics-event="profile_pdf">
+          <span className={contactStyles.documentText}>
+            <span className={contactStyles.documentTitle}>{copy.details.contact.profilePdf}</span>
+            <span className={contactStyles.note}>{copy.details.contact.pdfNote}</span>
+          </span>
+          <Download size={20} strokeWidth={1.5} aria-hidden="true" />
+        </a>
 
+        <div className={contactStyles.footer}>
         <nav
           className={`bento-connect-secondary ${contactStyles.channels}`}
           aria-label={copy.contactsSecondaryAria}
@@ -509,6 +510,8 @@ function BentoConnectTile({ index }: { index: number }) {
           </button>
 
         </nav>
+        <SharePageButton />
+        </div>
 
         {wechatHint ? (
           <p className="bento-connect-toast" role="status">
