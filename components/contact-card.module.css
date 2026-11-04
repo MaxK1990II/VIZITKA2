@@ -1,0 +1,34 @@
+.card { container: contact / inline-size; }
+.card .body { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(min-content, 1fr) auto auto; gap: 18px; margin-top: 0; }
+.overview { display: grid; grid-template-columns: minmax(0, 1fr) 148px; align-items: center; gap: 24px; }
+.overview :global(.bento-connect-primary) { gap: 18px; }
+.overview :global(.bento-connect-link-value) { white-space: normal; overflow: visible; overflow-wrap: anywhere; font-size: 15px; line-height: 1.5; }
+.qr { margin: 0; min-width: 0; }
+.qr :global(.bento-qr-frame) { padding: 0; border-radius: 8px; overflow: hidden; }
+.qr :global(.bento-qr-frame svg) { width: 148px; height: 148px; }
+.qr figcaption { margin-top: 10px; color: #b7a697; font-size: 11px; line-height: 1.5; text-align: center; }
+.actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; align-items: stretch; }
+.actions > :global(.bento-profile-download) { display: flex; }
+.body .actions :global(.bento-share) { margin: 0; min-width: 0; }
+.actions :global(.bento-profile-download a), .actions :global(.bento-share-btn) { flex: 1; min-height: 48px; gap: 8px; padding: 10px; font-size: 12px; line-height: 1.5; font-weight: 500; }
+.actions svg { flex-shrink: 0; }
+.note { grid-column: 1 / -1; margin: 0; color: #a9a29b; font-size: 11px; line-height: 1.5; }
+.body .channels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding-top: 16px; }
+.channels :global(.bento-connect-chip) { width: 100%; height: auto; min-height: 44px; padding: 8px 4px; gap: 6px; border-radius: 8px; }
+.channels svg { flex-shrink: 0; }
+.channelLabel { font-size: 11px; line-height: 1.4; overflow-wrap: anywhere; }
+@container contact (max-width: 420px) {
+  .overview { grid-template-columns: minmax(0, 1fr) 120px; gap: 16px; }
+  .overview :global(.bento-connect-link) { grid-template-columns: 32px minmax(0, 1fr); gap: 8px; padding-inline: 0; }
+  .overview :global(.bento-connect-link-icon) { width: 32px; height: 32px; border-radius: 8px; }
+  .overview :global(.bento-connect-link-value) { font-size: 13px; }
+  .qr :global(.bento-qr-frame svg) { width: 120px; height: 120px; }
+  .channelLabel { display: none; }
+}
+@container contact (max-width: 280px) {
+  .overview { grid-template-columns: minmax(0, 1fr) 100px; gap: 12px; }
+  .overview :global(.bento-connect-link) { grid-template-columns: 28px minmax(0, 1fr); gap: 8px; }
+  .overview :global(.bento-connect-link-icon) { width: 28px; height: 28px; }
+  .qr :global(.bento-qr-frame svg) { width: 100px; height: 100px; }
+  .actions { gap: 8px; }
+}

@@ -16,7 +16,8 @@ export function ConnectQr() {
           value={CONTACT_QR_URL}
           size={148}
           level="M"
-          marginSize={1}
+          marginSize={4}
+          role="img"
           bgColor="#f3f1ec"
           fgColor="#141210"
           title={copy.qrContactHint}

@@ -27,6 +27,7 @@ import { ProjectList } from "@/components/project-list";
 import { PortfolioNavigation } from "@/components/portfolio-navigation";
 import { PortfolioAnalytics } from "@/components/portfolio-analytics";
 import { profileAnchor } from "@/lib/portfolio-navigation";
+import contactStyles from "./contact-card.module.css";
 
 type BentoProfileHubProps = {
   isMobile: boolean;
@@ -434,7 +435,7 @@ function BentoConnectTile({ index }: { index: number }) {
 
   return (
     <motion.article
-      className="bento-tile bento-tile-connect"
+      className={`bento-tile bento-tile-connect ${contactStyles.card}`}
       id="contact"
       tabIndex={-1}
       custom={index}
@@ -447,24 +448,33 @@ function BentoConnectTile({ index }: { index: number }) {
         <p className="bento-tile-desc">{copy.connectBlurb}</p>
       </header>
 
-      <div className="bento-connect-body">
+      <div className={`bento-connect-body ${contactStyles.body}`}>
+        <div className={contactStyles.overview}>
         <div className="bento-connect-primary">
           <a className="bento-connect-link" href={`https://t.me/${PROFILE.telegram.replace("@", "")}`} target="_blank" rel="noreferrer" data-analytics-event="contact_click" data-analytics-channel="telegram">
             <span className="bento-connect-link-icon"><ConnectChannelIcon id="telegram" /></span>
-            <span className="bento-connect-link-text"><span className="bento-connect-link-label">{copy.details.contact.telegram}</span><span className="bento-connect-link-value">{PROFILE.telegram}</span></span>
+            <span className="bento-connect-link-text"><span className="bento-connect-link-label">{copy.details.contact.telegram}</span><bdi dir="ltr" className="bento-connect-link-value">{PROFILE.telegram}</bdi></span>
           </a>
           <a className="bento-connect-link" href={`mailto:${PROFILE.emailPersonal}`} data-analytics-event="contact_click" data-analytics-channel="email">
             <span className="bento-connect-link-icon"><ConnectChannelIcon id="email" /></span>
-            <span className="bento-connect-link-text"><span className="bento-connect-link-label">{copy.details.contact.email}</span><span className="bento-connect-link-value">{PROFILE.emailPersonal}</span></span>
+            <span className="bento-connect-link-text"><span className="bento-connect-link-label">{copy.details.contact.email}</span><bdi dir="ltr" className="bento-connect-link-value">{PROFILE.emailPersonal}</bdi></span>
           </a>
         </div>
+        <figure className={contactStyles.qr}>
+          <ConnectQr />
+          <figcaption>{copy.qrContactHint}</figcaption>
+        </figure>
+        </div>
+        <div className={contactStyles.actions}>
         <div className="bento-profile-download">
           <a href="/files/maxim-kanochkin-profile-ru.pdf" download data-analytics-event="profile_pdf"><Download size={16} aria-hidden="true" />{copy.details.contact.profilePdf}</a>
-          <p>{copy.details.contact.pdfNote}</p>
+        </div>
+        <SharePageButton />
+        <p className={contactStyles.note}>{copy.details.contact.pdfNote}</p>
         </div>
 
         <nav
-          className="bento-connect-secondary"
+          className={`bento-connect-secondary ${contactStyles.channels}`}
           aria-label={copy.contactsSecondaryAria}
         >
           {connectChips.map((channel) => (
@@ -481,6 +491,7 @@ function BentoConnectTile({ index }: { index: number }) {
                 : {})}
             >
               <ConnectChannelIcon id={channel.id} />
+              <span className={contactStyles.channelLabel}>{channel.label}</span>
             </a>
           ))}
 
@@ -494,13 +505,10 @@ function BentoConnectTile({ index }: { index: number }) {
             title="WeChat"
           >
             <ConnectChannelIcon id="wechat" />
+            <span className={contactStyles.channelLabel}>WeChat</span>
           </button>
 
         </nav>
-
-        <details className="bento-qr-details"><summary>{copy.qrContactHint}</summary><ConnectQr /></details>
-
-        <SharePageButton />
 
         {wechatHint ? (
           <p className="bento-connect-toast" role="status">
